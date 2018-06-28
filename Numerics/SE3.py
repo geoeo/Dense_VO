@@ -9,7 +9,7 @@ Attributes:
 
 
 class SE3:
-    def __init__(self, se3, invert_matricies=False):
+    def __init__(self, se3 : np.ndarray, invert_matricies=False):
         self.se3 = se3
         self.se3_inv = SE3.inverse(se3)
 

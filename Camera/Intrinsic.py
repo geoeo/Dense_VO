@@ -8,10 +8,10 @@ Attributes:
 """
 
 
-class IntrinsicCamera:
-    def __init__(self, K):
+class Intrinsic:
+    def __init__(self, K : np.ndarray):
         self.K = K
-        self.K_inv = IntrinsicCamera.inverse(K)
+        self.K_inv = Intrinsic.inverse(K)
 
     @staticmethod
     def extract_fx(K):
@@ -32,16 +32,19 @@ class IntrinsicCamera:
     # Returns 3x3 Intrinsic Camera Matrix
     @staticmethod
     def inverse(K):
-        fx = IntrinsicCamera.extract_fx(K)
-        fy = IntrinsicCamera.extract_fy(K)
+        fx = Intrinsic.extract_fx(K)
+        fy = Intrinsic.extract_fy(K)
         fx_inv = 1 / fx
         fy_inv = 1 / fy
-        cx_inv = -1 * IntrinsicCamera.extract_cx(K) / fx
-        cy_inv = -1 * IntrinsicCamera.extract_cy(K) / fy
+        cx_inv = -1 * Intrinsic.extract_cx(K) / fx
+        cy_inv = -1 * Intrinsic.extract_cy(K) / fy
 
         K_inv = np.array([[fx_inv, 0, cx_inv],
                           [0, fy_inv, cy_inv],
                           [0, 0, 1]])
-        # K_inv = np.linalg.inv(K[0:3,0:3])
 
         return K_inv
+
+    def scaly_by(self,scale_factor):
+        self.K = self.K*scale_factor
+        self.K_inv = Intrinsic.inverse(self.K)
