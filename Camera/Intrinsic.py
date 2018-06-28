@@ -46,5 +46,9 @@ class Intrinsic:
         return K_inv
 
     def scaly_by(self,scale_factor):
-        self.K = self.K*scale_factor
+        self.K[0,0] /= scale_factor # Halving the image double focal length
+        self.K[1,1] /= scale_factor
+        self.K[0,2] *= scale_factor
+        self.K[1,2] *= scale_factor
+
         self.K_inv = Intrinsic.inverse(self.K)
