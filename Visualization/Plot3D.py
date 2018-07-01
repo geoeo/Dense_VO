@@ -11,3 +11,16 @@ def scatter_plot(X,Y,Z):
     #ax.set_zlabel('Z Label')
 
     plt.show()
+
+def scatter_plot(points):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for point in points:
+        X,Y,Z = point
+        ax.scatter(X,Y,Z)
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    #ax.set_zlabel('Z Label')
+
+    plt.show()
