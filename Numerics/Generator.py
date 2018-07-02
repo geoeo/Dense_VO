@@ -1,4 +1,5 @@
 import numpy as np
+import Numerics.Utils as Utils
 from math import pi, cos, sin
 
 
@@ -26,7 +27,6 @@ def generate_3d_plane(a,b,d,pointCount,sigma):
 def generate_random_se3():
 
     t = np.reshape(np.random.uniform(-10,10,3),(3,1))
-    homogeneous = np.array([[0,0,0,1]])
 
     yaw = np.random.normal(pi / 2, 16) #around z
     pitch = np.random.normal(0, 16)# around y
@@ -46,6 +46,6 @@ def generate_random_se3():
 
     R = np.matmul(np.matmul(R_z,R_y),R_x)
 
-    SE3 = np.append(np.append(R,t,axis=1),homogeneous,axis=0)
+    SE3 = np.append(np.append(R,t,axis=1),Utils.homogenous_for_SE3(),axis=0)
 
     return SE3
