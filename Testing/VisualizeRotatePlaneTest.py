@@ -15,7 +15,7 @@ rotated_points = np.matmul(SE3,points)
 (X_new,Y_new,Z_new) = list(NumUtils.points_into_components(rotated_points))
 
 #Plot3D.scatter_plot(X_new,Y_new,Z_new)
-Plot3D.scatter_plot([(X,Y,Z),(X_new,Y_new,Z_new)])
+Plot3D.scatter_plot([(X,Y,Z),(X_new,Y_new,Z_new)],['original','perturbed'])
 
 
 
