@@ -21,7 +21,8 @@ def solve_SE3(X,Y,max_its,eps):
         w_sub = np.array([0, 0, 0, 0, 0, 0], dtype=np.float64)
         J = np.empty((1,6))
         J_v = np.empty((6,1))
-        #normal_matrix = np.empty((6,6))
+        J_v_2 = np.empty((6,1))
+        normal_matrix_2 = np.empty((6,6))
         normal_matrix = np.empty((1, 1))
         inv_J = 0
 
@@ -68,25 +69,28 @@ def solve_SE3(X,Y,max_its,eps):
 
         for i in range(0,N,1):
             G_i = Gs[i]
+            G_i_t = np.transpose(G_i)
             Y_est_i = Y_est[:,i]
             diff_n = diff[:,i]
+            diff_n_t = np.reshape(diff_n,(1,4))
             v_i = v[i]
-            J_prime = np.matmul(G_i,diff_n).reshape((6,1))
-            #J_prime = -np.multiply(G_i,Y_est_i).reshape((6,1))
+            J_prime = np.multiply(2,np.matmul(G_i,diff_n).reshape((6,1)))
+            J_prime_2 = np.multiply(2,np.matmul(diff_n_t,G_i_t).reshape((1,6)))
+            #J_prime = -np.multiply(G_i,v_i)
             J_t_prime = np.reshape(J_prime,(1,6))
+            J_t_prime_2 = np.reshape(J_prime_2, (6, 1))
             #J += J_prime
             J_v += np.multiply(J_prime,v_i)
+            J_v_2 += np.multiply(J_t_prime_2,v_i)
             normal_matrix += np.matmul(J_t_prime,J_prime)
-
+            #normal_matrix_2 += np.matmul(J_t_prime_2,J_prime_2)
 
         pseudo_inv = np.linalg.inv(normal_matrix)
-
-        #w_prime = np.matmul(pseudo_inv,J_v)
-        #w_prime[3] = math.fmod(w_prime[4],2*math.pi)
-        #w_prime[4] = math.fmod(w_prime[4],2*math.pi)
-        #w_prime[5] = math.fmod(w_prime[5],2*math.pi)
-        #w += w_prime
+        (Q,R) = np.linalg.qr(normal_matrix_2)
+        #pseudo_inv_2 = np.matmul(np.linalg.sol(R),np.transpose(Q)) #TODO: Use scipy for invertion of upper triangluar
         w = np.multiply(pseudo_inv,J_v)
+        #w = np.matmul(pseudo_inv_2,J_v_2)
+        #w = np.multiply(J_v_2,pseudo_inv)
         w_transpose = np.transpose(w)
         w_x = np.array([[0, -w[5], w[4]],
                         [w[5], 0, -w[3]],
@@ -104,11 +108,11 @@ def solve_SE3(X,Y,max_its,eps):
         #t_est = delta_trans
         t_est = t_est + delta_trans
 
+        #TODO: Use summantion of twist, only compute SE3 at the end
         R_new = np.identity(3) + np.multiply(A,w_x) + np.multiply(B,np.matmul(w_x,w_x))
         R_est = np.matmul(R_new,R_est)
         #R_est = R_new
 
         SE_3_est = np.append(np.append(R_est,t_est,axis=1),Utils.homogenous_for_SE3(),axis=0)
 
-    Y_new = np.matmul(SE_3_est,X)
     return SE_3_est
