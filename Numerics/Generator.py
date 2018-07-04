@@ -24,13 +24,13 @@ def generate_3d_plane(a,b,d,pointCount,sigma):
     return (xs + plane_normal_x_pertrubed,ys + plane_normal_y_pertrubed,zs + plane_normal_z_pertrubed)
 
 
-def generate_random_se3():
+def generate_random_se3(trans_min,trans_max,sigma):
 
-    t = np.reshape(np.random.uniform(-10,10,3),(3,1))
+    t = np.reshape(np.random.uniform(trans_min,trans_max,3),(3,1))
 
-    yaw = np.random.normal(pi / 2, 16) #around z
-    pitch = np.random.normal(0, 16)# around y
-    roll = np.random.normal(pi / 2, 16) # around x
+    yaw = np.random.normal(pi / 2, sigma) #around z
+    pitch = np.random.normal(0, sigma)# around y
+    roll = np.random.normal(pi / 2, sigma) # around x
 
     R_z = np.array([[cos(yaw), -sin(yaw), 0],
            [sin(yaw), cos(yaw), 0],
