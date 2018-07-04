@@ -65,7 +65,7 @@ def solve_SE3(X,Y,max_its,eps):
 
 
         for i in range(0,N,1):
-            G_i = Gs[i]
+            G_i = 2*Gs[i]
             G_i_t = np.transpose(G_i)
             diff_n = np.reshape(diff[:,i],(4,1))
             v_i = v[i]
@@ -87,7 +87,7 @@ def solve_SE3(X,Y,max_its,eps):
             return SE_3_est
         #R_inv = linalg.solve_triangular(R, np.identity(6))
         #Q_transpose = np.transpose(Q)
-        #pseudo_inv_2 = np.matmul(R_inv,Q_transpose) #TODO: Use scipy for invertion of upper triangluar
+        #pseudo_inv = np.matmul(R_inv,Q_transpose)
         #w = np.multiply(pseudo_inv,J_v)
         w = np.matmul(pseudo_inv,J_v)
         w_transpose = np.transpose(w)
