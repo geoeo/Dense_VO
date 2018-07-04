@@ -13,6 +13,7 @@ def solve_SE3(X,Y,max_its,eps):
                       [0, 0, 1]],dtype=np.float64)
     (position_vector_size,N) = X.shape
     stacked_obs_size = position_vector_size*N
+    v_mean = -1
 
     SE_3_est = np.append(np.append(R_est,t_est,axis=1),Utils.homogenous_for_SE3(),axis=0)
 
@@ -28,7 +29,9 @@ def solve_SE3(X,Y,max_its,eps):
         inv_J = 0
 
         Y_est = np.matmul(SE_3_est,X)
-        diff = np.multiply(0.5,Y - Y_est)
+        # 0.5 (f(x)_t f(x)) = (0.25*f(x)_t)(0.25*f(x))
+        diff = np.multiply(0.25,Y - Y_est)
+        #diff = Y - Y_est
         diff_stacked = np.reshape(diff,(stacked_obs_size,1),order='F')
         v = np.sum(np.square(diff),axis=0)
         v_transpose = np.reshape(v,(N,1))
@@ -65,7 +68,8 @@ def solve_SE3(X,Y,max_its,eps):
 
 
         for i in range(0,N,1):
-            G_i = 2*Gs[i]
+            G_i = np.multiply(2.0,Gs[i])
+            #G_i = Gs[i]
             G_i_t = np.transpose(G_i)
             diff_n = np.reshape(diff[:,i],(4,1))
             v_i = v[i]
@@ -116,4 +120,5 @@ def solve_SE3(X,Y,max_its,eps):
 
         SE_3_est = np.append(np.append(R_est,t_est,axis=1),Utils.homogenous_for_SE3(),axis=0)
 
+    print('mean error:',v_mean)
     return SE_3_est
