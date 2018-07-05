@@ -2,16 +2,17 @@ import numpy as np
 from scipy import linalg
 import Numerics.Lie as Lie
 import Numerics.Utils as Utils
+from Numerics.Utils import matrix_data_type
 import math
 
 def solve_SE3(X,Y,max_its,eps):
     #init
     # array for twist values x, y, z, roll, pitch, yaw
-    t_est = np.array([0, 0, 0],dtype=np.float64).reshape((3,1))
+    t_est = np.array([0, 0, 0],dtype=matrix_data_type).reshape((3,1))
     R_est = np.array([[1, 0, 0],
                       [0, 1, 0],
-                      [0, 0, 1]],dtype=np.float64)
-    I_3 = np.identity(3,dtype=np.float64)
+                      [0, 0, 1]],dtype=matrix_data_type)
+    I_3 = np.identity(3,dtype=matrix_data_type)
     (position_vector_size,N) = X.shape
     twist_size = 6
     stacked_obs_size = position_vector_size*N

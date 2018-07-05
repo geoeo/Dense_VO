@@ -1,5 +1,7 @@
 import numpy as np
 
+matrix_data_type = np.float32
+
 def points_into_components(points):
     X = points[0,:]
     Y = points[1,:]
