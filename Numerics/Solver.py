@@ -15,9 +15,18 @@ def solve_SE3(X,Y,max_its,eps):
     (position_vector_size,N) = X.shape
     twist_size = 6
     stacked_obs_size = position_vector_size*N
+    padding = Utils.padding_for_generator_jacobi()
     v_mean = -1
+    it = -1
 
     SE_3_est = np.append(np.append(R_est,t_est,axis=1),Utils.homogenous_for_SE3(),axis=0)
+
+    generator_x = Lie.generator_x()
+    generator_y = Lie.generator_y()
+    generator_z = Lie.generator_z()
+    generator_roll = Lie.generator_roll()
+    generator_pitch = Lie.generator_pitch()
+    generator_yaw = Lie.generator_yaw()
 
     for it in range(0,max_its,1):
         # accumulators
@@ -25,6 +34,7 @@ def solve_SE3(X,Y,max_its,eps):
         normal_matrix = np.zeros((twist_size, twist_size))
 
         Y_est = np.matmul(SE_3_est,X)
+        #  (0.25f(x))_t * (0.25f(x)) = 0.5 f(x)_t f(x)
         diff = np.multiply(0.25,Y - Y_est)
         v = np.sum(np.square(diff),axis=0)
         v_mean = np.mean(v)
@@ -37,22 +47,22 @@ def solve_SE3(X,Y,max_its,eps):
 
         # Variant 1
         # using generators of so3 to compute derivative with respect to parameters
-        G_1_y = np.matmul(Lie.generator_x(),Y_est)
+        G_1_y = np.matmul(generator_x,Y_est)
         G_1_y_stacked = np.reshape(G_1_y,(stacked_obs_size,1),order='F')
 
-        G_2_y = np.matmul(Lie.generator_y(),Y_est)
+        G_2_y = np.matmul(generator_y,Y_est)
         G_2_y_stacked = np.reshape(G_2_y,(stacked_obs_size,1),order='F')
 
-        G_3_y = np.matmul(Lie.generator_z(), Y_est)
+        G_3_y = np.matmul(generator_z, Y_est)
         G_3_y_stacked = np.reshape(G_3_y,(stacked_obs_size,1),order='F')
 
-        G_4_y = np.matmul(Lie.generator_roll(),Y_est)
+        G_4_y = np.matmul(generator_roll,Y_est)
         G_4_y_stacked = np.reshape(G_4_y,(stacked_obs_size,1),order='F')
 
-        G_5_y = np.matmul(Lie.generator_pitch(), Y_est)
+        G_5_y = np.matmul(generator_pitch, Y_est)
         G_5_y_stacked = np.reshape(G_5_y,(stacked_obs_size,1),order='F')
 
-        G_6_y = np.matmul(Lie.generator_yaw(), Y_est)
+        G_6_y = np.matmul(generator_yaw, Y_est)
         G_6_y_stacked = np.reshape(G_6_y,(stacked_obs_size,1),order='F')
 
         G_translation = np.append(np.append(G_1_y_stacked,G_2_y_stacked,axis=1),G_3_y_stacked,axis=1)
@@ -62,25 +72,26 @@ def solve_SE3(X,Y,max_its,eps):
         Gs = np.hsplit(np.transpose(G),N)
 
         for i in range(0,N,1):
-              G_i = Gs[i]
-              J_t = np.multiply(2.0,G_i)
-              J = np.transpose(J_t)
-              diff_n = np.reshape(diff[:,i],(position_vector_size,1))
-              J_v += np.matmul(J_t,diff_n)
-              normal_matrix += np.matmul(J_t,J)
+               G_i = Gs[i]
+               J_t = np.multiply(2.0,G_i)
+               J = np.transpose(J_t)
+               diff_n = np.reshape(diff[:,i],(position_vector_size,1))
+               J_v += np.matmul(J_t,diff_n)
+               normal_matrix += np.matmul(J_t,J)
 
         ##########################################################
 
-        # Variant #2
+        # Variant #2 - A lot slower! 1000ms Probably due to memory alloc in loop
         #for i in range(0,N,1):
-            # Y_est_i = Y_est[:,i]
-            # y_x = np.multiply(-1,Utils.skew_symmetric(Y_est_i[0],Y_est_i[1],Y_est_i[2]))
-            # J = np.multiply(2,np.append(np.append(I_3,y_x,axis=1),Utils.padding_for_generator_jacobi(),axis=0))
-            # J_t = np.transpose(J)
-            # diff_n = np.reshape(diff[:,i],(position_vector_size,1))
-            # J_v += np.matmul(J_t,diff_n)
-            # normal_matrix += np.matmul(J_t,J)
+        #     Y_est_i = Y_est[:,i]
+        #     y_x = np.multiply(-1,Utils.skew_symmetric(Y_est_i[0],Y_est_i[1],Y_est_i[2]))
+        #     J = np.multiply(2,np.append(np.append(I_3,y_x,axis=1),padding,axis=0))
+        #     J_t = np.transpose(J)
+        #     diff_n = np.reshape(diff[:,i],(position_vector_size,1))
+        #     J_v += np.matmul(J_t,diff_n)
+        #     normal_matrix += np.matmul(J_t,J)
 
+        # TODO: Investigate faster inversion with QR
         try:
             pseudo_inv = linalg.inv(normal_matrix)
             #(Q,R) = linalg.qr(normal_matrix_2)
