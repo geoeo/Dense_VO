@@ -11,6 +11,7 @@ def solve_SE3(X,Y,max_its,eps):
     R_est = np.array([[1, 0, 0],
                       [0, 1, 0],
                       [0, 0, 1]],dtype=np.float64)
+    I_3 = np.identity(3,dtype=np.float64)
     (position_vector_size,N) = X.shape
     twist_size = 6
     stacked_obs_size = position_vector_size*N
@@ -32,7 +33,10 @@ def solve_SE3(X,Y,max_its,eps):
             print('done')
             break
 
-        #using generators of so3 to compute derivative with respect to parameters
+        # TODO: Profile Variants
+
+        # Variant 1
+        # using generators of so3 to compute derivative with respect to parameters
         G_1_y = np.matmul(Lie.generator_x(),Y_est)
         G_1_y_stacked = np.reshape(G_1_y,(stacked_obs_size,1),order='F')
 
@@ -53,16 +57,29 @@ def solve_SE3(X,Y,max_its,eps):
 
         G_translation = np.append(np.append(G_1_y_stacked,G_2_y_stacked,axis=1),G_3_y_stacked,axis=1)
         G_rot = np.append(np.append(G_4_y_stacked,G_5_y_stacked,axis=1),G_6_y_stacked,axis=1)
-
         G = np.append(G_translation,G_rot,axis=1)
+
         Gs = np.hsplit(np.transpose(G),N)
 
         for i in range(0,N,1):
-            G_i = np.multiply(2.0,Gs[i]) # This is J_transpose
-            G_i_t = np.transpose(G_i)
-            diff_n = np.reshape(diff[:,i],(position_vector_size,1))
-            J_v += np.matmul(G_i,diff_n)
-            normal_matrix += np.matmul(G_i,G_i_t)
+              G_i = Gs[i]
+              J_t = np.multiply(2.0,G_i)
+              J = np.transpose(J_t)
+              diff_n = np.reshape(diff[:,i],(position_vector_size,1))
+              J_v += np.matmul(J_t,diff_n)
+              normal_matrix += np.matmul(J_t,J)
+
+        ##########################################################
+
+        # Variant #2
+        #for i in range(0,N,1):
+            # Y_est_i = Y_est[:,i]
+            # y_x = np.multiply(-1,Utils.skew_symmetric(Y_est_i[0],Y_est_i[1],Y_est_i[2]))
+            # J = np.multiply(2,np.append(np.append(I_3,y_x,axis=1),Utils.padding_for_generator_jacobi(),axis=0))
+            # J_t = np.transpose(J)
+            # diff_n = np.reshape(diff[:,i],(position_vector_size,1))
+            # J_v += np.matmul(J_t,diff_n)
+            # normal_matrix += np.matmul(J_t,J)
 
         try:
             pseudo_inv = linalg.inv(normal_matrix)
@@ -72,9 +89,7 @@ def solve_SE3(X,Y,max_its,eps):
             return SE_3_est
         w = np.matmul(pseudo_inv,J_v)
         w_transpose = np.transpose(w)
-        w_x = np.array([[0, -w[5], w[4]],
-                        [w[5], 0, -w[3]],
-                        [-w[4], w[3], 0]],dtype=np.float64)
+        w_x = Utils.skew_symmetric(w[3],w[4],w[5])
 
         #closed form solution for exponential map
         theta = math.sqrt(np.matmul(w_transpose,w))
