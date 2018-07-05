@@ -90,26 +90,31 @@ def solve_SE3(X,Y,max_its,eps):
         w = np.matmul(pseudo_inv,J_v)
         w_transpose = np.transpose(w)
         w_x = Utils.skew_symmetric(w[3],w[4],w[5])
+        w_x_squared = np.matmul(w_x,w_x)
 
-        #closed form solution for exponential map
+        # closed form solution for exponential map
         theta = math.sqrt(np.matmul(w_transpose,w))
         theta_sqred = math.pow(theta,2)
+        # TODO use Taylor Expansion when theta_sqred is small
         try:
             A = math.sin(theta) / theta
-            B = (1 - math.cos(theta)) / (theta_sqred)
+            B = (1 - math.cos(theta)) / theta_sqred
+            C = (1 - A) / theta_sqred
         except:
             print('bad theta')
             return SE_3_est
 
-        #translation parameters are just read out
-        delta_trans = np.array([w[0], w[1], w[2]])
+        u = np.array([w[0], w[1], w[2]]).reshape((3,1))
 
-        t_est = t_est + delta_trans
+        R_new = I_3 + np.multiply(A,w_x) + np.multiply(B,w_x_squared)
+        V = I_3 + np.multiply(B,w_x) + np.multiply(C,w_x_squared)
 
-        R_new = np.identity(3) + np.multiply(A,w_x) + np.multiply(B,np.matmul(w_x,w_x))
+        # TODO: Investigate with adding u works as well
+        t_est += + np.matmul(V,u)
+        #t_est += u
         R_est = np.matmul(R_new,R_est)
 
         SE_3_est = np.append(np.append(R_est,t_est,axis=1),Utils.homogenous_for_SE3(),axis=0)
 
-    print('mean error:',v_mean)
+    print('mean error:',v_mean, 'iteation: ', it)
     return SE_3_est
