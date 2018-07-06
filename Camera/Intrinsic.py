@@ -10,6 +10,9 @@ Attributes:
 
 class Intrinsic:
     def __init__(self, K : np.ndarray):
+        (r,c) = K.shape
+        if r != 3 and c != 4:
+            raise ValueError("Intrinsics Matrix not 3x4")
         self.K = K
         self.K_inv = Intrinsic.inverse(K)
 

@@ -31,13 +31,13 @@ class SE3:
         # returns 3x4 sub matrix
         return se3[0:3,0:4]
 
-    @staticmethod #TODO: This is WRONG!
+    @staticmethod
     def inverse(se3):
         rotation = SE3.extract_rotation(se3)
         rotation_transpose = np.transpose(rotation)
 
         translation = SE3.extract_translation(se3)
-        translation_inverse = -1 * translation
+        translation_inverse = np.multiply(-1,np.matmul(rotation_transpose,translation))
 
         m = np.concatenate((rotation_transpose, translation_inverse), axis=1)
         se3_inv = SE3.append_homogeneous_along_y(m)

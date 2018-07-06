@@ -5,6 +5,8 @@ import Numerics.Utils as Utils
 import Numerics.Solver as Solver
 from math import pi
 
+#TODO: Implement Virtual Pinhole Camera
+
 N = 20
 
 (X,Y,Z) = Generator.generate_3d_plane(1,1,-30,N,4)
