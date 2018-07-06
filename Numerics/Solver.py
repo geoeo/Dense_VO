@@ -16,7 +16,8 @@ def solve_SE3(X,Y,max_its,eps):
     (position_vector_size,N) = X.shape
     twist_size = 6
     stacked_obs_size = position_vector_size*N
-    padding = Utils.padding_for_generator_jacobi()
+    jacbobi_padding = Utils.padding_for_generator_jacobi()
+    homogeneous_se3_padding = Utils.homogenous_for_SE3()
     v_mean = -1
     it = -1
 
@@ -86,7 +87,7 @@ def solve_SE3(X,Y,max_its,eps):
         #for i in range(0,N,1):
         #     Y_est_i = Y_est[:,i]
         #     y_x = np.multiply(-1,Utils.skew_symmetric(Y_est_i[0],Y_est_i[1],Y_est_i[2]))
-        #     J = np.multiply(2,np.append(np.append(I_3,y_x,axis=1),padding,axis=0))
+        #     J = np.multiply(2,np.append(np.append(I_3,y_x,axis=1),jacbobi_padding,axis=0))
         #     J_t = np.transpose(J)
         #     diff_n = np.reshape(diff[:,i],(position_vector_size,1))
         #     J_v += np.matmul(J_t,diff_n)
@@ -126,7 +127,7 @@ def solve_SE3(X,Y,max_its,eps):
         #t_est += u
         R_est = np.matmul(R_new,R_est)
 
-        SE_3_est = np.append(np.append(R_est,t_est,axis=1),Utils.homogenous_for_SE3(),axis=0)
+        SE_3_est = np.append(np.append(R_est,t_est,axis=1),homogeneous_se3_padding,axis=0)
 
     print('mean error:',v_mean, 'iteation: ', it)
     return SE_3_est

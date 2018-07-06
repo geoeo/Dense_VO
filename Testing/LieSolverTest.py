@@ -4,7 +4,7 @@ import numpy as np
 import Numerics.Utils as NumUtils
 import Numerics.Solver as Solver
 
-N = 20000
+N = 200
 (X,Y,Z) = Generator.generate_3d_plane(1,1,0,N,4)
 H = np.repeat(1,N)
 

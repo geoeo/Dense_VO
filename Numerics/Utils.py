@@ -27,3 +27,6 @@ def skew_symmetric(a,b,c):
     return np.array([[0, -c, b],
                      [c, 0, -a],
                      [-b, a, 0]], dtype=np.float64)
+
+def normalize(vector: np.ndarray):
+    return vector/np.linalg.norm(vector)
