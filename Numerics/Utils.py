@@ -30,3 +30,11 @@ def skew_symmetric(a,b,c):
 
 def normalize(vector: np.ndarray):
     return vector/np.linalg.norm(vector)
+
+def move_data_along_z(points, magnitude):
+    translation = np.reshape(np.array([0,0,magnitude]),(3,1))
+    se3_translation_only = np.append(np.append(np.identity(3,dtype=matrix_data_type),translation,axis=1),homogenous_for_SE3(),axis=0)
+
+    return np.matmul(se3_translation_only,points)
+
+

@@ -122,12 +122,10 @@ def solve_SE3(X,Y,max_its,eps):
         R_new = I_3 + np.multiply(A,w_x) + np.multiply(B,w_x_squared)
         V = I_3 + np.multiply(B,w_x) + np.multiply(C,w_x_squared)
 
-        # TODO: Investigate with adding u works as well
         t_est += + np.matmul(V,u)
-        #t_est += u
         R_est = np.matmul(R_new,R_est)
 
         SE_3_est = np.append(np.append(R_est,t_est,axis=1),homogeneous_se3_padding,axis=0)
 
-    print('mean error:',v_mean, 'iteation: ', it)
+    print('mean error:',v_mean, 'iteration: ', it)
     return SE_3_est

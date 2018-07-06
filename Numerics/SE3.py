@@ -31,7 +31,7 @@ class SE3:
         # returns 3x4 sub matrix
         return se3[0:3,0:4]
 
-    @staticmethod
+    @staticmethod #TODO: This is WRONG!
     def inverse(se3):
         rotation = SE3.extract_rotation(se3)
         rotation_transpose = np.transpose(rotation)

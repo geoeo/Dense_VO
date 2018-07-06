@@ -3,14 +3,15 @@ import Visualization.Plot3D as Plot3D
 import numpy as np
 import Numerics.Utils as NumUtils
 import Numerics.Solver as Solver
+from math import pi
 
-N = 200
+N = 20
 (X,Y,Z) = Generator.generate_3d_plane(1,1,0,N,4)
 H = np.repeat(1,N)
 
 points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
-SE3 = Generator.generate_random_se3(-10,10,4)
+SE3 = Generator.generate_random_se3(-10,10,4,pi/2, 0, pi/2)
 
 rotated_points_gt = np.matmul(SE3,points)
 
