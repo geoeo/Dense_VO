@@ -9,7 +9,7 @@ from math import pi
 
 #TODO: Implement Virtual Pinhole Camera
 
-N = 3
+N = 20
 
 (X,Y,Z) = Generator.generate_3d_plane(1,1,-30,N,4)
 H = np.repeat(1,N)
@@ -21,7 +21,7 @@ SE3 = Generator.generate_random_se3(-5,5,pi/18,pi/10,0,pi/10)
 perturbed_points_gt = np.matmul(SE3, points)
 
 lookAt = Camera.lookAt(np.array([0,0,0]),np.array([0,0,-1]),np.array([0,1,0]))
-intrinsics = Intrinsic(1,1,0,0)
+intrinsics = Intrinsic(-1,-1,0,0)
 camera = Camera.Camera(intrinsics,lookAt)
 
 points_persp = camera.apply_perspective_pipeline(points)

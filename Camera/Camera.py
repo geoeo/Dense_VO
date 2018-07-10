@@ -2,6 +2,7 @@ import numpy as np
 import Camera.Intrinsic as Intrinsic
 import Numerics.SE3 as SE3
 import Numerics.Utils as Utils
+import warnings
 
 
 #TODO: Test this
@@ -36,6 +37,9 @@ Attributes:
 """
 class Camera:
     def __init__(self, intrinsic : Intrinsic, se3 : np.ndarray):
+        if intrinsic.extract_fx() > 0 or intrinsic.extract_fy() > 0:
+            warnings.warn("focal length is positive in right handed coordinate system, may lead to inverted image", RuntimeWarning)
+
         self.intrinsic = intrinsic
         self.se3 = se3
         self.se3_inv = SE3.invert(se3)

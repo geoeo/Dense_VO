@@ -11,33 +11,45 @@ Attributes:
 class Intrinsic:
     def __init__(self, fx,fy,cx,cy):
         self.K = np.array([[fx,0,cx,0],[0,fy,cy,0],[0.,0.,1.,0.]])
-        self.K_inv = Intrinsic.inverse(self.K)
+        self.K_inv = Intrinsic.invert(self.K)
+
+    def extract_fx(self):
+        return self.K[0, 0]
+
+    def extract_fy(self):
+        return self.K[1, 1]
+
+    def extract_cx(self):
+        return self.K[0, 2]
+
+    def extract_cy(self):
+        return self.K[1, 2]
 
     @staticmethod
-    def extract_fx(K):
+    def static_extract_fx(K):
         return K[0, 0]
 
     @staticmethod
-    def extract_fy(K):
+    def static_extract_fy(K):
         return K[1, 1]
 
     @staticmethod
-    def extract_cx(K):
+    def static_extract_cx(K):
         return K[0, 2]
 
     @staticmethod
-    def extract_cy(K):
+    def static_extract_cy(K):
         return K[1, 2]
 
     # Returns 3x3 Intrinsic Camera Matrix
     @staticmethod
-    def inverse(K):
-        fx = Intrinsic.extract_fx(K)
-        fy = Intrinsic.extract_fy(K)
+    def invert(K):
+        fx = Intrinsic.static_extract_fx(K)
+        fy = Intrinsic.static_extract_fy(K)
         fx_inv = 1 / fx
         fy_inv = 1 / fy
-        cx_inv = -1 * Intrinsic.extract_cx(K) / fx
-        cy_inv = -1 * Intrinsic.extract_cy(K) / fy
+        cx_inv = -1 * Intrinsic.static_extract_cx(K) / fx
+        cy_inv = -1 * Intrinsic.static_extract_cy(K) / fy
 
         K_inv = np.array([[fx_inv, 0, cx_inv],
                           [0, fy_inv, cy_inv],
@@ -51,4 +63,4 @@ class Intrinsic:
         self.K[0,2] *= scale_factor
         self.K[1,2] *= scale_factor
 
-        self.K_inv = Intrinsic.inverse(self.K)
+        self.K_inv = Intrinsic.invert(self.K)
