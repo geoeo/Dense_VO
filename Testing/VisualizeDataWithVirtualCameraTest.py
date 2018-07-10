@@ -7,7 +7,6 @@ import Camera.Camera as Camera
 from Camera.Intrinsic import Intrinsic
 from math import pi
 
-#TODO: Implement Virtual Pinhole Camera
 
 N = 20
 

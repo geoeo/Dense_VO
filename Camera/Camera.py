@@ -2,10 +2,10 @@ import numpy as np
 import Camera.Intrinsic as Intrinsic
 import Numerics.SE3 as SE3
 import Numerics.Utils as Utils
+from math import tan
 import warnings
 
 
-#TODO: Test this
 # https://referencesource.microsoft.com/#System.Numerics/System/Numerics/Matrix4x4.cs,b82966e485b5a306
 def lookAt(camera_position: np.ndarray, camera_target: np.ndarray, camera_up: np.ndarray):
     z_axis = Utils.normalize(np.array(camera_position - camera_target))
@@ -66,6 +66,39 @@ class Camera:
         for i in range(0,N):
             persp[:,i] = [persp[0,i]/persp[2,i],persp[1,i]/persp[2,i],1]
         return persp
+
+    #TODO Test camera
+    # ndc is [0, 1] from top left
+    def pixel_to_ndc(self,px,py,width,height):
+        return (px + 0.5)/width , (py+0.5)/height
+
+    # screen space is [-1,1] from top left
+    def ndc_to_screen(self,x_ndc,y_ndc):
+        return 2.0*x_ndc-1.0 , 2.0*y_ndc-1.0
+
+    def aspect_ratio(self,width,height):
+        return width/height
+
+    # pixel coordiantes / sample points (X,Y) in camera space (3D)
+    # focal length is implicit in the tan(alpha / 2) calc
+    def screen_to_camera(self,x_screen,y_screen,aspect_ratio,fov):
+        alpha = fov/2
+        return x_screen*aspect_ratio*tan(alpha) , x_screen*aspect_ratio*tan(alpha)
+
+    def pixel_to_camera(self,x,y,width,height,fov):
+        (ndc_x,ndc_y) = self.pixel_to_ndc(x,y,width,height)
+        aspect_ratio = self.aspect_ratio(width,height)
+        (screen_x,screen_y) = self.ndc_to_screen(ndc_x,ndc_y)
+        return self.screen_to_camera(screen_x,screen_y,aspect_ratio,fov)
+
+    # assumes normalized camera with focal length 1 looking towards z = -1
+    def camera_ray_direction_camera_space(self,camera_pixel_x,camera_pixel_y):
+        ray_cs = np.array([camera_pixel_x,camera_pixel_y,-1]).reshape(3,1)
+        norm = np.linalg.norm(ray_cs)
+        return np.matmul(1/norm,ray_cs)
+
+
+
 
 
 
