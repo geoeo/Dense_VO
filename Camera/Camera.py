@@ -43,6 +43,7 @@ class Camera:
         self.intrinsic = intrinsic
         self.se3 = se3
         self.se3_inv = SE3.invert(se3)
+        self.origin_ws = np.matmul(self.se3_inv,np.array([0,0,0,1]).reshape((4,1)))
 
     def to_camera_space(self,point_3D_world):
         return np.matmul(self.se3,point_3D_world)
@@ -94,8 +95,7 @@ class Camera:
     # assumes normalized camera with focal length 1 looking towards z = -1
     def camera_ray_direction_camera_space(self,camera_pixel_x,camera_pixel_y):
         ray_cs = np.array([camera_pixel_x,camera_pixel_y,-1]).reshape(3,1)
-        norm = np.linalg.norm(ray_cs)
-        return np.matmul(1/norm,ray_cs)
+        return Utils.normalize(ray_cs)
 
 
 
