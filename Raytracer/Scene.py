@@ -21,8 +21,8 @@ class Scene:
                 camera_to_world = self.camera.se3_inv
                 rot = SE3.extract_rotation(camera_to_world)
                 ray_world_space = Utils.normalize(np.matmul(rot,ray_direction_camera_space))
-                ray = Geometry.Ray(self.camera.origin_ws,ray_world_space)
-                (b,t,sphere) = self.find_closest_intersection(x,y,ray)
+                ray = Geometry.Ray(self.camera.origin_ws[0:3],ray_world_space)
+                (b,t,sphere) = self.find_closest_intersection(ray)
                 if sphere.is_intersection_acceptable(b,t):
                     intersection_point = Geometry.point_for_ray(ray,t)
                     depth = intersection_point[2]
@@ -30,13 +30,13 @@ class Scene:
                     self.frame_buffer[y,x] = 0.5
 
 
-    def find_closest_intersection(self,x,y,ray):
+    def find_closest_intersection(self,ray):
         real_solution_exists = False
         t_min = -1
-        sphere_best = Geometry.Sphere(np.zeros(3,1),1.0)
+        sphere_best = Geometry.empty_sphere
         for sphere in self.spheres:
             (b,t) = sphere.intersect(ray)
-            if Geometry.is_intersection_acceptable(b,t) and t < t_min:
+            if sphere.is_intersection_acceptable(b,t) and t < t_min:
                 t_min = t
                 sphere_best = sphere
                 real_solution_exists = True

@@ -22,6 +22,8 @@ def generate_spheres(points : np.ndarray):
 
 class Ray:
     def __init__(self,origin : np.ndarray ,direction : np.ndarray):
+        if origin.shape != (3,1):
+            raise TypeError('Ray origin not shape (3,1)')
         self.origin = origin
         self.direction = direction
 
@@ -35,9 +37,10 @@ class Sphere:
     def intersections(self,ray : Ray ):
         center_to_ray = ray.origin - self.origin
         # A is always 1 since vectors are normalized
-        B = np.multiply(2.0,np.dot(center_to_ray,ray.direction))
-        C = np.dot(center_to_ray,center_to_ray) - self.radius**2.0
+        B = np.multiply(2.0,np.dot(np.transpose(center_to_ray),ray.direction))
+        C = np.dot(np.transpose(center_to_ray),center_to_ray) - self.radius**2.0
         discriminant = B**2.0 - 4.0*C
+        discriminant = discriminant.flatten()[0]
         if discriminant < 0:
             return (False,0,0)
         elif round(discriminant,3) == 0:
@@ -56,6 +59,9 @@ class Sphere:
 
     def is_intersection_acceptable(self,b,t):
         return b and t > t_min()
+
+
+empty_sphere = Sphere(np.array([[0],[0],[0]]),1.0)
 
 
 
