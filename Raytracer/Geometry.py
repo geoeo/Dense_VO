@@ -8,12 +8,17 @@ def t_min():
 def t_max():
     return 500
 
-def is_intersection_acceptable(real_solution,t):
-    return False
-
 def point_for_ray(ray, t):
     return ray.origin + np.multiply(t,ray.direction)
 
+def generate_spheres(points : np.ndarray):
+    (dim,N) = points.shape
+    spheres = []
+    for i in range(0,N):
+        center = np.array(points[0:3,i]).reshape(3,1)
+        spheres.append(Sphere(center,1.0))
+
+    return spheres
 
 class Ray:
     def __init__(self,origin : np.ndarray ,direction : np.ndarray):

@@ -7,7 +7,7 @@ import warnings
 
 
 # https://referencesource.microsoft.com/#System.Numerics/System/Numerics/Matrix4x4.cs,b82966e485b5a306
-def lookAt(camera_position: np.ndarray, camera_target: np.ndarray, camera_up: np.ndarray):
+def look_at_matrix(camera_position: np.ndarray, camera_target: np.ndarray, camera_up: np.ndarray):
     z_axis = Utils.normalize(np.array(camera_position - camera_target))
     x_axis = Utils.normalize(np.cross(camera_up,z_axis))
     y_axis = np.cross(z_axis,x_axis)
@@ -26,6 +26,12 @@ def lookAt(camera_position: np.ndarray, camera_target: np.ndarray, camera_up: np
     mat = np.append(np.append(np.append(x_axis,y_axis,axis=1),z_axis,axis=1),translation,axis=1)
 
     return np.append(mat,Utils.homogenous_for_SE3(),axis=0)
+
+
+def normalized_camera():
+    look_at = look_at_matrix(np.array([0, 0, 0]), np.array([0, 0, -1]), np.array([0, 1, 0]))
+    intrinsics = Intrinsic.Intrinsic(-1, -1, 0, 0)
+    return Camera(intrinsics, look_at)
 
 
 

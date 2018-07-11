@@ -6,11 +6,11 @@ import Raytracer.Geometry as Geometry
 
 
 class Scene:
-    def __init__(self,x_resolution,y_resolution,number_of_spheres,camera : Camera):
+    def __init__(self,x_resolution,y_resolution,spheres,camera : Camera):
         self.resolution = (y_resolution,x_resolution)
         self.frame_buffer = np.zeros(self.resolution,dtype=np.float64)
         self.depth_buffer = np.zeros(self.resolution,dtype=np.float64)
-        self.spheres = np.zeros((4,1,number_of_spheres))
+        self.spheres = spheres
         self.camera = camera
 
     def render(self):
