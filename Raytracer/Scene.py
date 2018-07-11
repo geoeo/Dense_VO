@@ -2,7 +2,6 @@ import numpy as np
 import Camera.Camera as Camera
 import Numerics.SE3 as SE3
 import Numerics.Utils as Utils
-import Raytracer.Ray as Ray
 import Raytracer.Geometry as Geometry
 
 
@@ -22,12 +21,28 @@ class Scene:
                 camera_to_world = self.camera.se3_inv
                 rot = SE3.extract_rotation(camera_to_world)
                 ray_world_space = Utils.normalize(np.matmul(rot,ray_direction_camera_space))
-                ray = Ray.Ray(self.camera.origin_ws,ray_world_space)
+                ray = Geometry.Ray(self.camera.origin_ws,ray_world_space)
+                (b,t,sphere) = self.find_closest_intersection(x,y,ray)
+                if sphere.is_intersection_acceptable(b,t):
+                    intersection_point = Geometry.point_for_ray(ray,t)
+                    depth = intersection_point[2]
+                    self.depth_buffer[y,x] = depth
+                    self.frame_buffer[y,x] = 0.5
+
 
     def find_closest_intersection(self,x,y,ray):
         real_solution_exists = False
-        t = -1
-        sphere = Geometry.Sphere(np.zeros(3,1),1.0)
+        t_min = -1
+        sphere_best = Geometry.Sphere(np.zeros(3,1),1.0)
+        for sphere in self.spheres:
+            (b,t) = sphere.intersect(ray)
+            if Geometry.is_intersection_acceptable(b,t) and t < t_min:
+                t_min = t
+                sphere_best = sphere
+                real_solution_exists = True
+
+        return real_solution_exists , t_min , sphere_best
+
 
 
 
