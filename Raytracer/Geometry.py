@@ -2,11 +2,9 @@ import numpy as np
 import sys
 from math import sqrt
 
-def t_min():
-    return 0.001
+t_min = 0.001
 
-def t_max():
-    return 500
+t_max = 500
 
 def point_for_ray(ray, t):
     return ray.origin + np.multiply(t,ray.direction)
@@ -38,9 +36,11 @@ class Sphere:
         center_to_ray = ray.origin - self.origin
         # A is always 1 since vectors are normalized
         B = np.multiply(2.0,np.dot(np.transpose(center_to_ray),ray.direction))
-        C = np.dot(np.transpose(center_to_ray),center_to_ray) - self.radius**2.0
-        discriminant = B**2.0 - 4.0*C
-        discriminant = discriminant.flatten()[0]
+        B = B.flatten()[0]
+        center_to_ray_dot = np.dot(np.transpose(center_to_ray),center_to_ray).flatten()[0]
+        C = center_to_ray_dot - self.radius**2.0
+        C = C.flatten()[0]
+        discriminant = (B**2.0) - 4.0*C
         if discriminant < 0:
             return (False,0,0)
         elif round(discriminant,3) == 0:
@@ -50,7 +50,7 @@ class Sphere:
 
     def intersect(self, ray : Ray):
         (hasIntersection, i1, i2) = self.intersections(ray)
-        if i1 >= t_min() and i2 >= t_min():
+        if i1 >= t_min and i2 >= t_min:
             return hasIntersection, min(i1, i2)
         elif i1 < 0.0:
             return hasIntersection, i2
@@ -58,7 +58,7 @@ class Sphere:
             return hasIntersection, i1
 
     def is_intersection_acceptable(self,b,t):
-        return b and t > t_min()
+        return b and t > t_min
 
 
 empty_sphere = Sphere(np.array([[0],[0],[0]]),1.0)

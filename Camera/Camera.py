@@ -49,7 +49,7 @@ class Camera:
         self.intrinsic = intrinsic
         self.se3 = se3
         self.se3_inv = SE3.invert(se3)
-        self.origin_ws = np.matmul(self.se3_inv,np.array([0,0,0,1]).reshape((4,1)))
+        self.origin_ws = SE3.extract_translation(self.se3_inv)
 
     def to_camera_space(self,point_3D_world):
         return np.matmul(self.se3,point_3D_world)
@@ -81,7 +81,7 @@ class Camera:
 
     # screen space is [-1,1] from top left
     def ndc_to_screen(self,x_ndc,y_ndc):
-        return 2.0*x_ndc-1.0 , 2.0*y_ndc-1.0
+        return 2.0*x_ndc-1.0 , 1.0-2.0*y_ndc
 
     def aspect_ratio(self,width,height):
         return width/height
@@ -90,7 +90,7 @@ class Camera:
     # focal length is implicit in the tan(alpha / 2) calc
     def screen_to_camera(self,x_screen,y_screen,aspect_ratio,fov):
         alpha = fov/2
-        return x_screen*aspect_ratio*tan(alpha) , x_screen*aspect_ratio*tan(alpha)
+        return x_screen*aspect_ratio*tan(alpha) , y_screen*tan(alpha)
 
     def pixel_to_camera(self,x,y,width,height,fov):
         (ndc_x,ndc_y) = self.pixel_to_ndc(x,y,width,height)
@@ -99,8 +99,9 @@ class Camera:
         return self.screen_to_camera(screen_x,screen_y,aspect_ratio,fov)
 
     # assumes normalized camera with focal length 1 looking towards z = -1
-    def camera_ray_direction_camera_space(self,camera_pixel_x,camera_pixel_y):
-        ray_cs = np.array([camera_pixel_x,camera_pixel_y,-1]).reshape(3,1)
+    def camera_ray_direction_camera_space(self,pixel_x,pixel_y,width,height,fov):
+        (camera_x, camera_y) = self.pixel_to_camera(pixel_x,pixel_y,width,height,fov)
+        ray_cs = np.array([camera_x,camera_y,-1]).reshape(3,1)
         return Utils.normalize(ray_cs)
 
 

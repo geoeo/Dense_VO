@@ -3,6 +3,7 @@ import Camera.Camera as Camera
 import Numerics.SE3 as SE3
 import Numerics.Utils as Utils
 import Raytracer.Geometry as Geometry
+from math import pi
 
 
 class Scene:
@@ -12,12 +13,13 @@ class Scene:
         self.depth_buffer = np.zeros(self.resolution,dtype=np.float64)
         self.spheres = spheres
         self.camera = camera
+        self.fov = pi / 4
 
     def render(self):
         (height,width) = self.resolution
         for x in range(0,width):
             for y in range(0,height):
-                ray_direction_camera_space = self.camera.camera_ray_direction_camera_space(x,y)
+                ray_direction_camera_space = self.camera.camera_ray_direction_camera_space(x,y,width,height,self.fov)
                 camera_to_world = self.camera.se3_inv
                 rot = SE3.extract_rotation(camera_to_world)
                 ray_world_space = Utils.normalize(np.matmul(rot,ray_direction_camera_space))
@@ -32,7 +34,7 @@ class Scene:
 
     def find_closest_intersection(self,ray):
         real_solution_exists = False
-        t_min = -1
+        t_min = Geometry.t_max
         sphere_best = Geometry.empty_sphere
         for sphere in self.spheres:
             (b,t) = sphere.intersect(ray)
