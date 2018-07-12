@@ -5,8 +5,8 @@ import Numerics.Utils as NumUtils
 import Numerics.Solver as Solver
 from math import pi
 
-N = 20
-(X,Y,Z) = Generator.generate_3d_plane(1,1,0,N,4)
+N = 50
+(X,Y,Z) = Generator.generate_3d_plane(1,1,-10,N,4)
 H = np.repeat(1,N)
 
 points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))

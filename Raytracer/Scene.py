@@ -3,7 +3,7 @@ import Camera.Camera as Camera
 import Numerics.SE3 as SE3
 import Numerics.Utils as Utils
 import Raytracer.Geometry as Geometry
-from math import pi
+from math import pi, fabs
 
 
 class Scene:
@@ -28,7 +28,8 @@ class Scene:
                 if sphere.is_intersection_acceptable(b,t):
                     intersection_point = Geometry.point_for_ray(ray,t)
                     depth = intersection_point[2]
-                    self.depth_buffer[y,x] = depth
+                    self.depth_buffer[y,x] = fabs(depth)
+                    #TODO Implement simple phong shading
                     self.frame_buffer[y,x] = 0.5
 
 

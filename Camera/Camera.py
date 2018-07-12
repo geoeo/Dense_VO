@@ -74,7 +74,8 @@ class Camera:
             persp[:,i] = [persp[0,i]/persp[2,i],persp[1,i]/persp[2,i],1]
         return persp
 
-    #TODO Test camera
+    #TODO Make it work for arbitrary focal length
+    #This only works for a normalized camera with focal length 1!
     # ndc is [0, 1] from top left
     def pixel_to_ndc(self,px,py,width,height):
         return (px + 0.5)/width , (py+0.5)/height

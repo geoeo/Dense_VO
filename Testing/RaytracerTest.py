@@ -26,7 +26,7 @@ spheres = Geometry.generate_spheres(points)
 
 camera = Camera.normalized_camera()
 
-scene = Scene.Scene(320,160,spheres,camera)
+scene = Scene.Scene(640,320,spheres,camera)
 
 scene.render()
 

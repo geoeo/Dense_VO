@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 from math import sqrt
+import Numerics.Utils as Utils
 
 t_min = 0.001
 
@@ -35,11 +36,9 @@ class Sphere:
     def intersections(self,ray : Ray ):
         center_to_ray = ray.origin - self.origin
         # A is always 1 since vectors are normalized
-        B = np.multiply(2.0,np.dot(np.transpose(center_to_ray),ray.direction))
-        B = B.flatten()[0]
-        center_to_ray_dot = np.dot(np.transpose(center_to_ray),center_to_ray).flatten()[0]
+        B = 2.0 * Utils.fast_dot(center_to_ray,ray.direction)
+        center_to_ray_dot = Utils.fast_dot(center_to_ray,center_to_ray)
         C = center_to_ray_dot - self.radius**2.0
-        C = C.flatten()[0]
         discriminant = (B**2.0) - 4.0*C
         if discriminant < 0:
             return (False,0,0)

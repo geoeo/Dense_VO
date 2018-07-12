@@ -37,4 +37,7 @@ def move_data_along_z(points, magnitude):
 
     return np.matmul(se3_translation_only,points)
 
+def fast_dot(a,b):
+    return a[0,0]*b[0,0]+a[1,0]*b[1,0]+a[2,0]*b[2,0]
+
 
