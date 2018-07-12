@@ -5,6 +5,8 @@ import Numerics.Generator as Generator
 import Raytracer.Scene as Scene
 import Raytracer.Geometry as Geometry
 import Camera.Camera as Camera
+import Numerics.Utils as Utils
+import Visualization.Plot3D as Plot3D
 
 #gray_scale = np.zeros((320,640),dtype=np.float64)
 
@@ -26,6 +28,15 @@ spheres = Geometry.generate_spheres(points)
 
 camera = Camera.normalized_camera()
 
+##############
+
+points_persp = camera.apply_perspective_pipeline(points)
+
+(X_orig,Y_orig,Z_orig) = list(Utils.points_into_components(points))
+(X_persp,Y_persp,Z_persp) = list(Utils.points_into_components(points_persp))
+
+##############
+
 scene = Scene.Scene(640,320,spheres,camera)
 
 scene.render()
@@ -35,6 +46,8 @@ depth_buffer_image = ImageProcessing.normalize_to_image_space(ImageProcessing.z_
 
 cv2.imwrite("framebuffer.png",frame_buffer_image)
 cv2.imwrite("depthbuffer.png",depth_buffer_image)
+
+Plot3D.scatter_plot_sub([(X_orig,Y_orig,Z_orig)],[(X_persp,Y_persp,Z_persp)],['original'],['projected'])
 
 
 
