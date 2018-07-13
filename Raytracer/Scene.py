@@ -6,6 +6,10 @@ import Raytracer.Geometry as Geometry
 from math import pi, fabs
 
 
+def phong_shading(light_ws, position_ws, normal):
+    view = Utils.normalize(light_ws - position_ws)
+    return Utils.fast_dot(view,normal)
+
 class Scene:
     def __init__(self,x_resolution,y_resolution,spheres,camera : Camera):
         self.resolution = (y_resolution,x_resolution)
@@ -14,6 +18,7 @@ class Scene:
         self.spheres = spheres
         self.camera = camera
         self.fov = pi / 4
+        self.light_ws = np.array([0,0,10]).reshape((3,1))
 
     def render(self):
         (height,width) = self.resolution
@@ -27,10 +32,10 @@ class Scene:
                 (b,t,sphere) = self.find_closest_intersection(ray)
                 if sphere.is_intersection_acceptable(b,t):
                     intersection_point = Geometry.point_for_ray(ray,t)
+                    normal = sphere.normal_for_point(intersection_point)
                     depth = intersection_point[2]
                     self.depth_buffer[y,x] = fabs(depth)
-                    #TODO Implement simple phong shading
-                    self.frame_buffer[y,x] = 0.5
+                    self.frame_buffer[y,x] = phong_shading(self.light_ws,intersection_point,normal)
 
 
     def find_closest_intersection(self,ray):
@@ -45,6 +50,8 @@ class Scene:
                 real_solution_exists = True
 
         return real_solution_exists , t_min , sphere_best
+
+
 
 
 

@@ -59,6 +59,9 @@ class Sphere:
     def is_intersection_acceptable(self,b,t):
         return b and t > t_min
 
+    def normal_for_point(self,point_on_shpere):
+        return Utils.normalize(point_on_shpere - self.origin)
+
 
 empty_sphere = Sphere(np.array([[0],[0],[0]]),1.0)
 
