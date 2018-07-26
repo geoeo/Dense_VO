@@ -18,7 +18,6 @@ class Frame:
         self.pixel_image = pixel_image
         self.camera = camera
 
-
     def scale_frame_by(self,scale_factor):
         self.pixel_image = cv2.resize(self.pixel_image, (0, 0), fx=scale_factor, fy=scale_factor)
         self.camera = self.camera.intrinsic.scale_by(scale_factor)

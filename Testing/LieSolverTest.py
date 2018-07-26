@@ -5,7 +5,7 @@ import Numerics.Utils as NumUtils
 import Numerics.Solver as Solver
 from math import pi
 
-N = 50
+N = 100
 (X,Y,Z) = Generator.generate_3d_plane(1,1,-10,N,4)
 H = np.repeat(1,N)
 
