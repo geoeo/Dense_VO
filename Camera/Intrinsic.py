@@ -9,8 +9,8 @@ Attributes:
 
 
 class Intrinsic:
-    def __init__(self, fx,fy,cx,cy):
-        self.K = np.array([[fx,0,cx,0],[0,fy,cy,0],[0.,0.,1.,0.]])
+    def __init__(self, fx, fy, ox, oy):
+        self.K = np.array([[fx, 0, ox, 0], [0, fy, oy, 0], [0., 0., 1., 0.]])
         self.K_inv = Intrinsic.invert(self.K)
 
     def extract_fx(self):
@@ -34,11 +34,11 @@ class Intrinsic:
         return K[1, 1]
 
     @staticmethod
-    def static_extract_cx(K):
+    def static_extract_ox(K):
         return K[0, 2]
 
     @staticmethod
-    def static_extract_cy(K):
+    def static_extract_oy(K):
         return K[1, 2]
 
     # Returns 3x3 Intrinsic Camera Matrix
@@ -48,11 +48,11 @@ class Intrinsic:
         fy = Intrinsic.static_extract_fy(K)
         fx_inv = 1 / fx
         fy_inv = 1 / fy
-        cx_inv = -1 * Intrinsic.static_extract_cx(K) / fx
-        cy_inv = -1 * Intrinsic.static_extract_cy(K) / fy
+        ox_inv = -1 * Intrinsic.static_extract_ox(K) / fx
+        oy_inv = -1 * Intrinsic.static_extract_oy(K) / fy
 
-        K_inv = np.array([[fx_inv, 0, cx_inv],
-                          [0, fy_inv, cy_inv],
+        K_inv = np.array([[fx_inv, 0, ox_inv],
+                          [0, fy_inv, oy_inv],
                           [0, 0, 1]])
 
         return K_inv
