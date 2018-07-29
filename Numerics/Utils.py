@@ -1,6 +1,11 @@
 import numpy as np
+import cv2
 
+#TODO: Refactor this into declarations
 matrix_data_type = np.float32
+image_data_type = np.float64
+image_data_type_open_cv = cv2.CV_64F
+
 
 def points_into_components(points):
     X = points[0,:]

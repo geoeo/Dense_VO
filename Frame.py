@@ -1,5 +1,6 @@
 import numpy as np
 import Camera.Camera as Camera
+import Numerics.Utils as Utils
 import cv2
 
 """An Object which encodes a Frame.
@@ -11,12 +12,16 @@ Attributes:
 
 
 class Frame:
-    def __init__(self, pixel_image : np.ndarray, camera : Camera):
-        if pixel_image.dtype != 'float64':
+    def __init__(self, pixel_image : np.ndarray, camera : Camera, compute_gradients):
+        if pixel_image.dtype != Utils.image_data_type:
             raise TypeError('Camera pixels are not of type float64 and probably not z standardised')
 
         self.pixel_image = pixel_image
         self.camera = camera
+        if compute_gradients:
+            #https://docs.opencv.org/3.4.1/d5/d0f/tutorial_py_gradients.html
+            self.grad_x = np.absolute(cv2.Sobel(pixel_image,Utils.image_data_type_open_cv,1,0))
+            self.grad_y = np.absolute(cv2.Sobel(pixel_image,Utils.image_data_type_open_cv,0,1))
 
     def scale_frame_by(self,scale_factor):
         self.pixel_image = cv2.resize(self.pixel_image, (0, 0), fx=scale_factor, fy=scale_factor)

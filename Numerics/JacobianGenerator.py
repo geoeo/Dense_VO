@@ -43,15 +43,15 @@ def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generato
 #     J_v += np.matmul(J_t,diff_n)
 #     normal_matrix += np.matmul(J_t,J)
 
-def get_jacobian_rigid_body(se3):
-    translation = SE3.extract_translation(se3)
-    x = translation[0]
-    y = translation[1]
-    z = translation[2]
-    jacobian_rigid = np.array([[x, 0, 0,y,0,0,z,0,0,1,0,0],
-                               [0, x, 0,0,y,0,0,z,0,0,1,0],
-                               [0, 0, x,0,0,y,0,0,z,0,0,1]], dtype=matrix_data_type)
-    return jacobian_rigid
+#def get_jacobian_rigid_body(se3):
+#    translation = SE3.extract_translation(se3)
+#    x = translation[0]
+#    y = translation[1]
+#    z = translation[2]
+#    jacobian_rigid = np.array([[x, 0, 0,y,0,0,z,0,0,1,0,0],
+#                               [0, x, 0,0,y,0,0,z,0,0,1,0],
+#                               [0, 0, x,0,0,y,0,0,z,0,0,1]], dtype=matrix_data_type)
+#    return jacobian_rigid
 
 def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,se3):
     translation = SE3.extract_translation(se3)
@@ -71,8 +71,10 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,se3):
                                [0, v22, v23]], dtype=matrix_data_type)
     return jacobian_camera
 
-#TODO: Decide if image gradiants are precomputed for whole image, or computed here
-def get_jacobian_image(image,x,y):
+#TODO: Test
+def get_jacobian_image(image_g_x,image_g_y,x,y):
     jacobian_image = np.array([0,0],dtype=matrix_data_type)
+    jacobian_image[0] = image_g_x[y,x]
+    jacobian_image[1] = image_g_y[y,x]
     return jacobian_image
 
