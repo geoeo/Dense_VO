@@ -18,10 +18,11 @@ def solve_SE3(X, Y, max_its, eps):
     (position_vector_size, N) = X.shape
     twist_size = 6
     stacked_obs_size = position_vector_size * N
-    jacbobi_padding = Utils.padding_for_generator_jacobi()
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
-    v_mean = -1
+    L_mean = -1
     it = -1
+    # Dampening Factor
+    alpha = 0.125
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -38,12 +39,12 @@ def solve_SE3(X, Y, max_its, eps):
         normal_matrix = np.zeros((twist_size, twist_size))
 
         Y_est = np.matmul(SE_3_est, X)
-        #  (0.25f(x))_t * (0.25f(x)) = 0.5 f(x)_t f(x)
-        diff = np.multiply(0.25, Y - Y_est)
-        v = np.sum(np.square(diff), axis=0)
-        v_mean = np.mean(v)
+        v = Y - Y_est
 
-        if v_mean < eps:
+        L = np.sum(np.square(v), axis=0)
+        L_mean = np.mean(L)
+
+        if L_mean < eps:
             print('done')
             break
 
@@ -53,8 +54,8 @@ def solve_SE3(X, Y, max_its, eps):
         for i in range(0, N, 1):
             J = Js[i]
             J_t = np.transpose(J)
-            diff_n = np.reshape(diff[:, i], (position_vector_size, 1))
-            J_v += np.matmul(J_t, diff_n)
+            error_vector = np.reshape(v[:, i], (position_vector_size, 1))
+            J_v += np.matmul(J_t, error_vector)
             normal_matrix += np.matmul(J_t, J)
 
         ##########################################################
@@ -67,6 +68,9 @@ def solve_SE3(X, Y, max_its, eps):
             print('Cant invert')
             return SE_3_est
         w = np.matmul(pseudo_inv, J_v)
+        # Dampening
+        w = alpha*w
+
         w_transpose = np.transpose(w)
         w_x = Utils.skew_symmetric(w[3], w[4], w[5])
         w_x_squared = np.matmul(w_x, w_x)
@@ -93,5 +97,10 @@ def solve_SE3(X, Y, max_its, eps):
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
-    print('mean error:', v_mean, 'iteration: ', it)
+    print('mean error:', L_mean, 'iteration: ', it)
     return SE_3_est
+
+
+# TODO: implement the SE3 estimation with the objective function in image space
+def solve_photometric(frame_key,frame_target,max_its, eps):
+    return None

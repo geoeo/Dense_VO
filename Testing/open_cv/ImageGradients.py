@@ -22,7 +22,6 @@ cv2.imshow('sobel x',frame.grad_x)
 cv2.imshow('sobel y',frame.grad_y)
 
 
-
 while True:
     k = cv2.waitKey(5) & 0xFF
     # ESC

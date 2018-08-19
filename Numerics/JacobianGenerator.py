@@ -71,7 +71,6 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,se3):
                                [0, v22, v23]], dtype=matrix_data_type)
     return jacobian_camera
 
-#TODO: Test
 def get_jacobian_image(image_g_x,image_g_y,x,y):
     jacobian_image = np.array([0,0],dtype=matrix_data_type)
     jacobian_image[0] = image_g_x[y,x]
