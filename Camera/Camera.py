@@ -74,6 +74,7 @@ class Camera:
             persp[:,i] = [persp[0,i]/persp[2,i],persp[1,i]/persp[2,i],1]
         return persp
 
+    #TODO: Refactor to work with matrix multipications
     def back_project_pixel(self,u, v, z):
         x = (u+self.intrinsic.extract_cx())/self.intrinsic.extract_fx()
         y = (v+self.intrinsic.extract_cy())/self.intrinsic.extract_fy()

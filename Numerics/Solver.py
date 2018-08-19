@@ -138,12 +138,12 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
             flat_index = Utils.matrix_to_flat_index(y,x,width)
             depth = frame_key.pixel_depth[y, x]
             X[:,flat_index] = frame_key.camera.back_project_pixel(x, y, depth)
+    Y_est = np.matmul(SE_3_est, X)
 
     for it in range(0, max_its, 1):
         # accumulators
         J_v = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
-        Y_est = np.matmul(SE_3_est, X)
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
         v = 0
 
@@ -166,9 +166,6 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
         for y in range(0,height,1):
             for x in range(0,width,1):
 
-                depth = frame_key.pixel_depth[y,x]
-                X = frame_key.camera.back_project_pixel(x,y,depth)
-                Y_est = np.matmul(SE_3_est, X)
                 Js = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
                                                          generator_pitch,
                                                          generator_roll, Y_est, 1, stacked_obs_size)
