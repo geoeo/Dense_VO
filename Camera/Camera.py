@@ -74,6 +74,11 @@ class Camera:
             persp[:,i] = [persp[0,i]/persp[2,i],persp[1,i]/persp[2,i],1]
         return persp
 
+    def back_project_pixel(self,u, v, z):
+        x = (u+self.intrinsic.extract_cx())/self.intrinsic.extract_fx()
+        y = (v+self.intrinsic.extract_cy())/self.intrinsic.extract_fy()
+        return np.multiply(z,np.array([[x],[y],[1],[1/z]]))
+
     #TODO Make it work for arbitrary focal length
     #This only works for a normalized camera with focal length 1!
     # ndc is [0, 1] from top left

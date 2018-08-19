@@ -12,11 +12,14 @@ Attributes:
 
 
 class Frame:
-    def __init__(self, pixel_image : np.ndarray, camera : Camera, compute_gradients):
+    def __init__(self, pixel_image : np.ndarray, depth_image : np.ndarray, camera : Camera, compute_gradients):
         if pixel_image.dtype != Utils.image_data_type:
             raise TypeError('Camera pixels are not of type float64 and probably not z standardised')
+        if depth_image.dtype != Utils.depth_data_type:
+            raise TypeError('Depth image is not of type float32')
 
         self.pixel_image = pixel_image
+        self.pixel_depth = depth_image
         self.camera = camera
         if compute_gradients:
             #https://docs.opencv.org/3.4.1/d5/d0f/tutorial_py_gradients.html

@@ -10,13 +10,13 @@ im_greyscale = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resourc
 
 pixels_standardised = ImageProcessing.z_standardise(im_greyscale)
 pixels_normalized_disp = ImageProcessing.normalize_to_image_space(pixels_standardised)
+depth_image = pixels_standardised.astype(Utils.depth_data_type)
 
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 0, 0)
 camera_identity = Camera.Camera(intrinsic_identity, se3_identity)
 
-frame = Frame.Frame(pixels_standardised,camera_identity,True)
-
+frame = Frame.Frame(pixels_standardised,depth_image,camera_identity,True)
 
 cv2.imshow('sobel x',frame.grad_x)
 cv2.imshow('sobel y',frame.grad_y)

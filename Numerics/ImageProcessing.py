@@ -14,3 +14,4 @@ def normalize_to_image_space(pixels):
     # https://en.wikipedia.org/wiki/Normalization_(image_processing)
     mapped_float = (pixels - pixels_min) * (255.0 / (pixels_max - pixels_min))
     return mapped_float.astype(np.uint8)
+

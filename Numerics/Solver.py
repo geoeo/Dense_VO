@@ -21,7 +21,7 @@ def solve_SE3(X, Y, max_its, eps):
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     L_mean = -1
     it = -1
-    # Dampening Factor
+    # Step Factor
     alpha = 0.125
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
@@ -68,7 +68,7 @@ def solve_SE3(X, Y, max_its, eps):
             print('Cant invert')
             return SE_3_est
         w = np.matmul(pseudo_inv, J_v)
-        # Dampening
+        # Apply Step Factor
         w = alpha*w
 
         w_transpose = np.transpose(w)
@@ -101,6 +101,76 @@ def solve_SE3(X, Y, max_its, eps):
     return SE_3_est
 
 
+# TODO: TEST!
 # TODO: implement the SE3 estimation with the objective function in image space
 def solve_photometric(frame_key,frame_target,max_its, eps):
+    # init
+    # array for twist values x, y, z, roll, pitch, yaw
+    t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
+    R_est = np.array([[1, 0, 0],
+                      [0, 1, 0],
+                      [0, 0, 1]], dtype=matrix_data_type)
+    I_3 = np.identity(3, dtype=matrix_data_type)
+    (height,width) = frame_target.shape
+    N = height*width
+    position_vector_size = 4
+    twist_size = 6
+    stacked_obs_size = position_vector_size * N
+    homogeneous_se3_padding = Utils.homogenous_for_SE3()
+    L_mean = -1
+    it = -1
+    # Step Factor
+    alpha = 0.125
+
+    SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
+
+    generator_x = Lie.generator_x()
+    generator_y = Lie.generator_y()
+    generator_z = Lie.generator_z()
+    generator_roll = Lie.generator_roll()
+    generator_pitch = Lie.generator_pitch()
+    generator_yaw = Lie.generator_yaw()
+
+    X = np.ones((4,N),Utils.matrix_data_type)
+    # Precompute back projection of pixels
+    for y in range(0, height, 1):
+        for x in range(0, width, 1):
+            flat_index = Utils.matrix_to_flat_index(y,x,width)
+            depth = frame_key.pixel_depth[y, x]
+            X[:,flat_index] = frame_key.camera.back_project_pixel(x, y, depth)
+
+    for it in range(0, max_its, 1):
+        # accumulators
+        J_v = np.zeros((twist_size, 1))
+        normal_matrix = np.zeros((twist_size, twist_size))
+        Y_est = np.matmul(SE_3_est, X)
+        target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
+        v = 0
+
+        #TODO: Optimize this
+        for y in range(0,height,1):
+            for x in range(0,width,1):
+                flat_index = Utils.matrix_to_flat_index(y, x, width)
+                x_target = target_index_projections[0,flat_index]
+                y_target = target_index_projections[1,flat_index]
+                v += frame_target.pixel_image[y_target,x_target] - frame_key.pixel_image[y,x]
+
+        L = np.sum(np.square(v), axis=0)
+        L_mean = np.mean(L)
+
+        if L_mean < eps:
+            print('done')
+            break
+
+        #TODO: Optimize this
+        for y in range(0,height,1):
+            for x in range(0,width,1):
+
+                depth = frame_key.pixel_depth[y,x]
+                X = frame_key.camera.back_project_pixel(x,y,depth)
+                Y_est = np.matmul(SE_3_est, X)
+                Js = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
+                                                         generator_pitch,
+                                                         generator_roll, Y_est, 1, stacked_obs_size)
+
     return None
