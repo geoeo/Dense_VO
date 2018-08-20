@@ -144,6 +144,7 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
         # accumulators
         J_v = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
+        # TODO: check if projected uv are valid image addresses
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
         v = 0
 
@@ -153,10 +154,11 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
                 flat_index = Utils.matrix_to_flat_index(y, x, width)
                 x_target = target_index_projections[0,flat_index]
                 y_target = target_index_projections[1,flat_index]
-                v += frame_target.pixel_image[y_target,x_target] - frame_key.pixel_image[y,x]
+                v += math.pow(frame_target.pixel_image[y_target,x_target] - frame_key.pixel_image[y,x],2)
 
-        L = np.sum(np.square(v), axis=0)
-        L_mean = np.mean(L)
+        #L = np.sum(np.square(v), axis=0)
+        #L_mean = np.mean(L)
+        L_mean = v/N
 
         if L_mean < eps:
             print('done')
