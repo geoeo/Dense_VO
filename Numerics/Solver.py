@@ -132,12 +132,23 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
     generator_yaw = Lie.generator_yaw()
 
     X = np.ones((4,N),Utils.matrix_data_type)
+
     # Precompute back projection of pixels
     for y in range(0, height, 1):
         for x in range(0, width, 1):
             flat_index = Utils.matrix_to_flat_index(y,x,width)
             depth = frame_key.pixel_depth[y, x]
             X[:,flat_index] = frame_key.camera.back_project_pixel(x, y, depth)
+
+    # Precompute the Jacobian of SE3 around the identity
+    J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
+                                                     generator_pitch,
+                                                     generator_roll, X, 1, stacked_obs_size)
+
+    # Precompute the Jacobian of the projection function
+    J_pi = JacobianGenerator.get_jacobian_camera_model(frame_key.camera.intrinsic,X)
+
+    # Warp with the current SE3 estimate
     Y_est = np.matmul(SE_3_est, X)
 
     for it in range(0, max_its, 1):
@@ -165,11 +176,9 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
             break
 
         #TODO: Optimize this
-        for y in range(0,height,1):
-            for x in range(0,width,1):
+        #for y in range(0,height,1):
+            #for x in range(0,width,1):
 
-                Js = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
-                                                         generator_pitch,
-                                                         generator_roll, Y_est, 1, stacked_obs_size)
+
 
     return None

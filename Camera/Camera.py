@@ -28,8 +28,8 @@ def look_at_matrix(camera_position: np.ndarray, camera_target: np.ndarray, camer
     return np.append(mat,Utils.homogenous_for_SE3(),axis=0)
 
 
-def normalized_camera():
-    look_at = look_at_matrix(np.array([0, 0, 0]), np.array([0, 0, -1]), np.array([0, 1, 0]))
+def normalized_camera(x_trans):
+    look_at = look_at_matrix(np.array([x_trans, 0, 0]), np.array([x_trans, 0, -1]), np.array([0, 1, 0]))
     intrinsics = Intrinsic.Intrinsic(-1, -1, 0, 0)
     return Camera(intrinsics, look_at)
 

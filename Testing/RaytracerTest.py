@@ -26,7 +26,8 @@ points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
 spheres = Geometry.generate_spheres(points)
 
-camera = Camera.normalized_camera()
+camera = Camera.normalized_camera(0)
+camera_translated = Camera.normalized_camera(0.5)
 
 ##############
 
@@ -47,8 +48,21 @@ depth_buffer_image = ImageProcessing.normalize_to_image_space(ImageProcessing.z_
 cv2.imwrite("framebuffer.png",frame_buffer_image)
 cv2.imwrite("depthbuffer.png",depth_buffer_image)
 
-Plot3D.scatter_plot_sub([(X_orig,Y_orig,Z_orig)],[(X_persp,Y_persp,Z_persp)],['original'],['projected'])
+###############
+
+scene_translated = Scene.Scene(640,320,spheres,camera_translated)
+
+scene_translated.render()
+
+frame_buffer_image = ImageProcessing.normalize_to_image_space(scene_translated.frame_buffer)
+depth_buffer_image = ImageProcessing.normalize_to_image_space(ImageProcessing.z_standardise(scene_translated.depth_buffer))
+
+cv2.imwrite("framebuffer_translated.png",frame_buffer_image)
+cv2.imwrite("depthbuffer_translated.png",depth_buffer_image)
 
 
+################
+
+#Plot3D.scatter_plot_sub([(X_orig,Y_orig,Z_orig)],[(X_persp,Y_persp,Z_persp)],['original'],['projected'])
 
 
