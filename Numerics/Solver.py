@@ -145,19 +145,22 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
                                                      generator_pitch,
                                                      generator_roll, X, 1, stacked_obs_size)
 
+    # vectorize image
+    image_key_flat = np.reshape(frame_key.pixel_image, (N, 1), order='F')
+    image_warped_flat = np.zeros((N, 1), dtype=matrix_data_type)
+
     # Precompute the Jacobian of the projection function
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_key.camera.intrinsic,X)
-
-    # Warp with the current SE3 estimate
-    Y_est = np.matmul(SE_3_est, X)
 
     for it in range(0, max_its, 1):
         # accumulators
         J_v = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
-        # TODO: check if projected uv are valid image addresses
+        # Warp with the current SE3 estimate
+        Y_est = np.matmul(SE_3_est, X)
+
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
-        v = 0
+
 
         #TODO: Optimize this
         for y in range(0,height,1):
@@ -165,11 +168,12 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
                 flat_index = Utils.matrix_to_flat_index(y, x, width)
                 x_target = target_index_projections[0,flat_index]
                 y_target = target_index_projections[1,flat_index]
-                v += math.pow(frame_target.pixel_image[y_target,x_target] - frame_key.pixel_image[y,x],2)
+                # TODO: check if projected uv are valid image addresses
+                image_warped_flat[y,x] = frame_target.pixel_image[y_target,x_target]
 
-        #L = np.sum(np.square(v), axis=0)
-        #L_mean = np.mean(L)
-        L_mean = v/N
+        v = image_warped_flat - image_key_flat
+        L = np.sum(np.square(v), axis=0)
+        L_mean = np.mean(L)
 
         if L_mean < eps:
             print('done')
@@ -178,6 +182,7 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
         #TODO: Optimize this
         #for y in range(0,height,1):
             #for x in range(0,width,1):
+                #J_image = ...
 
 
 

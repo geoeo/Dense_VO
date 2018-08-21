@@ -15,3 +15,10 @@ def normalize_to_image_space(pixels):
     mapped_float = (pixels - pixels_min) * (255.0 / (pixels_max - pixels_min))
     return mapped_float.astype(np.uint8)
 
+
+def is_row_valid(r,matrix_height):
+    return 0 <= r < matrix_height
+
+
+def is_column_valid(c,matrix_width):
+    return 0 <= c < matrix_width
