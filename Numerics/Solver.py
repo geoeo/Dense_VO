@@ -39,7 +39,7 @@ def solve_SE3(X, Y, max_its, eps):
         normal_matrix = np.zeros((twist_size, twist_size))
 
         Y_est = np.matmul(SE_3_est, X)
-        v = Y - Y_est
+        v = Y_est - Y
 
         L = np.sum(np.square(v), axis=0)
         L_mean = np.mean(L)
@@ -56,7 +56,7 @@ def solve_SE3(X, Y, max_its, eps):
             J_t = np.transpose(J)
             error_vector = np.reshape(v[:, i], (position_vector_size, 1))
             J_v += np.matmul(J_t, error_vector)
-            normal_matrix += np.matmul(J_t, J)
+            normal_matrix += np.matmul(-J_t, J)
 
         ##########################################################
 
@@ -121,6 +121,7 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
     it = -1
     # Step Factor
     alpha = 0.125
+    index_array = np.zeros((1,2),matrix_data_type)
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -136,7 +137,7 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
     # Precompute back projection of pixels
     for y in range(0, height, 1):
         for x in range(0, width, 1):
-            flat_index = Utils.matrix_to_flat_index(y,x,width)
+            flat_index = Utils.matrix_to_flat_index_rows(y,x,width)
             depth = frame_key.pixel_depth[y, x]
             X[:,flat_index] = frame_key.camera.back_project_pixel(x, y, depth)
 
@@ -165,7 +166,7 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
         #TODO: Optimize this
         for y in range(0,height,1):
             for x in range(0,width,1):
-                flat_index = Utils.matrix_to_flat_index(y, x, width)
+                flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
                 x_target = target_index_projections[0,flat_index]
                 y_target = target_index_projections[1,flat_index]
                 # TODO: check if projected uv are valid image addresses

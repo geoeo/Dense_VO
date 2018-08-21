@@ -54,11 +54,22 @@ def fast_dot(a,b):
     return a[0,0]*b[0,0]+a[1,0]*b[1,0]+a[2,0]*b[2,0]
 
 
-def flat_index_to_2d(index,rows,cols,return_container: np.ndarray):
+def flat_index_to_2d_cols(index,rows,cols,return_container: np.ndarray):
     return_container[0] = index/rows
     return_container[1] = index%cols
     return return_container
 
-def matrix_to_flat_index(y,x,cols):
+
+def matrix_to_flat_index_cols(y,x,cols):
     return cols*y+x
+
+
+def flat_index_to_2d_rows(index,rows,cols,return_container: np.ndarray):
+    return_container[0] = index%rows
+    return_container[1] = index/cols
+    return return_container
+
+
+def matrix_to_flat_index_rows(y,x,rows):
+    return rows*x+y
 
