@@ -103,7 +103,7 @@ def solve_SE3(X, Y, max_its, eps):
 
 # TODO: TEST!
 # TODO: implement the SE3 estimation with the objective function in image space
-def solve_photometric(frame_key,frame_target,max_its, eps):
+def solve_photometric(frame_reference, frame_target, max_its, eps):
     # init
     # array for twist values x, y, z, roll, pitch, yaw
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
@@ -138,31 +138,32 @@ def solve_photometric(frame_key,frame_target,max_its, eps):
     for y in range(0, height, 1):
         for x in range(0, width, 1):
             flat_index = Utils.matrix_to_flat_index_rows(y,x,width)
-            depth = frame_key.pixel_depth[y, x]
-            X[:,flat_index] = frame_key.camera.back_project_pixel(x, y, depth)
+            depth = frame_reference.pixel_depth[y, x]
+            X[:,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth)
 
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
                                                      generator_pitch,
-                                                     generator_roll, X, 1, stacked_obs_size)
-
-    # vectorize image
-    image_key_flat = np.reshape(frame_key.pixel_image, (N, 1), order='F')
-    image_warped_flat = np.zeros((N, 1), dtype=matrix_data_type)
+                                                     generator_roll, X, N, stacked_obs_size)
 
     # Precompute the Jacobian of the projection function
-    J_pi = JacobianGenerator.get_jacobian_camera_model(frame_key.camera.intrinsic,X)
+    J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X)
+
+    # vectorize image
+    image_key_flat = np.reshape(frame_reference.pixel_image, (N, 1), order='F')
+    image_warped_flat = np.zeros((N, 1), dtype=matrix_data_type)
 
     for it in range(0, max_its, 1):
         # accumulators
         J_v = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
+
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X)
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
-
+        # Compute residual
         #TODO: Optimize this
         for y in range(0,height,1):
             for x in range(0,width,1):
