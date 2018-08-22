@@ -28,9 +28,9 @@ def look_at_matrix(camera_position: np.ndarray, camera_target: np.ndarray, camer
     return np.append(mat,Utils.homogenous_for_SE3(),axis=0)
 
 
-def normalized_camera(x_trans):
-    look_at = look_at_matrix(np.array([x_trans, 0, 0]), np.array([x_trans, 0, -1]), np.array([0, 1, 0]))
-    intrinsics = Intrinsic.Intrinsic(-1, -1, 0, 0)
+def normalized_camera(x_trans,y_trans,o_x,o_y):
+    look_at = look_at_matrix(np.array([x_trans, y_trans, 0]), np.array([x_trans, y_trans, -1]), np.array([0, 1, 0]))
+    intrinsics = Intrinsic.Intrinsic(-1, -1, o_x, o_y)
     return Camera(intrinsics, look_at)
 
 
@@ -74,11 +74,11 @@ class Camera:
             persp[:,i] = [persp[0,i]/persp[2,i],persp[1,i]/persp[2,i],1]
         return persp
 
-    #TODO: Refactor to work with matrix multipications
+    #TODO: Refactor to work with an array of uv coordiantes
     def back_project_pixel(self,u, v, z):
-        x = (u+self.intrinsic.extract_cx())/self.intrinsic.extract_fx()
-        y = (v+self.intrinsic.extract_cy())/self.intrinsic.extract_fy()
-        return np.multiply(z,np.array([[x],[y],[1],[1/z]]))
+        t = np.matmul(self.intrinsic.K_inv,np.array([[u],[v],[1]]))
+        return np.multiply(z,t)
+
 
     #TODO Make it work for arbitrary focal length
     #This only works for a normalized camera with focal length 1!

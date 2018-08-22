@@ -21,13 +21,15 @@ import Visualization.Plot3D as Plot3D
 N = 20
 (X,Y,Z) = Generator.generate_3d_plane(1,1,-30,N,4)
 H = np.repeat(1,N)
+image_width = 640
+image_height = 320
 
 points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
 spheres = Geometry.generate_spheres(points)
 
-camera = Camera.normalized_camera(0)
-camera_translated = Camera.normalized_camera(0.5)
+camera = Camera.normalized_camera(0,0,image_width/2,image_height/2)
+camera_translated = Camera.normalized_camera(0.5,0,image_width/2,image_height/2)
 
 ##############
 
@@ -38,7 +40,7 @@ points_persp = camera.apply_perspective_pipeline(points)
 
 ##############
 
-scene = Scene.Scene(640,320,spheres,camera)
+scene = Scene.Scene(image_width,image_height,spheres,camera)
 
 scene.render()
 

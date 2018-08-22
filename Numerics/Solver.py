@@ -117,8 +117,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps):
     twist_size = 6
     stacked_obs_size = position_vector_size * N
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
-    L_mean = -1
-    it = -1
     # Step Factor
     alpha = 0.125
     index_array = np.zeros((1,2),matrix_data_type)
@@ -132,14 +130,15 @@ def solve_photometric(frame_reference, frame_target, max_its, eps):
     generator_pitch = Lie.generator_pitch()
     generator_yaw = Lie.generator_yaw()
 
-    X = np.ones((4,N),Utils.matrix_data_type)
+    X = np.ones((4, N),Utils.matrix_data_type)
 
+    #TODO: Optimize
     # Precompute back projection of pixels
     for y in range(0, height, 1):
         for x in range(0, width, 1):
-            flat_index = Utils.matrix_to_flat_index_rows(y,x,width)
+            flat_index = Utils.matrix_to_flat_index_rows(y,x,height)
             depth = frame_reference.pixel_depth[y, x]
-            X[:,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth)
+            X[0:3,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth)[:,0]
 
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
@@ -168,8 +167,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps):
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                x_target = target_index_projections[0,flat_index]
-                y_target = target_index_projections[1,flat_index]
+                x_target = math.floor(target_index_projections[0,flat_index])
+                y_target = math.floor(target_index_projections[1,flat_index])
                 # TODO: check if projected uv are valid image addresses
                 image_warped_flat[y,x] = frame_target.pixel_image[y_target,x_target]
 

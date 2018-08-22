@@ -73,8 +73,8 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
         v13 = (-f_x*x)/z_sqrd
         v23 = (-f_y*y)/z_sqrd
 
-        jacobian_camera[:,i] = np.array([[v11, 0, v13],
-                                         [0, v22, v23]], dtype=matrix_data_type)
+        jacobian_camera[:,:,i] = np.array([[v11, 0, v13],
+                                          [0, v22, v23]], dtype=matrix_data_type)
     return jacobian_camera
 
 def get_jacobian_image(image_g_x,image_g_y,x,y):
