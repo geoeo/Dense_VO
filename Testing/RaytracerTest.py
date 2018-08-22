@@ -43,7 +43,7 @@ scene = Scene.Scene(640,320,spheres,camera)
 scene.render()
 
 frame_buffer_image = ImageProcessing.normalize_to_image_space(scene.frame_buffer)
-depth_buffer_image = ImageProcessing.normalize_to_image_space(ImageProcessing.z_standardise(scene.depth_buffer))
+depth_buffer_image = ImageProcessing.normalize_to_image_space(scene.depth_buffer)
 
 cv2.imwrite("framebuffer.png",frame_buffer_image)
 cv2.imwrite("depthbuffer.png",depth_buffer_image)
@@ -55,7 +55,7 @@ scene_translated = Scene.Scene(640,320,spheres,camera_translated)
 scene_translated.render()
 
 frame_buffer_image = ImageProcessing.normalize_to_image_space(scene_translated.frame_buffer)
-depth_buffer_image = ImageProcessing.normalize_to_image_space(ImageProcessing.z_standardise(scene_translated.depth_buffer))
+depth_buffer_image = ImageProcessing.normalize_to_image_space(scene_translated.depth_buffer)
 
 cv2.imwrite("framebuffer_translated.png",frame_buffer_image)
 cv2.imwrite("depthbuffer_translated.png",depth_buffer_image)

@@ -111,7 +111,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps):
                       [0, 1, 0],
                       [0, 0, 1]], dtype=matrix_data_type)
     I_3 = np.identity(3, dtype=matrix_data_type)
-    (height,width) = frame_target.shape
+    (height,width) = frame_target.pixel_image.shape
     N = height*width
     position_vector_size = 4
     twist_size = 6
