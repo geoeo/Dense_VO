@@ -1,10 +1,12 @@
 import numpy as np
+import cv2
 from scipy import linalg
 import Numerics.Lie as Lie
 import Numerics.Utils as Utils
 import Numerics.JacobianGenerator as JacobianGenerator
 from Numerics.Utils import matrix_data_type
 import math
+import Numerics.ImageProcessing as ImageProcessing
 
 
 def solve_SE3(X, Y, max_its, eps):
@@ -103,7 +105,7 @@ def solve_SE3(X, Y, max_its, eps):
 
 # TODO: TEST!
 # TODO: implement the SE3 estimation with the objective function in image space
-def solve_photometric(frame_reference, frame_target, max_its, eps):
+def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False):
     # init
     # array for twist values x, y, z, roll, pitch, yaw
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
@@ -139,6 +141,19 @@ def solve_photometric(frame_reference, frame_target, max_its, eps):
             flat_index = Utils.matrix_to_flat_index_rows(y,x,height)
             depth = -1* frame_reference.pixel_depth[y, x]
             X[0:3,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth)[:,0]
+
+    if debug:
+        # render/save image of projected, back projected points
+        projected_back_projected = frame_reference.camera.apply_perspective_pipeline(X)
+        debug_buffer = np.zeros((height,width), dtype=np.float64)
+        for i in range(0,N,1):
+            u = projected_back_projected[0,i]
+            v = projected_back_projected[1,i]
+
+            if not np.isnan(u) and not np.isnan(v):
+                debug_buffer[int(v),int(u)] = 1.0
+        cv2.imwrite("debug_buffer.png", ImageProcessing.normalize_to_image_space(debug_buffer))
+
 
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
