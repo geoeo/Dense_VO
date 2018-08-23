@@ -21,7 +21,7 @@ import Visualization.Plot3D as Plot3D
 N = 20
 (X,Y,Z) = Generator.generate_3d_plane(1,1,-30,N,4)
 H = np.repeat(1,N)
-image_width = 640
+image_width = 320
 image_height = 320
 
 points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
@@ -45,19 +45,19 @@ scene = Scene.Scene(image_width,image_height,spheres,camera)
 scene.render()
 
 frame_buffer_image = ImageProcessing.normalize_to_image_space(scene.frame_buffer)
-depth_buffer_image = ImageProcessing.normalize_to_image_space(scene.depth_buffer)
+depth_buffer_image = scene.depth_buffer
 
 cv2.imwrite("framebuffer.png",frame_buffer_image)
 cv2.imwrite("depthbuffer.png",depth_buffer_image)
 
 ###############
 
-scene_translated = Scene.Scene(640,320,spheres,camera_translated)
+scene_translated = Scene.Scene(image_width,image_height,spheres,camera_translated)
 
 scene_translated.render()
 
 frame_buffer_image = ImageProcessing.normalize_to_image_space(scene_translated.frame_buffer)
-depth_buffer_image = ImageProcessing.normalize_to_image_space(scene_translated.depth_buffer)
+depth_buffer_image = scene_translated.depth_buffer
 
 cv2.imwrite("framebuffer_translated.png",frame_buffer_image)
 cv2.imwrite("depthbuffer_translated.png",depth_buffer_image)
@@ -65,6 +65,6 @@ cv2.imwrite("depthbuffer_translated.png",depth_buffer_image)
 
 ################
 
-#Plot3D.scatter_plot_sub([(X_orig,Y_orig,Z_orig)],[(X_persp,Y_persp,Z_persp)],['original'],['projected'])
+Plot3D.scatter_plot_sub([(X_orig,Y_orig,Z_orig)],[(X_persp,Y_persp,Z_persp)],['original'],['projected'])
 
 

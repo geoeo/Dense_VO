@@ -7,23 +7,25 @@ import Camera.Camera as Camera
 import Numerics.Solver as Solver
 import Frame
 
+# TODO use raw depth values
 
-im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer.png',0)
+im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square.png',0)
 im_greyscale_reference = ImageProcessing.z_standardise(im_greyscale_reference)
 
-im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated.png',0)
+im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated_fov_90_square.png',0)
 im_greyscale_target = ImageProcessing.z_standardise(im_greyscale_target)
 
-depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer.png',0).astype(Utils.depth_data_type)
-depth_reference = ImageProcessing.z_standardise(depth_reference)
+depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square.png',0).astype(Utils.depth_data_type)
+#depth_reference = ImageProcessing.z_standardise(depth_reference)
 
-depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated.png',0).astype(Utils.depth_data_type)
-depth_target = ImageProcessing.z_standardise(depth_target)
+depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square.png',0).astype(Utils.depth_data_type)
+#depth_target = ImageProcessing.z_standardise(depth_target)
 
 (image_height,image_width) = im_greyscale_reference.shape
 
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(-1, -1, image_width/2, image_height/2)
+#intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 0, 0)
 
 # reference frame is assumed to be the origin
 # target frame SE3 is unknown i.e. what we are trying to solve

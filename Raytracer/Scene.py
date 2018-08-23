@@ -17,7 +17,7 @@ class Scene:
         self.depth_buffer = np.zeros(self.resolution,dtype=np.float64)
         self.spheres = spheres
         self.camera = camera
-        self.fov = pi / 3
+        self.fov = pi / 2
         self.light_ws = np.array([0,0,10]).reshape((3,1))
 
     def render(self):

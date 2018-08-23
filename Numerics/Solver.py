@@ -137,7 +137,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps):
     for y in range(0, height, 1):
         for x in range(0, width, 1):
             flat_index = Utils.matrix_to_flat_index_rows(y,x,height)
-            depth = frame_reference.pixel_depth[y, x]
+            depth = -1* frame_reference.pixel_depth[y, x]
             X[0:3,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth)[:,0]
 
     # Precompute the Jacobian of SE3 around the identity
