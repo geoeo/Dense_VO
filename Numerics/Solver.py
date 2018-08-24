@@ -145,6 +145,9 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     if debug:
         # render/save image of projected, back projected points
         projected_back_projected = frame_reference.camera.apply_perspective_pipeline(X)
+        # scale ndc if applicable
+        #projected_back_projected[0,:] = projected_back_projected[0,:]*width
+        #projected_back_projected[1,:] = projected_back_projected[1,:]*height
         debug_buffer = np.zeros((height,width), dtype=np.float64)
         for i in range(0,N,1):
             u = projected_back_projected[0,i]

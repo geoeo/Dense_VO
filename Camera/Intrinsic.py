@@ -1,4 +1,5 @@
 import numpy as np
+from math import tan
 
 """A Data Object which encodes the intrinsic state of the camera.
 

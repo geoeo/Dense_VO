@@ -79,6 +79,13 @@ class Camera:
         t = np.matmul(self.intrinsic.K_inv,np.array([[u],[v],[1]]))
         return np.multiply(z,t)
 
+    def back_project_pixel_with_shear(self,u, v, z, s):
+        t = np.matmul(self.intrinsic.K_inv,np.array([[u],[v],[1]]))
+        t = np.multiply(z,t)
+        t[0,0] -= s*t[1,0]/self.intrinsic.extract_fy()
+        return t
+
+
 
     #TODO Make it work for arbitrary focal length
     #This only works for a normalized camera with focal length 1!

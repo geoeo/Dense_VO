@@ -25,7 +25,7 @@ depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resourc
 
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(-1, -1, image_width/2, image_height/2)
-#intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 0, 0)
+#intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 1/2, 1/2) # for ndc
 
 # reference frame is assumed to be the origin
 # target frame SE3 is unknown i.e. what we are trying to solve
