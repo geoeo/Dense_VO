@@ -122,6 +122,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # Step Factor
     alpha = 0.125
     index_array = np.zeros((1,2),matrix_data_type)
+    valid_image_range = 10
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -168,7 +169,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
     # vectorize image
     image_key_flat = np.reshape(frame_reference.pixel_image, (N, 1), order='F')
-    image_warped_flat = np.zeros((N, 1), dtype=matrix_data_type)
+    image_warped = np.full((height, width),-1, dtype=matrix_data_type)
 
     for it in range(0, max_its, 1):
         # accumulators
@@ -182,14 +183,20 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         # Compute residual
         #TODO: Optimize this
-        for y in range(0,height,1):
-            for x in range(0,width,1):
+        for y in range(0, height, 1):
+            for x in range(0, width, 1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                x_target = math.floor(target_index_projections[0,flat_index])
-                y_target = math.floor(target_index_projections[1,flat_index])
+                x_index = target_index_projections[0,flat_index]
+                y_index = target_index_projections[1,flat_index]
+                if np.isnan(x_index) or np.isnan(y_index):
+                    continue
+                x_target = math.floor(x_index)
+                y_target = math.floor(x_target)
                 # TODO: check if projected uv are valid image addresses
-                image_warped_flat[y,x] = frame_target.pixel_image[y_target,x_target]
+                #if 0 <= y_target < height and 0 <= x_target < width:
+                image_warped[y,x] = frame_target.pixel_image[y_target,x_target]
 
+        image_warped_flat = np.reshape(image_warped, (N, 1), order='F')
         v = image_warped_flat - image_key_flat
         L = np.sum(np.square(v), axis=0)
         L_mean = np.mean(L)

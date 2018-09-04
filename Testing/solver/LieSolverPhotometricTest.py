@@ -36,7 +36,7 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference,depth_reference,camera_reference,False)
 frame_target = Frame.Frame(im_greyscale_target,depth_target,camera_target,True)
 
-SE3_est = Solver.solve_photometric(frame_reference,frame_target,20000,0.01,debug = True)
+SE3_est = Solver.solve_photometric(frame_reference,frame_target,20000,0.01,debug = False)
 
 
 

@@ -3,6 +3,7 @@ import Numerics.SE3 as SE3
 import Camera.Intrinsic as Intrinsic
 from Numerics.Utils import matrix_data_type
 import math
+import sys
 
 
 def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generator_pitch,generator_roll,Y_est,N,stacked_obs_size):
@@ -64,6 +65,7 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
         x = X[0,i]
         y = X[1,i]
         z = X[2,i]
+
         f_x = intrinsics.extract_fx()
         f_y = intrinsics.extract_fy()
         z_sqrd = math.pow(z,2)
