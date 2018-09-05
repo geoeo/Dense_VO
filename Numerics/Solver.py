@@ -192,7 +192,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X)
         L = 0
-        alpha = np.random.normal(0, 1, 1)[0] # adaptive convergence due to possibility of negative translation /rotation
+        alpha = np.random.normal(0, 1, 1)[0] # randomized convergence due to possibility of negative translation /rotation
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
