@@ -57,8 +57,8 @@ def solve_SE3(X, Y, max_its, eps):
             J = Js[i]
             J_t = np.transpose(J)
             error_vector = np.reshape(v[:, i], (position_vector_size, 1))
-            J_v += np.matmul(J_t, error_vector)
-            normal_matrix += np.matmul(-J_t, J)
+            J_v += np.matmul(-J_t, error_vector)
+            normal_matrix += np.matmul(J_t, J)
 
         ##########################################################
 
@@ -98,6 +98,7 @@ def solve_SE3(X, Y, max_its, eps):
         R_est = np.matmul(R_new, R_est)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
+        print('Runtime mean error:', L_mean)
 
     print('mean error:', L_mean, 'iteration: ', it)
     return SE_3_est
@@ -122,7 +123,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    alpha = 1
+    alpha = 0.5
     index_array = np.zeros((1,2),matrix_data_type)
     valid_image_range = 10
 
@@ -203,8 +204,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                 image_warped[y,x] = frame_target.pixel_image[y_target,x_target]
 
         image_warped_flat = np.reshape(image_warped, (N, 1), order='F')
-        #v = image_warped_flat - image_key_flat
-        v = image_key_flat - image_warped_flat
+        v = image_warped_flat - image_key_flat
+        #v = image_key_flat - image_warped_flat
 
         for y in range(0,height,1):
             for x in range(0,width,1):
@@ -234,7 +235,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                 J_t = np.transpose(J_full)
                 error_vector = v[flat_index][0]
                 J_v += np.multiply(error_vector,J_t)
-                normal_matrix += np.matmul(-J_t, J_full)
+                normal_matrix += np.matmul(J_t, J_full)
 
         # TODO: Investigate faster inversion with QR
         try:
