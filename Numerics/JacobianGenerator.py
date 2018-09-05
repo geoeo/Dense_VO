@@ -2,8 +2,8 @@ import numpy as np
 import Numerics.SE3 as SE3
 import Camera.Intrinsic as Intrinsic
 from Numerics.Utils import matrix_data_type
+import Numerics.Utils as Utils
 import math
-import sys
 
 
 def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generator_pitch,generator_roll,Y_est,N,stacked_obs_size):
@@ -54,34 +54,43 @@ def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generato
 #                               [0, 0, x,0,0,y,0,0,z,0,0,1]], dtype=matrix_data_type)
 #    return jacobian_rigid
 
-def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
+def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X,valid_measurements):
     #translation = SE3.extract_translation(se3)
     #x = translation[0]
     #y = translation[1]
     #z = translation[2]
     (vector_size,N) = X.shape
-    jacobian_camera = np.zeros((2,3,N),matrix_data_type)
+    jacobian_camera = np.zeros((N,2,3),matrix_data_type)
     for i in range(0,N):
         x = X[0,i]
         y = X[1,i]
         z = X[2,i]
 
-        f_x = intrinsics.extract_fx()
-        f_y = intrinsics.extract_fy()
-        z_sqrd = math.pow(z,2)
 
-        v11 = f_x/z
-        v22 = f_y/z
-        v13 = (-f_x*x)/z_sqrd
-        v23 = (-f_y*y)/z_sqrd
+        v11 = 0
+        v22 = 0
+        v13 = 0
+        v23 = 0
 
-        jacobian_camera[:,:,i] = np.array([[v11, 0, v13],
+        if z != 0:
+            f_x = intrinsics.extract_fx()
+            f_y = intrinsics.extract_fy()
+            z_sqrd = math.pow(z,2)
+
+
+            v11 = f_x/z
+            v22 = f_y/z
+            v13 = (-f_x*x)/z_sqrd
+            v23 = (-f_y*y)/z_sqrd
+            valid_measurements[i] = True
+
+        jacobian_camera[i,:,:] = np.array([[v11, 0, v13],
                                           [0, v22, v23]], dtype=matrix_data_type)
     return jacobian_camera
 
 def get_jacobian_image(image_g_x,image_g_y,x,y):
-    jacobian_image = np.array([0,0],dtype=matrix_data_type)
-    jacobian_image[0] = image_g_x[y,x]
-    jacobian_image[1] = image_g_y[y,x]
+    jacobian_image = np.zeros((1,2),dtype=matrix_data_type)
+    jacobian_image[0,0] = image_g_x[y,x]
+    jacobian_image[0,1] = image_g_y[y,x]
     return jacobian_image
 

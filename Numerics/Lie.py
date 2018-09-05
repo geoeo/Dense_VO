@@ -8,11 +8,21 @@ def generator_x():
                      [0,0,0,0],
                      [0,0,0,0]], dtype=matrix_data_type)
 
+def generator_x_3_4():
+    return np.array([[0,0,0,1],
+                     [0,0,0,0],
+                     [0,0,0,0]], dtype=matrix_data_type)
+
 
 def generator_y():
     return np.array([[0,0,0,0],
                      [0,0,0,1],
                      [0,0,0,0],
+                     [0,0,0,0]], dtype=matrix_data_type)
+
+def generator_y_3_4():
+    return np.array([[0,0,0,0],
+                     [0,0,0,1],
                      [0,0,0,0]], dtype=matrix_data_type)
 
 
@@ -22,6 +32,11 @@ def generator_z():
                      [0,0,0,1],
                      [0,0,0,0]], dtype=matrix_data_type)
 
+def generator_z_3_4():
+    return np.array([[0,0,0,0],
+                     [0,0,0,0],
+                     [0,0,0,1]], dtype=matrix_data_type)
+
 
 # Rotation Around X
 def generator_roll():
@@ -29,6 +44,11 @@ def generator_roll():
                      [0,0,-1,0],
                      [0,1,0,0],
                      [0,0,0,0]], dtype=matrix_data_type)
+
+def generator_roll_3_4():
+    return np.array([[0,0,0,0],
+                     [0,0,-1,0],
+                     [0,1,0,0]], dtype=matrix_data_type)
 
 
 # Rotation Around Y
@@ -38,12 +58,22 @@ def generator_pitch():
                      [-1,0,0,0],
                      [0,0,0,0]], dtype=matrix_data_type)
 
+def generator_pitch_3_4():
+    return np.array([[0,0,1,0],
+                     [0,0,0,0],
+                     [-1,0,0,0]], dtype=matrix_data_type)
+
 
 # Rotation Around Z
 def generator_yaw():
     return np.array([[0,-1,0,0],
                      [1,0,0,0],
                      [0,0,0,0],
+                     [0,0,0,0]], dtype=matrix_data_type)
+
+def generator_yaw_3_4():
+    return np.array([[0,-1,0,0],
+                     [1,0,0,0],
                      [0,0,0,0]], dtype=matrix_data_type)
 
 def adjoint_se3(R,t):
