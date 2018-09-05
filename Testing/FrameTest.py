@@ -25,7 +25,5 @@ class TestFrameMethods(unittest.TestCase):
         with self.assertRaises(TypeError):
             Frame.Frame(self.pixels_uint8,self.depth_float32,self.camera_identity,False)
 
-
-
 if __name__ == '__main__':
     unittest.main()

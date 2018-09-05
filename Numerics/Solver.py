@@ -125,7 +125,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     alpha = 1
     index_array = np.zeros((1,2),matrix_data_type)
     valid_image_range = 10
-    L_mean = -10000
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -170,6 +169,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
     # Precompute the Jacobian of the projection function
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X, valid_measurements)
+    # count the number of true
+    number_of_valid_measurements = np.sum(valid_measurements)
 
     # vectorize image
     image_key_flat = np.reshape(frame_reference.pixel_image, (N, 1), order='F')
@@ -182,6 +183,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X)
+        L = 0
+        L_mean = -10000
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
@@ -203,8 +206,14 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         image_warped_flat = np.reshape(image_warped, (N, 1), order='F')
         #v = image_warped_flat - image_key_flat
         v = image_key_flat - image_warped_flat
-        L = np.sum(np.square(v), axis=0)
-        L_mean = np.mean(L)
+        for y in range(0,height,1):
+            for x in range(0,width,1):
+                flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
+                if valid_measurements[flat_index]:
+                    L += v[flat_index,0]
+        L_mean = L / number_of_valid_measurements
+        #L = np.sum(np.square(v), axis=0)
+        #L_mean = np.mean(L)
 
         if L_mean < eps:
             print('done')
@@ -267,5 +276,4 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
     print('mean error:', L_mean, 'iteration: ', it)
 
-
-    return None
+    return SE_3_est
