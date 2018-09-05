@@ -54,7 +54,7 @@ def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generato
 #                               [0, 0, x,0,0,y,0,0,z,0,0,1]], dtype=matrix_data_type)
 #    return jacobian_rigid
 
-def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X,valid_measurements):
+def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
     #translation = SE3.extract_translation(se3)
     #x = translation[0]
     #y = translation[1]
@@ -82,7 +82,6 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X,valid_measureme
             v22 = f_y/z
             v13 = (-f_x*x)/z_sqrd
             v23 = (-f_y*y)/z_sqrd
-            valid_measurements[i] = True
 
         jacobian_camera[i,:,:] = np.array([[v11, 0, v13],
                                           [0, v22, v23]], dtype=matrix_data_type)

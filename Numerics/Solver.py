@@ -123,9 +123,10 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    alpha = 0.5
+    alpha = 0.1
     index_array = np.zeros((1,2),matrix_data_type)
-    valid_image_range = 10
+    L_mean = -10000
+    it = -1
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -137,15 +138,21 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     generator_yaw = Lie.generator_yaw_3_4()
 
     X = np.ones((4, N),Utils.matrix_data_type)
-    valid_measurements = np.full(N,False)
+    valid_measurements_reference = np.full(N,False)
+    valid_measurements_target = np.full(N,False)
 
     #TODO: Optimize
     # Precompute back projection of pixels
     for y in range(0, height, 1):
         for x in range(0, width, 1):
             flat_index = Utils.matrix_to_flat_index_rows(y,x,height)
-            depth = frame_reference.pixel_depth[y, x]
-            X[0:3,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth)[:,0]
+            depth_ref = frame_reference.pixel_depth[y, x]
+            depth_target = frame_target.pixel_depth[y, x]
+            X[0:3,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth_ref)[:,0]
+            if depth_ref != 0:
+                valid_measurements_reference[flat_index] = True
+            if depth_target != 0:
+                valid_measurements_target[flat_index] = True
 
     if debug:
         # render/save image of projected, back projected points
@@ -169,9 +176,9 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                                      generator_roll, X, N, stacked_obs_size,coefficient=1.0)
 
     # Precompute the Jacobian of the projection function
-    J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X, valid_measurements)
+    J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X)
     # count the number of true
-    number_of_valid_measurements = np.sum(valid_measurements)
+    number_of_valid_measurements = np.sum(valid_measurements_reference)
 
     # vectorize image
     image_key_flat = np.reshape(frame_reference.pixel_image, (N, 1), order='F')
@@ -185,7 +192,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X)
         L = 0
-        L_mean = -10000
+        alpha = np.random.normal(0, 1, 1)[0] # adaptive convergence due to possibility of negative translation /rotation
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
@@ -196,22 +203,23 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
                 x_index = target_index_projections[0,flat_index]
                 y_index = target_index_projections[1,flat_index]
-                # TODO: check if projected uv are valid image addresses
-                if not valid_measurements[flat_index]:
+                if not valid_measurements_reference[flat_index]:
                     continue
                 x_target = math.floor(x_index)
                 y_target = math.floor(y_index)
                 image_warped[y,x] = frame_target.pixel_image[y_target,x_target]
 
+        # Residual Funciton
         image_warped_flat = np.reshape(image_warped, (N, 1), order='F')
-        v = image_warped_flat - image_key_flat
+        v = image_warped_flat - image_key_flat # direction of motion influences conversion
         #v = image_key_flat - image_warped_flat
 
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                if valid_measurements[flat_index]:
-                    L += v[flat_index,0]
+                if valid_measurements_reference[flat_index]:
+                    v_sample = v[flat_index,0]
+                    L += v_sample
         L_mean = L / number_of_valid_measurements
         #L = np.sum(np.square(v), axis=0)
         #L_mean = np.mean(L)
@@ -224,7 +232,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                if not valid_measurements[flat_index]:
+                if not valid_measurements_reference[flat_index]:
                     continue
                 J_image = JacobianGenerator.get_jacobian_image(frame_target.grad_x, frame_target.grad_y, x, y)
                 J_pi_element = J_pi[flat_index]

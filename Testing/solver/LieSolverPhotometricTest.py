@@ -10,19 +10,19 @@ import Frame
 # TODO use raw depth values
 
 im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square.png',0)
-#im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer.png',0)
+#im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square_negative.png',0)
 im_greyscale_reference = ImageProcessing.z_standardise(im_greyscale_reference)
 
 im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated_fov_90_square.png',0)
-#im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated.png',0)
+#im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated_fov_90_square_negative.png',0)
 im_greyscale_target = ImageProcessing.z_standardise(im_greyscale_target)
 
 depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square.png',0).astype(Utils.depth_data_type)
-#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer.png',0).astype(Utils.depth_data_type)
+#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square_negative.png',0).astype(Utils.depth_data_type)
 #depth_reference = ImageProcessing.z_standardise(depth_reference)
 
 depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square.png',0).astype(Utils.depth_data_type)
-#depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated.png',0).astype(Utils.depth_data_type)
+#depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square_negative.png',0).astype(Utils.depth_data_type)
 #depth_target = ImageProcessing.z_standardise(depth_target)
 
 (image_height,image_width) = im_greyscale_reference.shape
@@ -40,7 +40,7 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference,depth_reference,camera_reference,False)
 frame_target = Frame.Frame(im_greyscale_target,depth_target,camera_target,True)
 
-SE3_est = Solver.solve_photometric(frame_reference,frame_target,20000,0.1,debug = False)
+SE3_est = Solver.solve_photometric(frame_reference,frame_target,20000,0.5,debug = False)
 
 print(SE3_est)
 
