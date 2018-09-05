@@ -6,7 +6,7 @@ import Numerics.Utils as Utils
 import math
 
 
-def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generator_pitch,generator_roll,Y_est,N,stacked_obs_size):
+def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generator_pitch,generator_roll,Y_est,N,stacked_obs_size, coefficient = 1.0):
     # Variant 1
     # using generators of so3 to compute derivative with respect to parameters
     G_1_y = np.matmul(generator_x, Y_est)
@@ -31,7 +31,7 @@ def get_jacobians_lie(generator_x,generator_y,generator_z,generator_yaw,generato
     G_rot = np.append(np.append(G_4_y_stacked, G_5_y_stacked, axis=1), G_6_y_stacked, axis=1)
     G = np.append(G_translation, G_rot, axis=1)
 
-    Js = np.multiply(2.0, np.vsplit(G, N))
+    Js = np.multiply(coefficient, np.vsplit(G, N))
     return Js
 
 # Variant #2 - A lot slower! 1000ms Probably due to memory alloc in loop

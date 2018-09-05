@@ -51,7 +51,7 @@ def solve_SE3(X, Y, max_its, eps):
             break
 
         Js = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw, generator_pitch,
-                                                 generator_roll, Y_est, N, stacked_obs_size)
+                                                 generator_roll, Y_est, N, stacked_obs_size, coefficient=2.0)
 
         for i in range(0, N, 1):
             J = Js[i]
@@ -143,7 +143,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     for y in range(0, height, 1):
         for x in range(0, width, 1):
             flat_index = Utils.matrix_to_flat_index_rows(y,x,height)
-            depth = -1* frame_reference.pixel_depth[y, x]
+            depth = frame_reference.pixel_depth[y, x]
             X[0:3,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth)[:,0]
 
     if debug:
@@ -165,7 +165,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
                                                      generator_pitch,
-                                                     generator_roll, X, N, stacked_obs_size)
+                                                     generator_roll, X, N, stacked_obs_size,coefficient=1.0)
 
     # Precompute the Jacobian of the projection function
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X, valid_measurements)
@@ -195,17 +195,17 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
                 x_index = target_index_projections[0,flat_index]
                 y_index = target_index_projections[1,flat_index]
+                # TODO: check if projected uv are valid image addresses
                 if not valid_measurements[flat_index]:
                     continue
                 x_target = math.floor(x_index)
                 y_target = math.floor(y_index)
-                # TODO: check if projected uv are valid image addresses
-                #if 0 <= y_target < height and 0 <= x_target < width:
                 image_warped[y,x] = frame_target.pixel_image[y_target,x_target]
 
         image_warped_flat = np.reshape(image_warped, (N, 1), order='F')
         #v = image_warped_flat - image_key_flat
         v = image_key_flat - image_warped_flat
+
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
@@ -215,7 +215,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         #L = np.sum(np.square(v), axis=0)
         #L_mean = np.mean(L)
 
-        if L_mean < eps:
+        if np.abs(L_mean) < eps:
             print('done')
             break
 
