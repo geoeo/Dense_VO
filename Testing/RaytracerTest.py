@@ -29,7 +29,7 @@ points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 spheres = Geometry.generate_spheres(points)
 
 camera = Camera.normalized_camera(0,0,image_width/2,image_height/2)
-camera_translated = Camera.normalized_camera(0.5,0,image_width/2,image_height/2)
+camera_translated = Camera.normalized_camera(0,0.5,image_width/2,image_height/2)
 
 ##############
 

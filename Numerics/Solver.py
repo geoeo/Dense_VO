@@ -1,11 +1,11 @@
 import numpy as np
 import cv2
+import math
 from scipy import linalg
 import Numerics.Lie as Lie
 import Numerics.Utils as Utils
 import Numerics.JacobianGenerator as JacobianGenerator
 from Numerics.Utils import matrix_data_type
-import math
 import Numerics.ImageProcessing as ImageProcessing
 
 
@@ -104,8 +104,6 @@ def solve_SE3(X, Y, max_its, eps):
     return SE_3_est
 
 
-# TODO: TEST!
-# TODO: implement the SE3 estimation with the objective function in image space
 def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False):
     # init
     # array for twist values x, y, z, roll, pitch, yaw
@@ -123,10 +121,19 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    alpha = 0.1
+    # Todo make this adaptive ?
+    alpha = 1.0
+    alpha_min = 0.7
+    alpha_step = 0.05
     index_array = np.zeros((1,2),matrix_data_type)
-    L_mean = -10000
+    v_last_mean_abs = -1000
+    v_mean = -10000
+    v_mean_abs = -10000
     it = -1
+    std = math.sqrt(0.4)
+    gradient_monitoring_window_start = 3
+    gradient_monitoring_window_size = 10
+    gradient_monitoring_window = np.full((1,gradient_monitoring_window_size), False)
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -177,8 +184,14 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
     # Precompute the Jacobian of the projection function
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X)
+
     # count the number of true
-    number_of_valid_measurements = np.sum(valid_measurements_reference)
+    valid_measurements_total = np.logical_and(valid_measurements_reference,valid_measurements_target)
+    valid_measurements = valid_measurements_reference
+
+    number_of_valid_reference = np.sum(valid_measurements_reference)
+    number_of_valid_total = np.sum(valid_measurements_total)
+    number_of_valid_measurements = number_of_valid_reference
 
     # vectorize image
     image_key_flat = np.reshape(frame_reference.pixel_image, (N, 1), order='F')
@@ -191,8 +204,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X)
-        L = 0
-        alpha = np.random.normal(0, 1, 1)[0] # randomized convergence due to possibility of negative translation /rotation
+        v_sum = 0
+        #alpha = np.random.normal(0, std, 1)[0] # randomized convergence due to possibility of negative translation /rotation
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
@@ -203,7 +216,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
                 x_index = target_index_projections[0,flat_index]
                 y_index = target_index_projections[1,flat_index]
-                if not valid_measurements_reference[flat_index]:
+                if not valid_measurements[flat_index]:
                     continue
                 x_target = math.floor(x_index)
                 y_target = math.floor(y_index)
@@ -217,22 +230,42 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                if valid_measurements_reference[flat_index]:
+                if valid_measurements[flat_index]:
                     v_sample = v[flat_index,0]
-                    L += v_sample
-        L_mean = L / number_of_valid_measurements
-        #L = np.sum(np.square(v), axis=0)
-        #L_mean = np.mean(L)
+                    v_sum += v_sample
 
-        if np.abs(L_mean) < eps:
+        if it > gradient_monitoring_window_start:
+            v_last_mean_abs = v_mean_abs
+        v_mean = v_sum / number_of_valid_measurements
+        v_mean_abs = np.abs(v_mean)
+
+        #TODO: Make Monitoring continuous
+        if gradient_monitoring_window_start < it < gradient_monitoring_window_start+gradient_monitoring_window_size:
+            gradient_monitoring_window[0,it-gradient_monitoring_window_start] = v_mean_abs >= v_last_mean_abs
+
+        if it == gradient_monitoring_window_size:
+            number_of_error_increases = np.sum(gradient_monitoring_window[0])
+            if number_of_error_increases > math.floor(gradient_monitoring_window_size/2):
+                print('switching alpha!')
+                alpha *= -1
+                alpha_step *= -1
+                alpha_min *= -1
+
+
+        if v_mean_abs < eps:
             print('done')
             break
+
+        if it > 0 and it % 40 == 0:
+            if math.fabs(alpha) > math.fabs(alpha_min):
+                alpha -= alpha_step
+                print('new alpha: ', alpha)
 
         #TODO: Optimize this
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                if not valid_measurements_reference[flat_index]:
+                if not valid_measurements[flat_index]:
                     continue
                 J_image = JacobianGenerator.get_jacobian_image(frame_target.grad_x, frame_target.grad_y, x, y)
                 J_pi_element = J_pi[flat_index]
@@ -281,8 +314,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         R_est = np.matmul(R_new, R_est)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
-        print('Runtime: mean error:', L_mean)
+        print('Runtime: mean error:', v_mean)
 
-    print('mean error:', L_mean, 'iteration: ', it)
+    print('mean error:', v_mean, 'iteration: ', it)
 
     return SE_3_est

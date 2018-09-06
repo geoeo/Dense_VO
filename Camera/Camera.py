@@ -33,6 +33,11 @@ def normalized_camera(x_trans,y_trans,o_x,o_y):
     intrinsics = Intrinsic.Intrinsic(-1, -1, o_x, o_y)
     return Camera(intrinsics, look_at)
 
+def normalized_camera_with_look_at(camera_position, camera_target, camera_up, o_x, o_y):
+    look_at = look_at_matrix(camera_position, camera_target, camera_up)
+    intrinsics = Intrinsic.Intrinsic(-1, -1, o_x, o_y)
+    return Camera(intrinsics, look_at)
+
 
 
 """An Object which encodes a Camera.

@@ -2,7 +2,7 @@
 
 import unittest
 import numpy as np
-import Frame
+from VisualOdometry import Frame
 import Camera.Camera as Camera
 import Camera.Intrinsic as Intrinsic
 import Numerics.Utils as Utils
@@ -19,11 +19,11 @@ class TestFrameMethods(unittest.TestCase):
         cls.camera_identity = Camera.Camera(cls.intrinsic_identity,cls.se3_identity)
 
     def test_init(self):
-        Frame.Frame(self.pixels_float32,self.depth_float32,self.camera_identity,False)
+        Frame.Frame(self.pixels_float32, self.depth_float32, self.camera_identity, False)
 
     def test_init_raise(self):
         with self.assertRaises(TypeError):
-            Frame.Frame(self.pixels_uint8,self.depth_float32,self.camera_identity,False)
+            Frame.Frame(self.pixels_uint8, self.depth_float32, self.camera_identity, False)
 
 if __name__ == '__main__':
     unittest.main()
