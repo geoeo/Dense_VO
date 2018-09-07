@@ -5,8 +5,8 @@ from scipy import linalg
 import Numerics.Lie as Lie
 import Numerics.Utils as Utils
 import Numerics.JacobianGenerator as JacobianGenerator
-from Numerics.Utils import matrix_data_type
 import Numerics.ImageProcessing as ImageProcessing
+from Numerics.Utils import matrix_data_type
 from VisualOdometry import GradientStepManager
 
 
@@ -123,7 +123,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # Step Factor
     #alpha = 0.125
     Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = -1.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 10)
-    index_array = np.zeros((1,2),matrix_data_type)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
@@ -138,26 +137,23 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     generator_pitch = Lie.generator_pitch_3_4()
     generator_yaw = Lie.generator_yaw_3_4()
 
-    X = np.ones((4, N),Utils.matrix_data_type)
+    X_back_projection = np.ones((4, N),Utils.matrix_data_type)
     valid_measurements_reference = np.full(N,False)
     valid_measurements_target = np.full(N,False)
 
-    #TODO: Optimize / Abstract this
     # Precompute back projection of pixels
-    for y in range(0, height, 1):
-        for x in range(0, width, 1):
-            flat_index = Utils.matrix_to_flat_index_rows(y,x,height)
-            depth_ref = frame_reference.pixel_depth[y, x]
-            depth_target = frame_target.pixel_depth[y, x]
-            X[0:3,flat_index] = frame_reference.camera.back_project_pixel(x, y, depth_ref)[:,0]
-            if depth_ref != 0:
-                valid_measurements_reference[flat_index] = True
-            if depth_target != 0:
-                valid_measurements_target[flat_index] = True
+    ImageProcessing.back_project_image(width,
+                                       height,
+                                       frame_reference.camera,
+                                       frame_reference.pixel_depth,
+                                       frame_target.pixel_depth,
+                                       X_back_projection,
+                                       valid_measurements_reference,
+                                       valid_measurements_target)
 
     if debug:
         # render/save image of projected, back projected points
-        projected_back_projected = frame_reference.camera.apply_perspective_pipeline(X)
+        projected_back_projected = frame_reference.camera.apply_perspective_pipeline(X_back_projection)
         # scale ndc if applicable
         #projected_back_projected[0,:] = projected_back_projected[0,:]*width
         #projected_back_projected[1,:] = projected_back_projected[1,:]*height
@@ -174,66 +170,38 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
                                                      generator_pitch,
-                                                     generator_roll, X, N, stacked_obs_size,coefficient=1.0)
+                                                     generator_roll, X_back_projection, N, stacked_obs_size,coefficient=1.0)
 
     # Precompute the Jacobian of the projection function
-    J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X)
+    J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X_back_projection)
 
     # count the number of true
     valid_measurements_total = np.logical_and(valid_measurements_reference,valid_measurements_target)
     valid_measurements = valid_measurements_reference
 
     number_of_valid_reference = np.sum(valid_measurements_reference)
-    number_of_valid_total = np.sum(valid_measurements_total)
+    #number_of_valid_total = np.sum(valid_measurements_total)
     number_of_valid_measurements = number_of_valid_reference
-
-    # vectorize image
-    image_key_flat = np.reshape(frame_reference.pixel_image, (N, 1), order='F')
-    image_warped = np.full((height, width),-1, dtype=matrix_data_type)
 
     for it in range(0, max_its, 1):
         # accumulators
+        #TODO: investigate preallocate and clear in a for loop
         J_v = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
 
         # Warp with the current SE3 estimate
-        Y_est = np.matmul(SE_3_est, X)
-        v_sum = 0
-        #alpha = np.random.normal(0, std, 1)[0] # randomized convergence due to possibility of negative translation /rotation
+        Y_est = np.matmul(SE_3_est, X_back_projection)
+        v = np.zeros((N,1),dtype=matrix_data_type,order='F')
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
-        # Compute residual
-        # TODO: Optimize / Abstract this
-        for y in range(0, height, 1):
-            for x in range(0, width, 1):
-                flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                x_index = target_index_projections[0,flat_index]
-                y_index = target_index_projections[1,flat_index]
-                if not valid_measurements[flat_index]:
-                    continue
-
-                if not 0 < y_index < height or not 0 < x_index < width:
-                    valid_measurements[flat_index] = False
-                    continue
-                # A newer SE3 estimate might re-validate a sample / pixel
-                valid_measurements[flat_index] = True
-                x_target = math.floor(x_index)
-                y_target = math.floor(y_index)
-                image_warped[y,x] = frame_target.pixel_image[y_target,x_target]
-
-        # Residual Function
-        image_warped_flat = np.reshape(image_warped, (N, 1), order='F')
-        v = image_warped_flat - image_key_flat # direction of motion influences conversion
-        #v = image_key_flat - image_warped_flat
-
-        # TODO: Optimize / Abstract this
-        for y in range(0,height,1):
-            for x in range(0,width,1):
-                flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                if valid_measurements[flat_index]:
-                    v_sample = v[flat_index,0]
-                    v_sum += v_sample
+        v_sum = ImageProcessing.compute_residual(width,
+                                                 height,
+                                                 target_index_projections,
+                                                 valid_measurements,
+                                                 frame_target.pixel_image,
+                                                 frame_reference.pixel_image,
+                                                 v)
 
         Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
 
@@ -248,22 +216,16 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         Gradient_step_manager.analyze_gradient_history(it)
 
-        # TODO: Optimize / Abstract this
-        for y in range(0,height,1):
-            for x in range(0,width,1):
-                flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
-                if not valid_measurements[flat_index]:
-                    continue
-                J_image = JacobianGenerator.get_jacobian_image(frame_target.grad_x, frame_target.grad_y, x, y)
-                J_pi_element = J_pi[flat_index]
-                J_lie_element = J_lie[flat_index]
-
-                J_pi_lie = np.matmul(J_pi_element,J_lie_element)
-                J_full = np.matmul(J_image,J_pi_lie)
-                J_t = np.transpose(J_full)
-                error_vector = v[flat_index][0]
-                J_v += np.multiply(error_vector,J_t)
-                normal_matrix += np.matmul(J_t, J_full)
+        ImageProcessing.gauss_newton_step(width,
+                                          height,
+                                          valid_measurements,
+                                          J_pi,
+                                          J_lie,
+                                          frame_target.grad_x,
+                                          frame_target.grad_y,
+                                          v,
+                                          J_v,
+                                          normal_matrix)
 
         # TODO: Investigate faster inversion with QR
         try:
@@ -272,6 +234,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         except:
             print('Cant invert')
             return SE_3_est
+
         w = np.matmul(pseudo_inv, J_v)
         # Apply Step Factor
         w = Gradient_step_manager.current_alpha*w
