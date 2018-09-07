@@ -25,7 +25,7 @@ class GradientStepManager:
     def analyze_gradient_history(self, current_iteration):
 
         new_alpha = self.current_alpha
-        if current_iteration == self.gradient_monitoring_window_size:
+        if current_iteration == self.gradient_monitoring_window_size and current_iteration > 0:
             number_of_error_increases = np.sum(self.gradient_monitoring_window[0])
             if number_of_error_increases > math.floor(self.gradient_monitoring_window_size/2):
                 print('switching alpha!')

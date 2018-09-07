@@ -109,9 +109,13 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # init
     # array for twist values x, y, z, roll, pitch, yaw
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
-    R_est = np.array([[1, 0, 0],
-                      [0, 1, 0],
-                      [0, 0, 1]], dtype=matrix_data_type)
+    #R_est = np.array([[0.05233595624, -0.9986295347545, 0],
+    #                  [0.9986295347545, 0.05233595624, 0],
+    #                  [0, 0, 1]], dtype=matrix_data_type)
+    #R_est = np.array([[1, 0, 0],
+    #                  [0, 1, 0],
+    #                  [0, 0, 1]], dtype=matrix_data_type)
+    R_est = np.identity(3, dtype=matrix_data_type)
     I_3 = np.identity(3, dtype=matrix_data_type)
 
     (height,width) = frame_target.pixel_image.shape
@@ -122,11 +126,12 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = -1.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 10)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 5.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
     std = math.sqrt(0.4)
+    image_range_offset = 10
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -149,7 +154,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                        frame_target.pixel_depth,
                                        X_back_projection,
                                        valid_measurements_reference,
-                                       valid_measurements_target)
+                                       valid_measurements_target,
+                                       image_range_offset)
 
     if debug:
         # render/save image of projected, back projected points
@@ -170,7 +176,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
                                                      generator_pitch,
-                                                     generator_roll, X_back_projection, N, stacked_obs_size,coefficient=1.0)
+                                                     generator_roll, X_back_projection, N, stacked_obs_size,coefficient=2.0)
 
     # Precompute the Jacobian of the projection function
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X_back_projection)
@@ -201,12 +207,14 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                                  valid_measurements,
                                                  frame_target.pixel_image,
                                                  frame_reference.pixel_image,
-                                                 v)
+                                                 v,
+                                                 image_range_offset)
 
         Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
 
         v_mean = v_sum / number_of_valid_measurements
-        v_mean_abs = np.abs(v_mean)
+        #v_mean_abs = np.abs(v_mean)
+        v_mean_abs = v_mean
 
         Gradient_step_manager.track_gradient(v_mean_abs,it)
 
@@ -225,12 +233,16 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                           frame_target.grad_y,
                                           v,
                                           J_v,
-                                          normal_matrix)
+                                          normal_matrix,
+                                          image_range_offset)
 
         # TODO: Investigate faster inversion with QR
         try:
             pseudo_inv = linalg.inv(normal_matrix)
-            # (Q,R) = linalg.qr(normal_matrix_2)
+            #(Q,R) = linalg.qr(normal_matrix)
+            #Q_t = np.transpose(Q)
+            #R_inv = linalg.inv(R)
+            #pseudo_inv = np.multiply(R_inv,Q_t)
         except:
             print('Cant invert')
             return SE_3_est
