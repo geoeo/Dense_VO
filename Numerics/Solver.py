@@ -7,6 +7,7 @@ import Numerics.Utils as Utils
 import Numerics.JacobianGenerator as JacobianGenerator
 from Numerics.Utils import matrix_data_type
 import Numerics.ImageProcessing as ImageProcessing
+from VisualOdometry import GradientStepManager
 
 
 def solve_SE3(X, Y, max_its, eps):
@@ -121,19 +122,12 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    # Todo make this adaptive ?
-    alpha = 1.0
-    alpha_min = 0.7
-    alpha_step = 0.05
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = -1.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 10)
     index_array = np.zeros((1,2),matrix_data_type)
-    v_last_mean_abs = -1000
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
     std = math.sqrt(0.4)
-    gradient_monitoring_window_start = 3
-    gradient_monitoring_window_size = 10
-    gradient_monitoring_window = np.full((1,gradient_monitoring_window_size), False)
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -148,7 +142,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     valid_measurements_reference = np.full(N,False)
     valid_measurements_target = np.full(N,False)
 
-    #TODO: Optimize
+    #TODO: Optimize / Abstract this
     # Precompute back projection of pixels
     for y in range(0, height, 1):
         for x in range(0, width, 1):
@@ -210,7 +204,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
         # Compute residual
-        #TODO: Optimize this
+        # TODO: Optimize / Abstract this
         for y in range(0, height, 1):
             for x in range(0, width, 1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
@@ -218,15 +212,22 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                 y_index = target_index_projections[1,flat_index]
                 if not valid_measurements[flat_index]:
                     continue
+
+                if not 0 < y_index < height or not 0 < x_index < width:
+                    valid_measurements[flat_index] = False
+                    continue
+                # A newer SE3 estimate might re-validate a sample / pixel
+                valid_measurements[flat_index] = True
                 x_target = math.floor(x_index)
                 y_target = math.floor(y_index)
                 image_warped[y,x] = frame_target.pixel_image[y_target,x_target]
 
-        # Residual Funciton
+        # Residual Function
         image_warped_flat = np.reshape(image_warped, (N, 1), order='F')
         v = image_warped_flat - image_key_flat # direction of motion influences conversion
         #v = image_key_flat - image_warped_flat
 
+        # TODO: Optimize / Abstract this
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
@@ -234,34 +235,20 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                     v_sample = v[flat_index,0]
                     v_sum += v_sample
 
-        if it > gradient_monitoring_window_start:
-            v_last_mean_abs = v_mean_abs
+        Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
+
         v_mean = v_sum / number_of_valid_measurements
         v_mean_abs = np.abs(v_mean)
 
-        #TODO: Make Monitoring continuous
-        if gradient_monitoring_window_start < it < gradient_monitoring_window_start+gradient_monitoring_window_size:
-            gradient_monitoring_window[0,it-gradient_monitoring_window_start] = v_mean_abs >= v_last_mean_abs
-
-        if it == gradient_monitoring_window_size:
-            number_of_error_increases = np.sum(gradient_monitoring_window[0])
-            if number_of_error_increases > math.floor(gradient_monitoring_window_size/2):
-                print('switching alpha!')
-                alpha *= -1
-                alpha_step *= -1
-                alpha_min *= -1
-
+        Gradient_step_manager.track_gradient(v_mean_abs,it)
 
         if v_mean_abs < eps:
             print('done')
             break
 
-        if it > 0 and it % 40 == 0:
-            if math.fabs(alpha) > math.fabs(alpha_min):
-                alpha -= alpha_step
-                print('new alpha: ', alpha)
+        Gradient_step_manager.analyze_gradient_history(it)
 
-        #TODO: Optimize this
+        # TODO: Optimize / Abstract this
         for y in range(0,height,1):
             for x in range(0,width,1):
                 flat_index = Utils.matrix_to_flat_index_rows(y, x, height)
@@ -287,7 +274,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
             return SE_3_est
         w = np.matmul(pseudo_inv, J_v)
         # Apply Step Factor
-        w = alpha*w
+        w = Gradient_step_manager.current_alpha*w
 
         w_transpose = np.transpose(w)
         w_x = Utils.skew_symmetric(w[3], w[4], w[5])
