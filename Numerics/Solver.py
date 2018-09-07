@@ -126,7 +126,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 5.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 3.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
@@ -153,8 +153,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                        frame_reference.pixel_depth,
                                        frame_target.pixel_depth,
                                        X_back_projection,
-                                       valid_measurements_reference,
-                                       valid_measurements_target,
                                        image_range_offset)
 
     if debug:
@@ -182,12 +180,12 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X_back_projection)
 
     # count the number of true
-    valid_measurements_total = np.logical_and(valid_measurements_reference,valid_measurements_target)
+    #valid_measurements_total = np.logical_and(valid_measurements_reference,valid_measurements_target)
     valid_measurements = valid_measurements_reference
 
-    number_of_valid_reference = np.sum(valid_measurements_reference)
+    #number_of_valid_reference = np.sum(valid_measurements_reference)
     #number_of_valid_total = np.sum(valid_measurements_total)
-    number_of_valid_measurements = number_of_valid_reference
+    #number_of_valid_measurements = number_of_valid_reference
 
     for it in range(0, max_its, 1):
         # accumulators
@@ -210,6 +208,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                                  v,
                                                  image_range_offset)
 
+        number_of_valid_measurements = np.sum(valid_measurements_reference)
+
         Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
 
         v_mean = v_sum / number_of_valid_measurements
@@ -222,7 +222,14 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
             print('done')
             break
 
+        print('mean error:', v_mean, 'iteration: ', it)
+
         Gradient_step_manager.analyze_gradient_history(it)
+        #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
+
+        # See Kerl et al. ensures error decreases ( For pyramid levels )
+        #if(v_mean > Gradient_step_manager.last_error_mean_abs):
+            #continue
 
         ImageProcessing.gauss_newton_step(width,
                                           height,
@@ -276,8 +283,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         R_est = np.matmul(R_new, R_est)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
-        print('Runtime: mean error:', v_mean)
 
-    print('mean error:', v_mean, 'iteration: ', it)
+        #print('Runtime: mean error:', v_mean)
 
     return SE_3_est

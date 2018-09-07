@@ -10,7 +10,7 @@ class GradientStepManager:
         self.gradient_monitoring_window_start = gradient_monitoring_window_start
         self.gradient_monitoring_window_size = gradient_monitoring_window_size
         self.gradient_monitoring_window = np.full((1,gradient_monitoring_window_size), False)
-        self.last_error_mean_abs = -1000
+        self.last_error_mean_abs = -1000.0
         self.alpha_change_rate = alpha_change_rate
 
     #TODO track continuously
@@ -21,6 +21,13 @@ class GradientStepManager:
     def save_previous_mean_error(self, current_error_mean_abs, current_iteration):
         if current_iteration > self.gradient_monitoring_window_start:
             self.last_error_mean_abs = current_error_mean_abs
+
+    def analyze_gradient_history_instantly(self, current_error_mean_abs):
+        if current_error_mean_abs > self.last_error_mean_abs:
+            #self.current_alpha += self.alpha_step
+            self.current_alpha *= 0.9
+            #self.alpha_step = -1
+            print('switching alpha! new alpha: ', self.current_alpha)
 
     def analyze_gradient_history(self, current_iteration):
 
