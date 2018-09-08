@@ -1,14 +1,13 @@
 import numpy as np
 import Camera.Camera as Camera
-import Numerics.SE3 as SE3
-import Numerics.Utils as Utils
+from Numerics import SE3, Utils
 import Raytracer.Geometry as Geometry
 from math import pi, fabs
 
 
 def phong_shading(light_ws, position_ws, normal):
     view = Utils.normalize(light_ws - position_ws)
-    return Utils.fast_dot(view,normal)
+    return Utils.fast_dot(view, normal)
 
 class Scene:
     def __init__(self,x_resolution,y_resolution,spheres,camera : Camera):
@@ -27,7 +26,7 @@ class Scene:
                 ray_direction_camera_space = self.camera.camera_ray_direction_camera_space(x,y,width,height,self.fov)
                 camera_to_world = self.camera.se3_inv
                 rot = SE3.extract_rotation(camera_to_world)
-                ray_world_space = Utils.normalize(np.matmul(rot,ray_direction_camera_space))
+                ray_world_space = Utils.normalize(np.matmul(rot, ray_direction_camera_space))
                 ray = Geometry.Ray(self.camera.origin_ws[0:3],ray_world_space)
                 (b,t,sphere) = self.find_closest_intersection(ray)
                 if sphere.is_intersection_acceptable(b,t):

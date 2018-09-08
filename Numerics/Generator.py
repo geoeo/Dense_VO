@@ -1,6 +1,6 @@
 import numpy as np
 import Numerics.Utils as Utils
-from math import pi, cos, sin
+from math import cos, sin
 
 
 def generate_3d_plane(a,b,d,pointCount,sigma):
@@ -46,6 +46,6 @@ def generate_random_se3(trans_min,trans_max,sigma,yaw_range,pitch_rangle,roll_ra
 
     R = np.matmul(np.matmul(R_z,R_y),R_x)
 
-    SE3 = np.append(np.append(R,t,axis=1),Utils.homogenous_for_SE3(),axis=0)
+    SE3 = np.append(np.append(R,t,axis=1), Utils.homogenous_for_SE3(), axis=0)
 
     return SE3

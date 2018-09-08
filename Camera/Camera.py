@@ -1,7 +1,6 @@
 import numpy as np
 import Camera.Intrinsic as Intrinsic
-import Numerics.SE3 as SE3
-import Numerics.Utils as Utils
+from Numerics import SE3, Utils
 from math import tan
 import warnings
 
@@ -9,7 +8,7 @@ import warnings
 # https://referencesource.microsoft.com/#System.Numerics/System/Numerics/Matrix4x4.cs,b82966e485b5a306
 def look_at_matrix(camera_position: np.ndarray, camera_target: np.ndarray, camera_up: np.ndarray):
     z_axis = Utils.normalize(np.array(camera_position - camera_target))
-    x_axis = Utils.normalize(np.cross(camera_up,z_axis))
+    x_axis = Utils.normalize(np.cross(camera_up, z_axis))
     y_axis = np.cross(z_axis,x_axis)
 
     translation_x = -np.dot(x_axis,camera_position)
@@ -25,7 +24,7 @@ def look_at_matrix(camera_position: np.ndarray, camera_target: np.ndarray, camer
     #TODO: Make this more efficient
     mat = np.append(np.append(np.append(x_axis,y_axis,axis=1),z_axis,axis=1),translation,axis=1)
 
-    return np.append(mat,Utils.homogenous_for_SE3(),axis=0)
+    return np.append(mat, Utils.homogenous_for_SE3(), axis=0)
 
 
 def normalized_camera(x_trans,y_trans,o_x,o_y):

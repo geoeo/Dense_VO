@@ -1,8 +1,6 @@
 import numpy as np
-import Numerics.SE3 as SE3
 import Camera.Intrinsic as Intrinsic
 from Numerics.Utils import matrix_data_type
-import Numerics.Utils as Utils
 import math
 
 

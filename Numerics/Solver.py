@@ -2,12 +2,10 @@ import numpy as np
 import cv2
 import math
 from scipy import linalg
-import Numerics.Lie as Lie
-import Numerics.Utils as Utils
-import Numerics.JacobianGenerator as JacobianGenerator
-import Numerics.ImageProcessing as ImageProcessing
+from Numerics import Lie, Utils, ImageProcessing, JacobianGenerator
 from Numerics.Utils import matrix_data_type
-from VisualOdometry import GradientStepManager
+from VisualOdometry import  GradientStepManager
+from VisualOdometry import  GaussNewtonRoutines
 
 
 def solve_SE3(X, Y, max_its, eps):
@@ -142,12 +140,12 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     generator_pitch = Lie.generator_pitch_3_4()
     generator_yaw = Lie.generator_yaw_3_4()
 
-    X_back_projection = np.ones((4, N),Utils.matrix_data_type)
+    X_back_projection = np.ones((4, N), Utils.matrix_data_type)
     valid_measurements_reference = np.full(N,False)
     valid_measurements_target = np.full(N,False)
 
     # Precompute back projection of pixels
-    ImageProcessing.back_project_image(width,
+    GaussNewtonRoutines.back_project_image(width,
                                        height,
                                        frame_reference.camera,
                                        frame_reference.pixel_depth,
@@ -173,8 +171,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
-                                                     generator_pitch,
-                                                     generator_roll, X_back_projection, N, stacked_obs_size,coefficient=2.0)
+                                                generator_pitch,
+                                                generator_roll, X_back_projection, N, stacked_obs_size, coefficient=2.0)
 
     # Precompute the Jacobian of the projection function
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X_back_projection)
@@ -199,7 +197,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
-        v_sum = ImageProcessing.compute_residual(width,
+        v_sum = GaussNewtonRoutines.compute_residual(width,
                                                  height,
                                                  target_index_projections,
                                                  valid_measurements,
@@ -231,7 +229,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         #if(v_mean > Gradient_step_manager.last_error_mean_abs):
             #continue
 
-        ImageProcessing.gauss_newton_step(width,
+        GaussNewtonRoutines.gauss_newton_step(width,
                                           height,
                                           valid_measurements,
                                           J_pi,

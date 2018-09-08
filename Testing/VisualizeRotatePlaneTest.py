@@ -3,12 +3,12 @@ import Visualization.Plot3D as Plot3D
 import numpy as np
 import Numerics.Utils as NumUtils
 
-(X,Y,Z) = Generator.generate_3d_plane(1,1,-30,20,4)
+(X,Y,Z) = Generator.generate_3d_plane(1, 1, -30, 20, 4)
 H = np.repeat(1,20)
 
 points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
-SE3 = Generator.generate_random_se3(-1,1,4)
+SE3 = Generator.generate_random_se3(-1, 1, 4)
 
 rotated_points = np.matmul(SE3,points)
 

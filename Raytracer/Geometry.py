@@ -36,8 +36,8 @@ class Sphere:
     def intersections(self,ray : Ray ):
         center_to_ray = ray.origin - self.origin
         # A is always 1 since vectors are normalized
-        B = 2.0 * Utils.fast_dot(center_to_ray,ray.direction)
-        center_to_ray_dot = Utils.fast_dot(center_to_ray,center_to_ray)
+        B = 2.0 * Utils.fast_dot(center_to_ray, ray.direction)
+        center_to_ray_dot = Utils.fast_dot(center_to_ray, center_to_ray)
         C = center_to_ray_dot - self.radius**2.0
         discriminant = (B**2.0) - 4.0*C
         if discriminant < 0:

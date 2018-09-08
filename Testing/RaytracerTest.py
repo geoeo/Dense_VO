@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
-import Numerics.ImageProcessing as ImageProcessing
-import Numerics.Generator as Generator
+from Numerics import Generator, ImageProcessing
 import Raytracer.Scene as Scene
 import Raytracer.Geometry as Geometry
 import Camera.Camera as Camera
@@ -19,7 +18,7 @@ import Visualization.Plot3D as Plot3D
 #cv2.imwrite("grayscale.png",grayscale_image)
 
 N = 20
-(X,Y,Z) = Generator.generate_3d_plane(1,1,-30,N,4)
+(X,Y,Z) = Generator.generate_3d_plane(1, 1, -30, N, 4)
 H = np.repeat(1,N)
 image_width = 320
 image_height = 320
@@ -29,7 +28,7 @@ points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 spheres = Geometry.generate_spheres(points)
 
 camera = Camera.normalized_camera(0,0,image_width/2,image_height/2)
-camera_translated = Camera.normalized_camera(0,0.5,image_width/2,image_height/2)
+camera_translated = Camera.normalized_camera(5,0,image_width/2,image_height/2)
 
 ##############
 

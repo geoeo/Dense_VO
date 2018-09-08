@@ -23,8 +23,8 @@ class Frame:
         self.camera = camera
         if compute_gradients:
             #https://docs.opencv.org/3.4.1/d5/d0f/tutorial_py_gradients.html
-            self.grad_x = np.absolute(cv2.Sobel(pixel_image,Utils.image_data_type_open_cv,1,0))
-            self.grad_y = np.absolute(cv2.Sobel(pixel_image,Utils.image_data_type_open_cv,0,1))
+            self.grad_x = np.absolute(cv2.Sobel(pixel_image, Utils.image_data_type_open_cv, 1, 0))
+            self.grad_y = np.absolute(cv2.Sobel(pixel_image, Utils.image_data_type_open_cv, 0, 1))
 
     def scale_frame_by(self,scale_factor):
         self.pixel_image = cv2.resize(self.pixel_image, (0, 0), fx=scale_factor, fy=scale_factor)

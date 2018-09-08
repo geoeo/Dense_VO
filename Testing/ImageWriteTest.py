@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import Numerics.ImageProcessing as ImageProcessing
+import Numerics as ImageProcessing
 
 gray_scale = np.zeros((320,640),dtype=np.float64)
 

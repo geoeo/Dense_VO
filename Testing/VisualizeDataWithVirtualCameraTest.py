@@ -2,20 +2,18 @@ import Numerics.Generator as Generator
 import Visualization.Plot3D as Plot3D
 import numpy as np
 import Numerics.Utils as Utils
-import Numerics.Solver as Solver
 import Camera.Camera as Camera
-from Camera.Intrinsic import Intrinsic
 from math import pi
 
 
 N = 20
 
-(X,Y,Z) = Generator.generate_3d_plane(1,1,-30,N,4)
+(X,Y,Z) = Generator.generate_3d_plane(1, 1, -30, N, 4)
 H = np.repeat(1,N)
 
 points = np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
-SE3 = Generator.generate_random_se3(-5,5,pi/18,pi/10,0,pi/10)
+SE3 = Generator.generate_random_se3(-5, 5, pi / 18, pi / 10, 0, pi / 10)
 
 perturbed_points_gt = np.matmul(SE3, points)
 

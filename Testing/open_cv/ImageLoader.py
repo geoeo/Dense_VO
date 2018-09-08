@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import Numerics.ImageProcessing as ImageProcessing
+import Numerics as ImageProcessing
 
 im_greyscale = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_XTrans/image_1.png',0)
 

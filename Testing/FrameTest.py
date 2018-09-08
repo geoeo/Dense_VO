@@ -14,7 +14,7 @@ class TestFrameMethods(unittest.TestCase):
         cls.pixels_uint8 = np.array([[1, 2], [3, 4]]).astype(np.uint8)
         cls.pixels_float32 = np.array([[1, 2], [3, 4]]).astype(Utils.image_data_type)
         cls.depth_float32 = np.array([[0.1, 0.5], [1, 2]]).astype(Utils.image_data_type)
-        cls.se3_identity = np.identity(4,dtype=Utils.matrix_data_type)
+        cls.se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
         cls.intrinsic_identity = Intrinsic.Intrinsic(-1,-1,0,0)
         cls.camera_identity = Camera.Camera(cls.intrinsic_identity,cls.se3_identity)
 
