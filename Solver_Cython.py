@@ -5,11 +5,15 @@ from scipy import linalg
 from Numerics import Lie, Utils, ImageProcessing, JacobianGenerator
 from Numerics.Utils import matrix_data_type
 from VisualOdometry import GradientStepManager
-import GaussNewtonRoutines_Cython
+import time
+from VisualOdometry import GaussNewtonRoutines
+import GaussNewtonRoutines_Cython # .so file - will be linked dynamically
+
 
 def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False):
     # init
     # array for twist values x, y, z, roll, pitch, yaw
+    #t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
     #R_est = np.array([[0.05233595624, -0.9986295347545, 0],
     #                  [0.9986295347545, 0.05233595624, 0],
@@ -28,7 +32,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 3.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 1.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
@@ -89,11 +93,13 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     #number_of_valid_total = np.sum(valid_measurements_total)
     #number_of_valid_measurements = number_of_valid_reference
 
+
     for it in range(0, max_its, 1):
+        start = time.time()
         # accumulators
         #TODO: investigate preallocate and clear in a for loop
-        J_v = np.zeros((twist_size, 1))
-        normal_matrix = np.zeros((twist_size, twist_size))
+        J_v = np.zeros((twist_size, 1), dtype=np.float64)
+        normal_matrix = np.zeros((twist_size, twist_size), dtype=np.float64)
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X_back_projection)
@@ -124,8 +130,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
             print('done')
             break
 
-        print('mean error:', v_mean, 'iteration: ', it)
-
         Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
@@ -133,7 +137,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         #if(v_mean > Gradient_step_manager.last_error_mean_abs):
             #continue
 
-        GaussNewtonRoutines_Cython.gauss_newton_step(width,
+        GaussNewtonRoutines.gauss_newton_step(width,
                                           height,
                                           valid_measurements,
                                           J_pi,
@@ -185,7 +189,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         R_est = np.matmul(R_new, R_est)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
-
-        #print('Runtime: mean error:', v_mean)
+        end = time.time()
+        print('mean error:', v_mean, 'iteration: ', it, 'runtime: ', end-start)
+        #print('Runtime for one iteration:', end-start)
 
     return SE_3_est

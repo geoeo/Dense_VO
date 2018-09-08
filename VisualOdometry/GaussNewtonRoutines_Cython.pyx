@@ -1,10 +1,12 @@
 import math
 import numpy as np
+import time
 
 def hello_world():
     return "Hello World!"
 
-matrix_data_type = np.float32
+#matrix_data_type = np.float32
+matrix_data_type = np.cfloat
 
 def matrix_to_flat_index_rows(y,x,rows):
     return rows*x+y
@@ -15,8 +17,14 @@ def get_jacobian_image(image_g_x,image_g_y,x,y):
     jacobian_image[0,1] = image_g_y[y,x]
     return jacobian_image
 
-def back_project_image(width, height, reference_camera, reference_depth_image, target_depth_image, X_back_projection,
-                       image_range_offset):
+def back_project_image(int width, int height, reference_camera, float[:, :] reference_depth_image, float[:, :] target_depth_image, X_back_projection,
+                       int image_range_offset):
+
+
+    # Py_ssize_t is the proper C type for Python array indices.
+    cdef Py_ssize_t x, y
+
+    start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
@@ -24,11 +32,19 @@ def back_project_image(width, height, reference_camera, reference_depth_image, t
             #depth_target = target_depth_image[y, x]
             if depth_ref == 0:
                 depth_ref = 1000
-            X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x, y, depth_ref)[:, 0]
+            X = reference_camera.back_project_pixel(x, y, depth_ref)[:, 0]
+            X_back_projection[0:3, flat_index] = X
+    end = time.time()
+    #print('Runtime for Back Project Image:', end-start)
 
 
-def compute_residual(width, height, target_index_projections, valid_measurements, target_image, reference_image, v, image_range_offset):
-    v_sum = 0
+def compute_residual(int width, int height, double[:,:] target_index_projections, valid_measurements, double[:,:] target_image, double[:,:] reference_image, float[:,:] v, int image_range_offset):
+    cdef int v_sum = 0
+
+    # Py_ssize_t is the proper C type for Python array indices.
+    cdef Py_ssize_t x, y
+
+    start = time.time()
     for y in range(image_range_offset, height-image_range_offset, 1):
         for x in range(image_range_offset, width-image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
@@ -51,11 +67,17 @@ def compute_residual(width, height, target_index_projections, valid_measurements
     # If the estimate is so bad that all measurements are invalid
     if v_sum == 0:
         v_sum = -1000
+
+    end = time.time()
+    #print('Runtime for Compute Residual:', end-start)
     return v_sum
 
 
-def gauss_newton_step(width, height, valid_measurements, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
-                      J_v_return, normal_matrix_return, image_range_offset):
+# Doesnt work
+def gauss_newton_step(width, height, valid_measurements, J_pi, J_lie, target_image_grad_x,target_image_grad_y, v,
+                     J_v_return, normal_matrix_return, int image_range_offset):
+
+    start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
@@ -69,5 +91,9 @@ def gauss_newton_step(width, height, valid_measurements, J_pi, J_lie, target_ima
             J_full = np.matmul(J_image, J_pi_lie)
             J_t = np.transpose(J_full)
             error_vector = v[flat_index][0]
-            J_v_return += np.multiply(error_vector, -J_t)
-            normal_matrix_return += np.matmul(J_t, J_full)
+            res = np.multiply(error_vector, -J_t)
+            J_v_return = np.add(J_v_return,res)
+            res_2 = np.matmul(J_t, J_full)
+            normal_matrix_return = np.add(normal_matrix_return,res_2)
+    end = time.time()
+    #print('Runtime Gauss Newton Step:', end-start)

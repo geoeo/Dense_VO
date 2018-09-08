@@ -6,7 +6,7 @@ from Numerics import Lie, Utils, ImageProcessing, JacobianGenerator
 from Numerics.Utils import matrix_data_type
 from VisualOdometry import GradientStepManager
 from VisualOdometry import GaussNewtonRoutines
-import GaussNewtonRoutines_Cython
+import time
 
 
 
@@ -126,7 +126,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 3.0, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 0.125, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
@@ -147,15 +147,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     valid_measurements_target = np.full(N,False)
 
     # Precompute back projection of pixels
-    #GaussNewtonRoutines.back_project_image(width,
-    #                                   height,
-    #                                   frame_reference.camera,
-    #                                   frame_reference.pixel_depth,
-    #                                   frame_target.pixel_depth,
-    #                                   X_back_projection,
-    #                                   image_range_offset)
-
-    GaussNewtonRoutines_Cython.back_project_image(width,
+    GaussNewtonRoutines.back_project_image(width,
                                        height,
                                        frame_reference.camera,
                                        frame_reference.pixel_depth,
@@ -196,6 +188,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     #number_of_valid_measurements = number_of_valid_reference
 
     for it in range(0, max_its, 1):
+        start = time.time()
         # accumulators
         #TODO: investigate preallocate and clear in a for loop
         J_v = np.zeros((twist_size, 1))
@@ -207,16 +200,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
-        #v_sum = GaussNewtonRoutines.compute_residual(width,
-        #                                         height,
-        #                                         target_index_projections,
-        #                                         valid_measurements,
-        #                                         frame_target.pixel_image,
-        #                                         frame_reference.pixel_image,
-        #                                         v,
-        #                                         image_range_offset)
-
-        v_sum = GaussNewtonRoutines_Cython.compute_residual(width,
+        v_sum = GaussNewtonRoutines.compute_residual(width,
                                                  height,
                                                  target_index_projections,
                                                  valid_measurements,
@@ -236,10 +220,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         Gradient_step_manager.track_gradient(v_mean_abs,it)
 
         if v_mean_abs < eps:
-            print('done')
+            print('done, mean error:', v_mean)
             break
-
-        print('mean error:', v_mean, 'iteration: ', it)
 
         Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
@@ -248,19 +230,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         #if(v_mean > Gradient_step_manager.last_error_mean_abs):
             #continue
 
-        #GaussNewtonRoutines.gauss_newton_step(width,
-        #                                  height,
-        #                                  valid_measurements,
-        #                                  J_pi,
-        #                                  J_lie,
-        #                                  frame_target.grad_x,
-        #                                  frame_target.grad_y,
-        #                                  v,
-        #                                  J_v,
-        #                                  normal_matrix,
-        #                                  image_range_offset)
-
-        GaussNewtonRoutines_Cython.gauss_newton_step(width,
+        GaussNewtonRoutines.gauss_newton_step(width,
                                           height,
                                           valid_measurements,
                                           J_pi,
@@ -312,7 +282,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         R_est = np.matmul(R_new, R_est)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
-
-        #print('Runtime: mean error:', v_mean)
+        end = time.time()
+        print('mean error:', v_mean, 'iteration: ', it, 'runtime: ', end-start)
 
     return SE_3_est

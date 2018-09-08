@@ -2,10 +2,12 @@ import math
 from Numerics.Utils import matrix_to_flat_index_rows
 from Numerics.JacobianGenerator import get_jacobian_image
 import numpy as np
+import time
 
 
 def back_project_image(width, height, reference_camera, reference_depth_image, target_depth_image, X_back_projection,
                        image_range_offset):
+    start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
@@ -13,11 +15,15 @@ def back_project_image(width, height, reference_camera, reference_depth_image, t
             #depth_target = target_depth_image[y, x]
             if depth_ref == 0:
                 depth_ref = 1000
-            X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x, y, depth_ref)[:, 0]
+            # back projection from ndc seems to give better convergence
+            X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x/width, y/height, depth_ref)[:, 0]
+    end = time.time()
+    #print('Runtime for Back Project Image:', end - start)
 
 
 def compute_residual(width, height, target_index_projections, valid_measurements, target_image, reference_image, v, image_range_offset):
     v_sum = 0
+    start = time.time()
     for y in range(image_range_offset, height-image_range_offset, 1):
         for x in range(image_range_offset, width-image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
@@ -40,11 +46,15 @@ def compute_residual(width, height, target_index_projections, valid_measurements
     # If the estimate is so bad that all measurements are invalid
     if v_sum == 0:
         v_sum = -1000
+
+    end = time.time()
+    #print('Runtime for Compute Residual:', end-start)
     return v_sum
 
 
 def gauss_newton_step(width, height, valid_measurements, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
                       J_v_return, normal_matrix_return, image_range_offset):
+    start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
@@ -60,3 +70,5 @@ def gauss_newton_step(width, height, valid_measurements, J_pi, J_lie, target_ima
             error_vector = v[flat_index][0]
             J_v_return += np.multiply(error_vector, -J_t)
             normal_matrix_return += np.matmul(J_t, J_full)
+    end = time.time()
+    #print('Runtime Gauss Newton Step:', end-start)
