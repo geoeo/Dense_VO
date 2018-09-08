@@ -1,9 +1,9 @@
 import numpy as np
 import cv2
-import Numerics.Utils as Utils
+from Numerics import Utils
 import Camera.Intrinsic as Intrinsic
 import Camera.Camera as Camera
-import VisualOdometry.Solver as Solver
+import  Solver_Cython
 from VisualOdometry import Frame
 from Numerics import ImageProcessing
 
@@ -53,7 +53,7 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference, depth_reference, camera_reference, False)
 frame_target = Frame.Frame(im_greyscale_target, depth_target, camera_target, True)
 
-SE3_est = Solver.solve_photometric(frame_reference, frame_target, 20000, 0.5, debug = False)
+SE3_est = Solver_Cython.solve_photometric(frame_reference, frame_target, 20000, 0.5, debug = False)
 
 print(SE3_est)
 

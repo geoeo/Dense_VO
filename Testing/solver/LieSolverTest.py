@@ -2,7 +2,7 @@ import Numerics.Generator as Generator
 import Visualization.Plot3D as Plot3D
 import numpy as np
 import Numerics.Utils as NumUtils
-import Numerics.Solver as Solver
+import VisualOdometry.Solver as Solver
 from math import pi
 
 N = 100

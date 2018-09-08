@@ -3,12 +3,12 @@ import shutil
 from subprocess import check_call, call
 
 try:
-    os.remove('GaussNewtonRoutines_Cython.c')
+    os.remove('VisualOdometry/GaussNewtonRoutines_Cython.c')
 except OSError:
     pass
 
 try:
-    os.remove('GaussNewtonRoutines_Cython.so')
+    os.remove('VisualOdometry/GaussNewtonRoutines_Cython.so')
 except OSError:
     pass
 
