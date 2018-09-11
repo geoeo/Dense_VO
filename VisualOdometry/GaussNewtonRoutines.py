@@ -5,17 +5,17 @@ import numpy as np
 import time
 
 
-def back_project_image(width, height, reference_camera, reference_depth_image, target_depth_image, X_back_projection,
+def back_project_image(width, height, reference_camera, reference_depth_image, X_back_projection,
                        image_range_offset):
     start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
             depth_ref = reference_depth_image[y, x]
-            #depth_target = target_depth_image[y, x]
             if depth_ref == 0:
                 depth_ref = 1000
             # back projection from ndc seems to give better convergence
+            #X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x, y, depth_ref)[:, 0]
             X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x/width, y/height, depth_ref)[:, 0]
     end = time.time()
     #print('Runtime for Back Project Image:', end - start)

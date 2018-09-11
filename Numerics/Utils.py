@@ -1,11 +1,12 @@
 import numpy as np
 import cv2
+import math
 
 #TODO: Refactor this into declarations
 matrix_data_type = np.float32
 image_data_type = np.float64
 image_data_type_open_cv = cv2.CV_64F
-depth_data_type = np.float32
+depth_data_type = np.float16
 
 
 def points_into_components(points):
@@ -72,4 +73,7 @@ def flat_index_to_2d_rows(index,rows,cols,return_container: np.ndarray):
 
 def matrix_to_flat_index_rows(y,x,rows):
     return rows*x+y
+
+def radians_to_degrees(rad):
+    return (180.0/math.pi) * rad
 

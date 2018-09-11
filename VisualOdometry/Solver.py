@@ -109,11 +109,8 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # init
     # array for twist values x, y, z, roll, pitch, yaw
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
-    #R_est = np.array([[0.05233595624, -0.9986295347545, 0],
-    #                  [0.9986295347545, 0.05233595624, 0],
-    #                  [0, 0, 1]], dtype=matrix_data_type)
-    #R_est = np.array([[1, 0, 0],
-    #                  [0, 1, 0],
+    #R_est = np.array([[0.0, -1.0, 0],
+    #                  [1.0, 0.0, 0],
     #                  [0, 0, 1]], dtype=matrix_data_type)
     R_est = np.identity(3, dtype=matrix_data_type)
     I_3 = np.identity(3, dtype=matrix_data_type)
@@ -126,14 +123,19 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 0.125, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 0.01, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
     std = math.sqrt(0.4)
     image_range_offset = 10
+    #depth_factor = 1.0
+    #depth_factor = 1000 # 0.001 # ZR300
+
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
+    SE_3_est_orig = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
+    SE_3_est_last_valid = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
     generator_x = Lie.generator_x_3_4()
     generator_y = Lie.generator_y_3_4()
@@ -143,7 +145,9 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     generator_yaw = Lie.generator_yaw_3_4()
 
     X_back_projection = np.ones((4, N), Utils.matrix_data_type)
+    X_back_projection_last_valid = np.ones((4, N), Utils.matrix_data_type)
     valid_measurements_reference = np.full(N,False)
+    valid_measurements_last = np.full(N,False)
     valid_measurements_target = np.full(N,False)
 
     # Precompute back projection of pixels
@@ -151,7 +155,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                        height,
                                        frame_reference.camera,
                                        frame_reference.pixel_depth,
-                                       frame_target.pixel_depth,
                                        X_back_projection,
                                        image_range_offset)
 
@@ -215,11 +218,21 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         v_mean = v_sum / number_of_valid_measurements
         #v_mean_abs = np.abs(v_mean)
-        v_mean_abs = v_mean
+        #v_mean_abs = v_mean
+
+        # TODO put this in gradient step manager
+        #if number_of_valid_measurements/N < 0.8:
+        #    print('Too many pixels are marked invalid')
+        #    Gradient_step_manager.current_alpha+=0.1
+        #    SE_3_est = SE_3_est_last_valid
+        #    valid_measurements = valid_measurements_last
+        #else:
+        #    SE_3_est_last_valid = SE_3_est
+        #    valid_measurements_last = valid_measurements
 
         Gradient_step_manager.track_gradient(v_mean_abs,it)
 
-        if v_mean_abs < eps:
+        if v_mean < eps:
             print('done, mean error:', v_mean)
             break
 

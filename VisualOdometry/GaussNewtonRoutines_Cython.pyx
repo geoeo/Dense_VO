@@ -32,7 +32,7 @@ def back_project_image(int width, int height, reference_camera, float[:, :] refe
             #depth_target = target_depth_image[y, x]
             if depth_ref == 0:
                 depth_ref = 1000
-            X = reference_camera.back_project_pixel(x, y, depth_ref)[:, 0]
+            X = reference_camera.back_project_pixel(x/width, y/height, depth_ref)[:, 0]
             X_back_projection[0:3, flat_index] = X
     end = time.time()
     #print('Runtime for Back Project Image:', end-start)
