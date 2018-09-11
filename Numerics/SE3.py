@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from Numerics.Utils import matrix_data_type
 
 
 def extract_rotation(se3 : np.ndarray):
@@ -53,3 +54,92 @@ def rotationMatrixToEulerAngles(R):
         z = 0
 
     return np.array([x, y, z])
+
+def makeS03(roll_rad,pitch_rad,yaw_rad):
+    R_x = np.identity(3)
+    R_y = np.identity(3)
+    R_z = np.identity(3)
+
+    R_x[1,1] = math.cos(roll_rad)
+    R_x[1,2] = -math.sin(roll_rad)
+    R_x[2,1] = math.sin(roll_rad)
+    R_x[2,2] = math.cos(roll_rad)
+
+    R_y[0,0] = math.cos(pitch_rad)
+    R_y[0,2] = math.sin(pitch_rad)
+    R_y[2,0] = -math.sin(pitch_rad)
+    R_y[2,2] = math.cos(pitch_rad)
+
+    R_z[0,0] = math.cos(yaw_rad)
+    R_z[0,1] = -math.sin(yaw_rad)
+    R_z[1,0] = math.sin(yaw_rad)
+    R_z[1,1] = math.cos(yaw_rad)
+
+    S03 = np.matmul(R_z,np.matmul(R_y,R_x))
+
+    return S03
+
+#https: // en.wikipedia.org / wiki / Conversion_between_quaternions_and_Euler_angles
+def Quaternion_toEulerianRadians(x_raw, y_raw, z_raw, w_raw):
+
+    #n =  math.sqrt(x_raw*x_raw+y_raw*y_raw+z_raw*z_raw+w_raw*w_raw)
+    x = x_raw
+    y = y_raw
+    z = z_raw
+    w = w_raw
+
+    ysqr = y * y
+
+    t0 = +2.0 * (w * x + y * z)
+    t1 = +1.0 - 2.0 * (x * x + ysqr)
+    X = math.atan2(t0, t1)
+
+    t2 = +2.0 * (w * y - z * x)
+    t2 = 1 if t2 > 1 else t2
+    t2 = -1 if t2 < -1 else t2
+    Y = math.asin(t2)
+
+    t3 = +2.0 * (w * z + x * y)
+    t4 = +1.0 - 2.0 * (ysqr + z * z)
+    Z = math.atan2(t3, t4)
+
+    return X, Y, Z
+
+'''Returns 4x4 SE3 Matrix'''
+'''Source will become new origin of coordiante system'''
+def pose_pose_composition_inverse(self, SE3_source, SE3_target):
+
+    R_source = SE3_source[0:3,0:3]
+    R_target = SE3_target[0:3,0:3]
+
+    x_source = SE3_source[0,3]
+    y_source = SE3_source[1,3]
+    z_source = SE3_source[2,3]
+
+    x_target = SE3_target[0,3]
+    y_target = SE3_target[1,3]
+    z_target = SE3_target[2,3]
+
+    R_source_inv = np.transpose(R_source)
+    #R_target_inv = np.transpose(R_target)
+
+    translation_source = np.array([[0],[0],[0]],matrix_data_type)
+    translation_source[0,0] = x_source
+    translation_source[1,0] = y_source
+    translation_source[2,0] = z_source
+
+    translation_target = np.array([[0],[0],[0]],matrix_data_type)
+    translation_target[0,0] = x_target
+    translation_target[1,0] = y_target
+    translation_target[2,0] = z_target
+
+    translation_source_target = translation_target - translation_source
+    translation_source_target_prime = np.matmul(R_source_inv,translation_source_target)
+
+    R_origin_target = np.matmul(R_source_inv,R_target)
+
+    se3_source_target = np.identity(4,matrix_data_type)
+    se3_source_target[3,0:3] = translation_source_target_prime
+    se3_source_target[0:3,0:3] = R_origin_target[0:3,0:3]
+
+    return se3_source_target

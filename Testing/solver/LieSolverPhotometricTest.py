@@ -10,7 +10,7 @@ from Numerics import SE3
 
 # TODO use raw depth values
 
-#im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square_Y.png',cv2.IMREAD_GRAYSCALE)
+im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square_Y.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square_negative.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth/image_25.png',cv2.IMREAD_GRAYSCALE)
@@ -24,12 +24,12 @@ from Numerics import SE3
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_3/image_17.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_40.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_40.png',cv2.IMREAD_GRAYSCALE)
-im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_126.png',cv2.IMREAD_GRAYSCALE)
+#im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_126.png',cv2.IMREAD_GRAYSCALE)
 
 im_greyscale_reference = ImageProcessing.z_standardise(im_greyscale_reference)
 
 
-#im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated_fov_90_square_Y.png',cv2.IMREAD_GRAYSCALE)
+im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated_fov_90_square_Y.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated_fov_90_square.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_left_90_fov_90_square.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_translated_fov_90_square_negative.png',cv2.IMREAD_GRAYSCALE)
@@ -43,16 +43,15 @@ im_greyscale_reference = ImageProcessing.z_standardise(im_greyscale_reference)
 #im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_2/image_19.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_3/image_19.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_41.png',cv2.IMREAD_GRAYSCALE)
-im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_127.png',cv2.IMREAD_GRAYSCALE)
+#im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_127.png',cv2.IMREAD_GRAYSCALE)
 
 im_greyscale_target = ImageProcessing.z_standardise(im_greyscale_target)
 
-#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square_Y.png',cv2.IMREAD_ANYDEPTH).astype(
-#    Utils.depth_data_type)
+depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square_Y.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square_negative.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth/image_depth_25.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
-#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth/image_depth_25.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
+#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/ Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth/image_depth_25.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Rot_Z/image_depth_25.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Rot_Z_Carpet/image_depth_80.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_XTrans_Rectified/image_depth_70.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
@@ -62,11 +61,10 @@ im_greyscale_target = ImageProcessing.z_standardise(im_greyscale_target)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_3/image_depth_aligned_17.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_40.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_depth_aligned_40.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
-depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_126.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
+#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_126.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = ImageProcessing.z_standardise(depth_reference)
 
-#depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square_Y.png',cv2.IMREAD_ANYDEPTH).astype(
-#    Utils.depth_data_type)
+depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square_Y.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_left_90_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square_negative.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
@@ -81,7 +79,7 @@ depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Reso
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_3/image_depth_aligned_19.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_41.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_depth_aligned_41.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
-depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_127.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
+#depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_127.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_target = ImageProcessing.z_standardise(depth_target)
 
 (image_height,image_width) = im_greyscale_reference.shape
