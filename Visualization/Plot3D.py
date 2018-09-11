@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from Numerics import  ImageProcessing
+import numpy as np
+import cv2
+
 
 def scatter_plot(X,Y,Z):
     fig = plt.figure()
@@ -57,3 +61,19 @@ def scatter_plot_sub(plot_1,plot_2,labels_1,labels_2):
 
 
     plt.show()
+
+def save_projection_of_back_projected(height,width,frame_reference,X_back_projection):
+    N = width*height
+    # render/save image of projected, back projected points
+    projected_back_projected = frame_reference.camera.apply_perspective_pipeline(X_back_projection)
+    # scale ndc if applicable
+    #projected_back_projected[0,:] = projected_back_projected[0,:]*width
+    #projected_back_projected[1,:] = projected_back_projected[1,:]*height
+    debug_buffer = np.zeros((height,width), dtype=np.float64)
+    for i in range(0,N,1):
+        u = projected_back_projected[0,i]
+        v = projected_back_projected[1,i]
+
+        if not np.isnan(u) and not np.isnan(v):
+            debug_buffer[int(v),int(u)] = 1.0
+    cv2.imwrite("debug_buffer.png", ImageProcessing.normalize_to_image_space(debug_buffer))

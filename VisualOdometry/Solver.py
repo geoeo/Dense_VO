@@ -6,6 +6,7 @@ from Numerics import Lie, Utils, ImageProcessing, JacobianGenerator
 from Numerics.Utils import matrix_data_type
 from VisualOdometry import GradientStepManager
 from VisualOdometry import GaussNewtonRoutines
+from Visualization import Plot3D
 import time
 
 
@@ -123,7 +124,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 0.01, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 0.1, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
@@ -159,20 +160,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                        image_range_offset)
 
     if debug:
-        # render/save image of projected, back projected points
-        projected_back_projected = frame_reference.camera.apply_perspective_pipeline(X_back_projection)
-        # scale ndc if applicable
-        #projected_back_projected[0,:] = projected_back_projected[0,:]*width
-        #projected_back_projected[1,:] = projected_back_projected[1,:]*height
-        debug_buffer = np.zeros((height,width), dtype=np.float64)
-        for i in range(0,N,1):
-            u = projected_back_projected[0,i]
-            v = projected_back_projected[1,i]
-
-            if not np.isnan(u) and not np.isnan(v):
-                debug_buffer[int(v),int(u)] = 1.0
-        cv2.imwrite("debug_buffer.png", ImageProcessing.normalize_to_image_space(debug_buffer))
-
+        Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)
 
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
@@ -217,11 +205,12 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
         Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
 
         v_mean = v_sum / number_of_valid_measurements
+        valid_pixel_ratio = number_of_valid_measurements/N
         #v_mean_abs = np.abs(v_mean)
         #v_mean_abs = v_mean
 
         # TODO put this in gradient step manager
-        #if number_of_valid_measurements/N < 0.8:
+        #if valid_pixel_ratio< 0.8:
         #    print('Too many pixels are marked invalid')
         #    Gradient_step_manager.current_alpha+=0.1
         #    SE_3_est = SE_3_est_last_valid
@@ -296,6 +285,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
-        print('mean error:', v_mean, 'iteration: ', it, 'runtime: ', end-start)
+        print('mean error:', v_mean, 'iteration: ', it,'valid pixel ratio: ',valid_pixel_ratio, 'runtime: ', end-start)
 
     return SE_3_est
