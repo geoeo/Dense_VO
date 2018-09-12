@@ -106,7 +106,7 @@ def solve_SE3(X, Y, max_its, eps):
     return SE_3_est
 
 
-def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False):
+def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, use_ndc = False, debug = False):
     # init
     # array for twist values x, y, z, roll, pitch, yaw
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
@@ -124,7 +124,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = 0.1, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
@@ -155,11 +155,12 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     # Precompute back projection of pixels
     GaussNewtonRoutines.back_project_image(width,
                                        height,
+                                       image_range_offset,
                                        frame_reference.camera,
                                        frame_reference.pixel_depth,
                                        X_back_projection,
                                        valid_measurements,
-                                       image_range_offset)
+                                       use_ndc)
 
     if debug:
         Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)

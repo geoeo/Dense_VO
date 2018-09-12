@@ -70,7 +70,7 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
         v13 = 0
         v23 = 0
 
-        if z != 0:
+        if z != 0.0:
             f_x = intrinsics.extract_fx()
             f_y = intrinsics.extract_fy()
             z_sqrd = math.pow(z,2)

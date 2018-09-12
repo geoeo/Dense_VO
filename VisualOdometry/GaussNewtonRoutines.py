@@ -5,8 +5,8 @@ import numpy as np
 import time
 
 
-def back_project_image(width, height, reference_camera, reference_depth_image, X_back_projection,
-                       valid_measurements, image_range_offset):
+def back_project_image(width, height, image_range_offset, reference_camera, reference_depth_image, X_back_projection,
+                       valid_measurements, use_ndc ):
     start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
@@ -17,8 +17,14 @@ def back_project_image(width, height, reference_camera, reference_depth_image, X
                 depth_ref = 1000
                 valid_measurements[flat_index] = False
             # back projection from ndc seems to give better convergence
+            x_back = x
+            y_back = y
+            if use_ndc:
+                x_back /= width
+                y_back /= height
+
             #X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x, y, depth_ref)[:, 0]
-            X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x/width, y/height, depth_ref)[:, 0]
+            X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x_back, y_back, depth_ref)[:, 0]
     end = time.time()
     #print('Runtime for Back Project Image:', end - start)
 
