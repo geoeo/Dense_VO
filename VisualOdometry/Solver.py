@@ -150,6 +150,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
     valid_measurements_reference = np.full(N,False)
     valid_measurements_last = np.full(N,False)
     valid_measurements_target = np.full(N,False)
+    valid_measurements = valid_measurements_reference
 
     # Precompute back projection of pixels
     GaussNewtonRoutines.back_project_image(width,
@@ -157,6 +158,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
                                        frame_reference.camera,
                                        frame_reference.pixel_depth,
                                        X_back_projection,
+                                       valid_measurements,
                                        image_range_offset)
 
     if debug:
@@ -172,7 +174,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, debug = False
 
     # count the number of true
     #valid_measurements_total = np.logical_and(valid_measurements_reference,valid_measurements_target)
-    valid_measurements = valid_measurements_reference
 
     #number_of_valid_reference = np.sum(valid_measurements_reference)
     #number_of_valid_total = np.sum(valid_measurements_total)

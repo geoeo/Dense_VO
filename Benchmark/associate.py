@@ -46,6 +46,52 @@ import os
 import numpy
 
 
+offset_default = 0.0
+max_difference_default = 0.02
+
+def return_rgb_depth_from_rgb_selection(rgb_text_filepath, depth_text_filepath, match_text_filepath,dataset_root, rgb_image_index):
+
+    match_dict = read_file_list(match_text_filepath)
+
+    rgb_image_dict = read_file_list(rgb_text_filepath)
+    depth_image_dict = read_file_list(depth_text_filepath)
+
+    rgb_keys = rgb_image_dict.keys()
+    rgb_key = list(rgb_keys)[rgb_image_index]
+
+    rgb_filename = rgb_image_dict[rgb_key][0]
+    depth_timestamp = float(match_dict[rgb_key][0])
+    depth_filename = depth_image_dict[depth_timestamp][0]
+
+    rgb_file_path = dataset_root+rgb_filename
+    depth_file_path = dataset_root+depth_filename
+
+    return rgb_file_path , depth_file_path
+
+
+def read_file_matches(filename):
+    """
+    Reads a trajectory from a text file.
+
+    File format:
+    The file format is "stamp d1 d2 d3 ...", where stamp denotes the time stamp (to be matched)
+    and "d1 d2 d3.." is arbitary data (e.g., a 3D position and 3D orientation) associated to this timestamp.
+
+    Input:
+    filename -- File name
+
+    Output:
+    dict -- dictionary of (stamp,data) tuples
+
+    """
+    file = open(filename)
+    data = file.read()
+    lines = data.replace(",", " ").replace("\t", " ").split("\n")
+    list = [[v.strip() for v in line.split(" ") if v.strip() != ""] for line in lines if
+            len(line) > 0 and line[0] != "#"]
+    list = [(float(l[0]), float(l[1])) for l in list if len(l) > 1]
+    return list
+
 def read_file_list(filename):
     """
     Reads a trajectory from a text file. 
@@ -83,8 +129,8 @@ def associate(first_list, second_list,offset,max_difference):
     matches -- list of matched tuples ((stamp1,data1),(stamp2,data2))
     
     """
-    first_keys = first_list.keys()
-    second_keys = second_list.keys()
+    first_keys = list(first_list.keys())
+    second_keys = list(second_list.keys())
     potential_matches = [(abs(a - (b + offset)), a, b) 
                          for a in first_keys 
                          for b in second_keys 
@@ -100,6 +146,15 @@ def associate(first_list, second_list,offset,max_difference):
     matches.sort()
     return matches
 
+
+def match(rgb_file, depth_file, offset = offset_default, max_difference = max_difference_default):
+
+    rgb_list = read_file_list(rgb_file)
+    depth_list = read_file_list(depth_file)
+
+    return associate(rgb_list, depth_list, offset, max_difference)
+
+
 if __name__ == '__main__':
     
     # parse command line
@@ -109,8 +164,8 @@ if __name__ == '__main__':
     parser.add_argument('first_file', help='first text file (format: timestamp data)')
     parser.add_argument('second_file', help='second text file (format: timestamp data)')
     parser.add_argument('--first_only', help='only output associated lines from first file', action='store_true')
-    parser.add_argument('--offset', help='time offset added to the timestamps of the second file (default: 0.0)',default=0.0)
-    parser.add_argument('--max_difference', help='maximally allowed time difference for matching entries (default: 0.02)',default=0.02)
+    parser.add_argument('--offset', help='time offset added to the timestamps of the second file (default: 0.0)',default=offset_default)
+    parser.add_argument('--max_difference', help='maximally allowed time difference for matching entries (default: 0.02)',default=max_difference_default)
     args = parser.parse_args()
 
     first_list = read_file_list(args.first_file)

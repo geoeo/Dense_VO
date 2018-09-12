@@ -6,14 +6,16 @@ import time
 
 
 def back_project_image(width, height, reference_camera, reference_depth_image, X_back_projection,
-                       image_range_offset):
+                       valid_measurements, image_range_offset):
     start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
             depth_ref = reference_depth_image[y, x]
+            # For opencl maybe do this in a simple kernel before
             if depth_ref == 0:
                 depth_ref = 1000
+                valid_measurements[flat_index] = False
             # back projection from ndc seems to give better convergence
             #X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x, y, depth_ref)[:, 0]
             X_back_projection[0:3, flat_index] = reference_camera.back_project_pixel(x/width, y/height, depth_ref)[:, 0]
