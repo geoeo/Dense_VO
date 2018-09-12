@@ -11,9 +11,11 @@ rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
 match_text = dataset_root+'matches.txt'
 
+rgb_id_ref = 1305031102.175304
+rgb_id_target = 1305031102.411258
 
-rgb_ref_file_path , depth_ref_file_path = associate.return_rgb_depth_from_rgb_selection(rgb_text,depth_text, match_text, dataset_root, 0)
-rgb_target_file_path , depth_target_file_path = associate.return_rgb_depth_from_rgb_selection(rgb_text,depth_text, match_text, dataset_root, 10)
+rgb_ref_file_path , depth_ref_file_path = associate.return_rgb_depth_from_rgb_selection(rgb_text,depth_text, match_text, dataset_root, rgb_id_ref)
+rgb_target_file_path , depth_target_file_path = associate.return_rgb_depth_from_rgb_selection(rgb_text,depth_text, match_text, dataset_root, rgb_id_target)
 
 im_greyscale_reference = cv2.imread(rgb_ref_file_path,cv2.IMREAD_GRAYSCALE)
 im_depth_reference = cv2.imread(depth_ref_file_path,cv2.IMREAD_ANYDEPTH)

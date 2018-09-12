@@ -56,11 +56,11 @@ def return_rgb_depth_from_rgb_selection(rgb_text_filepath, depth_text_filepath, 
     rgb_image_dict = read_file_list(rgb_text_filepath)
     depth_image_dict = read_file_list(depth_text_filepath)
 
-    rgb_keys = rgb_image_dict.keys()
-    rgb_key = list(rgb_keys)[rgb_image_index]
+    #rgb_keys = rgb_image_dict.keys()
+    #rgb_key = list(rgb_keys)[rgb_image_index]
 
-    rgb_filename = rgb_image_dict[rgb_key][0]
-    depth_timestamp = float(match_dict[rgb_key][0])
+    rgb_filename = rgb_image_dict[rgb_image_index][0]
+    depth_timestamp = float(match_dict[rgb_image_index][0])
     depth_filename = depth_image_dict[depth_timestamp][0]
 
     rgb_file_path = dataset_root+rgb_filename
