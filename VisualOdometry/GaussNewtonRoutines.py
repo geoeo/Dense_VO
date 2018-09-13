@@ -14,7 +14,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             depth_ref = reference_depth_image[y, x]
             # For opencl maybe do this in a simple kernel before
             if depth_ref == 0:
-                depth_ref = 1000
+                depth_ref = 100000
                 valid_measurements[flat_index] = False
             # back projection from ndc seems to give better convergence
             x_back = x

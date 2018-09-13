@@ -69,6 +69,15 @@ def return_rgb_depth_from_rgb_selection(rgb_text_filepath, depth_text_filepath, 
     return rgb_file_path , depth_file_path
 
 
+def return_groundtruth(groundtruth_text_filepath, ground_truth_index):
+
+    groundtruth_dict = read_file_list(groundtruth_text_filepath)
+
+    groundtruth_data = groundtruth_dict[ground_truth_index]
+
+    return groundtruth_data
+
+
 def read_file_matches(filename):
     """
     Reads a trajectory from a text file.
@@ -147,10 +156,10 @@ def associate(first_list, second_list,offset,max_difference):
     return matches
 
 
-def match(rgb_file, depth_file, offset = offset_default, max_difference = max_difference_default):
+def match(source_file, match_file, offset = offset_default, max_difference = max_difference_default):
 
-    rgb_list = read_file_list(rgb_file)
-    depth_list = read_file_list(depth_file)
+    rgb_list = read_file_list(source_file)
+    depth_list = read_file_list(match_file)
 
     return associate(rgb_list, depth_list, offset, max_difference)
 

@@ -132,7 +132,39 @@ def pose_pose_composition_inverse(SE3_source, SE3_target):
     R_origin_target = np.matmul(R_source_inv,R_target)
 
     se3_source_target = np.identity(4,matrix_data_type)
-    se3_source_target[3,0:3] = translation_source_target_prime
+    se3_source_target[0:3,3:4] = translation_source_target_prime
     se3_source_target[0:3,0:3] = R_origin_target[0:3,0:3]
 
     return se3_source_target
+
+def quaternion_to_s03(qx, qy, qz, qw):
+    mag = math.sqrt(qx*qx+qy*qy+qz*qz+qw*qw)
+
+    qx /= mag
+    qy /= mag
+    qz /= mag
+    qw /= mag
+
+    qw_sq = qw*qw
+    qx_sq = qx*qx
+    qy_sq = qy*qy
+    qz_sq = qz*qz
+
+    so3 = np.identity(3,matrix_data_type)
+
+    so3[0,0] = qw_sq + qx_sq - qy_sq - qz_sq
+    so3[0,1] = 2*(qx*qy - qw*qz)
+    so3[0,2] = 2*(qx*qz + qw*qy)
+
+    so3[1,0] = 2*(qx*qy + qw*qz)
+    so3[1,1] = qw_sq - qx_sq + qy_sq - qz_sq
+    so3[1,2] = 2*(qz*qy - qw*qx)
+
+    so3[2,0] = 2*(qx*qz - qw*qy)
+    so3[2,1] = 2*(qz*qy + qw*qx)
+    so3[2,2] = qw_sq - qx_sq - qy_sq + qz_sq
+
+    return so3
+
+
+
