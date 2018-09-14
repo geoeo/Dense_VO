@@ -130,6 +130,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
     it = -1
     std = math.sqrt(0.4)
     image_range_offset = 10
+    degrees_of_freedom = 5.0 # empirically derived: see paper
     #depth_factor = 1.0
     #depth_factor = 1000 # 0.001 # ZR300
 
@@ -186,10 +187,12 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
         #TODO: investigate preallocate and clear in a for loop
         J_v = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
+        v = np.zeros((N,1), dtype=matrix_data_type,order='F')
+        W = np.identity(N, dtype=matrix_data_type)
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X_back_projection)
-        v = np.zeros((N,1),dtype=matrix_data_type,order='F')
+
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
@@ -207,19 +210,9 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
         Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
 
         v_mean = v_sum / number_of_valid_measurements
-        valid_pixel_ratio = number_of_valid_measurements/N
+        valid_pixel_ratio = number_of_valid_measurements / N
         #v_mean_abs = np.abs(v_mean)
         #v_mean_abs = v_mean
-
-        # TODO put this in gradient step manager
-        #if valid_pixel_ratio< 0.8:
-        #    print('Too many pixels are marked invalid')
-        #    Gradient_step_manager.current_alpha+=0.1
-        #    SE_3_est = SE_3_est_last_valid
-        #    valid_measurements = valid_measurements_last
-        #else:
-        #    SE_3_est_last_valid = SE_3_est
-        #    valid_measurements_last = valid_measurements
 
         Gradient_step_manager.track_gradient(v_mean_abs,it)
 
@@ -237,6 +230,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
         GaussNewtonRoutines.gauss_newton_step(width,
                                           height,
                                           valid_measurements,
+                                          W,
                                           J_pi,
                                           J_lie,
                                           frame_target.grad_x,

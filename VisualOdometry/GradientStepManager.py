@@ -47,3 +47,13 @@ class GradientStepManager:
                     print('new alpha: ', new_alpha)
 
         self.current_alpha = new_alpha
+
+        # TODO: Refactor
+        #if valid_pixel_ratio< 0.8:
+        #    print('Too many pixels are marked invalid')
+        #    Gradient_step_manager.current_alpha+=0.1
+        #    SE_3_est = SE_3_est_last_valid
+        #    valid_measurements = valid_measurements_last
+        #else:
+        #    SE_3_est_last_valid = SE_3_est
+        #    valid_measurements_last = valid_measurements

@@ -40,14 +40,15 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             v[flat_index][0] = 0
             if not 0 < y_index < height or not 0 < x_index < width:
                 valid_measurements[flat_index] = False
+                v[flat_index][0] = 0
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
-            error = target_image[y_target, x_target] - reference_image[y, x]
+            error = math.fabs(target_image[y_target, x_target] - reference_image[y, x])
             error_sq = error*error
-            v[flat_index][0] = error_sq
+            v[flat_index][0] = error
             v_sum += error_sq
 
     #v_sum = v_sum*v_sum
@@ -60,7 +61,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
     return v_sum
 
 
-def gauss_newton_step(width, height, valid_measurements, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
+def gauss_newton_step(width, height, valid_measurements,W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
                       J_v_return, normal_matrix_return, image_range_offset):
     start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
@@ -75,8 +76,49 @@ def gauss_newton_step(width, height, valid_measurements, J_pi, J_lie, target_ima
             J_pi_lie = np.matmul(J_pi_element, J_lie_element)
             J_full = np.matmul(J_image, J_pi_lie)
             J_t = np.transpose(J_full)
-            error_vector = v[flat_index][0]
-            J_v_return += np.multiply(error_vector, -J_t)
-            normal_matrix_return += np.matmul(J_t, J_full)
+            W_i = W[flat_index,flat_index]
+            #W_J_full = np.matmul(W,J_full)
+            #J_t_W = np.matmul(J_t,W)
+            error_sample = v[flat_index][0]
+            J_v_return += np.multiply(W_i,np.multiply(error_sample, -J_t))
+            normal_matrix_return += np.multiply(W_i,np.matmul(J_t, J_full))
     end = time.time()
     #print('Runtime Gauss Newton Step:', end-start)
+
+
+def compute_t_dist_variance(v, degrees_of_freedom, N, number_of_valid_measurements, variance_min, eps):
+    variance = variance_min
+    variance_prev = variance
+    max_it = 10
+    for i in range(0,max_it):
+        variance = compute_t_dist_variance_round(v, degrees_of_freedom, N,number_of_valid_measurements,variance_prev)
+        if math.fabs(variance_prev - variance) < eps:
+            break
+        variance_prev = variance
+    return variance
+
+
+def compute_t_dist_variance_round(v, degrees_of_freedom, N, number_of_valid_measurements, variance_prev):
+    numerator = degrees_of_freedom + 1.0
+    variance = variance_prev
+    for i in range(0,N):
+        r = v[i][0]
+        r_sq = r*r
+        variance_sq = variance*variance
+        denominator = degrees_of_freedom + (r_sq/variance_sq)
+        variance = (numerator/denominator)*r_sq
+    variance /= number_of_valid_measurements
+    return variance
+
+def generate_weight_matrix(W, v, variance, degrees_of_freedom, N):
+
+    numerator = degrees_of_freedom + 1.0
+    for i in range(0,N):
+        v_i = v[i][0]
+        t = v_i/variance
+        t_sq = t*t
+        frac = (t_sq/variance)
+        W[i,i] = numerator / (5 + frac)
+
+
+
