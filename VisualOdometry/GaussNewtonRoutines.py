@@ -40,7 +40,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             v[flat_index][0] = 0
             if not 0 < y_index < height or not 0 < x_index < width:
                 valid_measurements[flat_index] = False
-                v[flat_index][0] = 0
+                v[flat_index][0] = -1
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             valid_measurements[flat_index] = True
@@ -86,27 +86,30 @@ def gauss_newton_step(width, height, valid_measurements,W, J_pi, J_lie, target_i
     #print('Runtime Gauss Newton Step:', end-start)
 
 
-def compute_t_dist_variance(v, degrees_of_freedom, N, number_of_valid_measurements, variance_min, eps):
+def compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min, eps):
     variance = variance_min
     variance_prev = variance
-    max_it = 10
+    max_it = 20
     for i in range(0,max_it):
-        variance = compute_t_dist_variance_round(v, degrees_of_freedom, N,number_of_valid_measurements,variance_prev)
-        if math.fabs(variance_prev - variance) < eps:
+        variance = compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements,variance_prev)
+        if math.fabs(variance_prev - variance) < eps or variance == 0.0:
             break
         variance_prev = variance
     return variance
 
 
-def compute_t_dist_variance_round(v, degrees_of_freedom, N, number_of_valid_measurements, variance_prev):
+def compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_prev):
     numerator = degrees_of_freedom + 1.0
     variance = variance_prev
     for i in range(0,N):
+        if not valid_measurements[i]:
+            continue
+        if variance == 0.0:
+            break
         r = v[i][0]
         r_sq = r*r
-        variance_sq = variance*variance
-        denominator = degrees_of_freedom + (r_sq/variance_sq)
-        variance = (numerator/denominator)*r_sq
+        denominator = degrees_of_freedom + (r_sq/variance_prev)
+        variance += (numerator/denominator)*r_sq
     variance /= number_of_valid_measurements
     return variance
 

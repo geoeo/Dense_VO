@@ -227,6 +227,10 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
         #if(v_mean > Gradient_step_manager.last_error_mean_abs):
             #continue
 
+        variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)
+        if variance > 0.0:
+            GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
+
         GaussNewtonRoutines.gauss_newton_step(width,
                                           height,
                                           valid_measurements,
@@ -281,6 +285,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
-        print('mean error:', v_mean, 'iteration: ', it,'valid pixel ratio: ',valid_pixel_ratio, 'runtime: ', end-start)
+        print('mean error:', v_mean, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
     return SE_3_est

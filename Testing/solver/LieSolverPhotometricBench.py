@@ -77,7 +77,7 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
 frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
 
-SE3_est = Solver.solve_photometric(frame_reference, frame_target, 20000, 1.0, alpha_step=0.01, use_ndc=use_ndc, debug = False)
+SE3_est = Solver.solve_photometric(frame_reference, frame_target, 20000, 0.1, alpha_step=0.01, use_ndc=use_ndc, debug = False)
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
 
 print('*'*80)
