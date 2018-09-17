@@ -40,13 +40,13 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             v[flat_index][0] = 0
             if not 0 < y_index < height or not 0 < x_index < width:
                 valid_measurements[flat_index] = False
-                v[flat_index][0] = -1
+                v[flat_index][0] = 0
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
-            error = math.fabs(target_image[y_target, x_target] - reference_image[y, x])
+            error = target_image[y_target, x_target] - reference_image[y, x]
             error_sq = error*error
             v[flat_index][0] = error
             v_sum += error_sq
@@ -58,7 +58,8 @@ def compute_residual(width, height, target_index_projections, valid_measurements
 
     end = time.time()
     #print('Runtime for Compute Residual:', end-start)
-    return v_sum
+    #return v_sum
+    return v
 
 
 def gauss_newton_step(width, height, valid_measurements,W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
@@ -76,7 +77,7 @@ def gauss_newton_step(width, height, valid_measurements,W, J_pi, J_lie, target_i
             J_pi_lie = np.matmul(J_pi_element, J_lie_element)
             J_full = np.matmul(J_image, J_pi_lie)
             J_t = np.transpose(J_full)
-            W_i = W[flat_index,flat_index]
+            W_i = W[0,flat_index]
             #W_J_full = np.matmul(W,J_full)
             #J_t_W = np.matmul(J_t,W)
             error_sample = v[flat_index][0]
@@ -121,7 +122,12 @@ def generate_weight_matrix(W, v, variance, degrees_of_freedom, N):
         t = v_i/variance
         t_sq = t*t
         frac = (t_sq/variance)
-        W[i,i] = numerator / (5 + frac)
+        W[0,i] = numerator / (5 + frac)
+
+def multiply_v_by_diagonal_matrix(W,v,N,valid_measurements):
+    for i in range(0,N):
+        if valid_measurements[i]:
+            v[i] *= W[0,i]
 
 
 

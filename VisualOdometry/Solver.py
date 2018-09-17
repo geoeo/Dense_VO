@@ -106,7 +106,14 @@ def solve_SE3(X, Y, max_its, eps):
     return SE_3_est
 
 
-def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, use_ndc = False, debug = False):
+def solve_photometric(frame_reference,
+                      frame_target,
+                      max_its,
+                      eps,
+                      alpha_step,
+                      use_ndc = False,
+                      use_robust = False,
+                      debug = False):
     # init
     # array for twist values x, y, z, roll, pitch, yaw
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
@@ -122,9 +129,15 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
     twist_size = 6
     stacked_obs_size = position_vector_size * N
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
+    variance = -1
     # Step Factor
     #alpha = 0.125
-    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step, alpha_min = -0.7, alpha_step = -0.01 , alpha_change_rate = 0, gradient_monitoring_window_start = 3, gradient_monitoring_window_size = 0)
+    Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step,
+                                                                    alpha_min = -0.7,
+                                                                    alpha_step = -0.01 ,
+                                                                    alpha_change_rate = 0,
+                                                                    gradient_monitoring_window_start = 3,
+                                                                    gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
     it = -1
@@ -188,7 +201,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
         J_v = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
         v = np.zeros((N,1), dtype=matrix_data_type,order='F')
-        W = np.identity(N, dtype=matrix_data_type)
+        W = np.ones((1,N), dtype=matrix_data_type,order='F')
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X_back_projection)
@@ -196,7 +209,7 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
 
-        v_sum = GaussNewtonRoutines.compute_residual(width,
+        v = GaussNewtonRoutines.compute_residual(width,
                                                  height,
                                                  target_index_projections,
                                                  valid_measurements,
@@ -207,7 +220,17 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
 
         number_of_valid_measurements = np.sum(valid_measurements_reference)
 
+        if use_robust:
+            variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)
+            if variance > 0.0:
+                GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
+
+
         Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
+
+        GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
+
+        v_sum = np.matmul(np.transpose(v),v)[0][0]
 
         v_mean = v_sum / number_of_valid_measurements
         valid_pixel_ratio = number_of_valid_measurements / N
@@ -227,9 +250,6 @@ def solve_photometric(frame_reference, frame_target, max_its, eps, alpha_step, u
         #if(v_mean > Gradient_step_manager.last_error_mean_abs):
             #continue
 
-        variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)
-        if variance > 0.0:
-            GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
 
         GaussNewtonRoutines.gauss_newton_step(width,
                                           height,

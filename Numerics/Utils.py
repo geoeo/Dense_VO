@@ -78,3 +78,6 @@ def matrix_to_flat_index_rows(y,x,rows):
 def radians_to_degrees(rad):
     return (180.0/math.pi) * rad
 
+def to_homogeneous_positions(X,Y,Z,H):
+    return np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
+

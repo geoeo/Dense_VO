@@ -21,14 +21,18 @@ depth_text = dataset_root+'depth.txt'
 match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
-rgb_id_ref = 1305031102.175304
-rgb_id_target = 1305031102.211214
+#rgb_id_ref = 1305031102.175304
+#rgb_id_target = 1305031102.211214
 
 #rgb_id_ref = 1305031108.743502
 #rgb_id_target = 1305031108.775493
 
 #rgb_id_ref = 1305031119.615017
 #rgb_id_target = 1305031119.647903
+
+rgb_id_ref = 1305031106.675279
+rgb_id_target = 1305031106.711508
+
 
 image_groundtruth_dict = dict(associate.match(rgb_text,groundtruth_text))
 
@@ -41,7 +45,6 @@ groundtruth_data_target = associate.return_groundtruth(groundtruth_text,groundtr
 SE3_target = Parser.generate_se3_from_groundtruth(groundtruth_data_target)
 
 SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref,SE3_target)
-
 
 rgb_ref_file_path , depth_ref_file_path = associate.return_rgb_depth_from_rgb_selection(rgb_text,depth_text, match_text, dataset_root, rgb_id_ref)
 rgb_target_file_path , depth_target_file_path = associate.return_rgb_depth_from_rgb_selection(rgb_text,depth_text, match_text, dataset_root, rgb_id_target)
@@ -66,9 +69,9 @@ im_depth_target /= depth_factor
 
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 
-intrinsic_identity = Intrinsic.Intrinsic(1, 1, image_width/2, image_height/2)
+intrinsic_identity = Intrinsic.Intrinsic(-1, 1, image_width/2, image_height/2)
 if use_ndc:
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 1/2, 1/2) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, 1, 1/2, 1/2) # for ndc
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
 camera_target = Camera.Camera(intrinsic_identity, se3_identity)
@@ -77,7 +80,15 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
 frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
 
-SE3_est = Solver.solve_photometric(frame_reference, frame_target, 20000, 0.1, alpha_step=0.01, use_ndc=use_ndc, debug = False)
+SE3_est = Solver.solve_photometric(frame_reference,
+                                   frame_target,
+                                   20000,
+                                   1.0,
+                                   alpha_step=1.0,
+                                   use_ndc=use_ndc,
+                                   use_robust = True,
+                                   debug = False)
+
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
 
 print('*'*80)
