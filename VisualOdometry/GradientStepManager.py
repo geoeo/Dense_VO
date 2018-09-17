@@ -10,7 +10,7 @@ class GradientStepManager:
         self.gradient_monitoring_window_start = gradient_monitoring_window_start
         self.gradient_monitoring_window_size = gradient_monitoring_window_size
         self.gradient_monitoring_window = np.full((1,gradient_monitoring_window_size), False)
-        self.last_error_mean_abs = -1000.0
+        self.last_error_mean_abs = 1000.0
         self.alpha_change_rate = alpha_change_rate
 
     #TODO track continuously

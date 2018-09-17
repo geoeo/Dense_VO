@@ -130,13 +130,14 @@ def solve_photometric(frame_reference,
     stacked_obs_size = position_vector_size * N
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     variance = -1
+    w = np.zeros((6,1),dtype=Utils.matrix_data_type)
     # Step Factor
     #alpha = 0.125
     Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step,
                                                                     alpha_min = -0.7,
                                                                     alpha_step = -0.01 ,
                                                                     alpha_change_rate = 0,
-                                                                    gradient_monitoring_window_start = 3,
+                                                                    gradient_monitoring_window_start = 1,
                                                                     gradient_monitoring_window_size = 0)
     v_mean = -10000
     v_mean_abs = -10000
@@ -226,7 +227,7 @@ def solve_photometric(frame_reference,
                 GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
 
 
-        Gradient_step_manager.save_previous_mean_error(v_mean_abs,it)
+        Gradient_step_manager.save_previous_mean_error(v_mean,it)
 
         GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
 
@@ -234,23 +235,20 @@ def solve_photometric(frame_reference,
 
         v_mean = v_sum / number_of_valid_measurements
         valid_pixel_ratio = number_of_valid_measurements / N
+        v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
         #v_mean_abs = np.abs(v_mean)
         #v_mean_abs = v_mean
 
         Gradient_step_manager.track_gradient(v_mean_abs,it)
 
-        if v_mean < eps:
+        if v_diff <= eps:
             print('done, mean error:', v_mean)
             break
 
         Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
-        # See Kerl et al. ensures error decreases ( For pyramid levels )
-        #if(v_mean > Gradient_step_manager.last_error_mean_abs):
-            #continue
-
-
+        #if v_mean <= Gradient_step_manager.last_error_mean_abs:
         GaussNewtonRoutines.gauss_newton_step(width,
                                           height,
                                           valid_measurements,
@@ -276,6 +274,8 @@ def solve_photometric(frame_reference,
             return SE_3_est
 
         w = np.matmul(pseudo_inv, J_v)
+        #w_new = np.matmul(pseudo_inv, J_v)
+        #w = w_new
         # Apply Step Factor
         w = Gradient_step_manager.current_alpha*w
 
@@ -305,6 +305,6 @@ def solve_photometric(frame_reference,
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
-        print('mean error:', v_mean, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
+        print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
     return SE_3_est

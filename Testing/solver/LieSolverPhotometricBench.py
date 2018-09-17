@@ -69,9 +69,9 @@ im_depth_target /= depth_factor
 
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 
-intrinsic_identity = Intrinsic.Intrinsic(-1, 1, image_width/2, image_height/2)
+intrinsic_identity = Intrinsic.Intrinsic(1, 1, image_width/2, image_height/2)
 if use_ndc:
-    intrinsic_identity = Intrinsic.Intrinsic(-1, 1, 1/2, 1/2) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
 camera_target = Camera.Camera(intrinsic_identity, se3_identity)
@@ -83,7 +83,7 @@ frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, 
 SE3_est = Solver.solve_photometric(frame_reference,
                                    frame_target,
                                    20000,
-                                   1.0,
+                                   eps = 0.01,
                                    alpha_step=1.0,
                                    use_ndc=use_ndc,
                                    use_robust = True,

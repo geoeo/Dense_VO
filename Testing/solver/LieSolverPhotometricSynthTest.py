@@ -26,14 +26,14 @@ im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_
 im_greyscale_target = ImageProcessing.z_standardise(im_greyscale_target)
 
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square_Y.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
-depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
+depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_float)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_60.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_fov_90_square_negative.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 
 #depth_reference = ImageProcessing.z_standardise(depth_reference)
 
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square_Y.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
-depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
+depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_float)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_translated_fov_60.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/depthbuffer_left_90_fov_90_square.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 
@@ -43,15 +43,15 @@ depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resourc
 
 # Some depth image were aquired without scaling i.e. scale here
 depth_factor = 1000
-use_ndc = False
+use_ndc = True
 
-depth_target *= depth_factor
-depth_reference *= depth_factor
+#depth_target *= depth_factor
+#depth_reference *= depth_factor
 
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 
 # fx and fy affect the resulting coordiante system of the se3 matrix
-intrinsic_identity = Intrinsic.Intrinsic(-1, -1, image_width/2, image_height/2)
+intrinsic_identity = Intrinsic.Intrinsic(1, 1, image_width/2, image_height/2)
 if use_ndc:
     intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
 
@@ -68,8 +68,8 @@ frame_target = Frame.Frame(im_greyscale_target, depth_target, camera_target, Tru
 SE3_est = Solver.solve_photometric(frame_reference,
                                    frame_target,
                                    20000,
-                                   0.03,
-                                   alpha_step=0.1,
+                                   0.00001,
+                                   alpha_step=1.0,
                                    use_ndc = use_ndc,
                                    use_robust = False,
                                    debug = False)# - Synth Y

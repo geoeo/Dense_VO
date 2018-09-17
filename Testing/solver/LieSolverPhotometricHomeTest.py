@@ -9,26 +9,26 @@ from Numerics import ImageProcessing
 from Numerics import SE3
 
 
-#im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_40.png',cv2.IMREAD_GRAYSCALE)
-im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_40.png',cv2.IMREAD_GRAYSCALE)
+im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_40.png',cv2.IMREAD_GRAYSCALE)
+#im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_40.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_126.png',cv2.IMREAD_GRAYSCALE)
 
 im_greyscale_reference = ImageProcessing.z_standardise(im_greyscale_reference)
 
-#im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_41.png',cv2.IMREAD_GRAYSCALE)
-im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_41.png',cv2.IMREAD_GRAYSCALE)
+im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_41.png',cv2.IMREAD_GRAYSCALE)
+#im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_41.png',cv2.IMREAD_GRAYSCALE)
 #im_greyscale_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_127.png',cv2.IMREAD_GRAYSCALE)
 
 im_greyscale_target = ImageProcessing.z_standardise(im_greyscale_target)
 
-#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_40.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
-depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_depth_aligned_40.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
+depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_40.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
+#depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_depth_aligned_40.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
 #depth_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_126.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_reference = ImageProcessing.z_standardise(depth_reference)
 
 
-#depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_41.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
-depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_depth_aligned_41.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
+depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_41.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
+#depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Y_Trans_Depth_Aligned_Scaled/image_depth_aligned_41.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_int)
 #depth_target = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Home_Images/Images_ZR300_Board_X_Trans_Depth_Aligned_Scaled/image_depth_aligned_127.png',cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type)
 #depth_target = ImageProcessing.z_standardise(depth_target)
 
@@ -44,9 +44,9 @@ use_ndc = True
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 
 # fx and fy affect the resulting coordiante system of the se3 matrix
-intrinsic_identity = Intrinsic.Intrinsic(-1, 1, image_width/2, image_height/2)
+intrinsic_identity = Intrinsic.Intrinsic(1, 1, image_width/2, image_height/2)
 if use_ndc:
-    intrinsic_identity = Intrinsic.Intrinsic(-1, 1, 1/2, 1/2) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
 
 
 
@@ -62,10 +62,10 @@ frame_target = Frame.Frame(im_greyscale_target, depth_target, camera_target, Tru
 SE3_est = Solver.solve_photometric(frame_reference,
                                    frame_target,
                                    20000,
-                                   0.2,
+                                   eps = 0.1,
                                    alpha_step=1.0,
                                    use_ndc = use_ndc,
-                                   use_robust = False,
+                                   use_robust = True,
                                    debug = False)
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
 
