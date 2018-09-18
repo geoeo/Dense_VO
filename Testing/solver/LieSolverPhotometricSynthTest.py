@@ -66,12 +66,10 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference, depth_reference, camera_reference, False)
 frame_target = Frame.Frame(im_greyscale_target, depth_target, camera_target, True)
 
-visualizer = Visualizer.VisualizerThread(1,"Visualizer")
-visualizer.start()
+#visualizer = Visualizer.Visualizer(photometric_solver)
 
 SE3_est = Solver.solve_photometric(frame_reference,
                                    frame_target,
-                                   visualizer,
                                    20000,
                                    0.00001,
                                    alpha_step=1.0,
@@ -79,7 +77,6 @@ SE3_est = Solver.solve_photometric(frame_reference,
                                    use_robust = False,
                                    debug = False)# - Synth Y
 
-visualizer.stop()
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
 
 print(SE3_est)

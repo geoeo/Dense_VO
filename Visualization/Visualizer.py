@@ -55,3 +55,44 @@ class VisualizerThread(threading.Thread):
     def stop(self):
         self.running = False
 
+class Visualizer():
+
+    def __init__(self, solver):
+        self.solver = solver
+        self.figure = plt.figure()
+        self.graph = self.figure.add_subplot(111, projection='3d')
+
+        # These points will be plotted with incomming se3 matricies
+        X, Y, Z = [0, 0], [0, 0], [0, -1]
+        H = np.repeat(1, 2)
+
+        self.point_pair = Utils.to_homogeneous_positions(X, Y, Z, H)
+
+    #TODO
+    def visualize_poses(self,pose_list):
+        points_to_be_graphed = self.point_pair[0:3, :]
+        # for se3 in pose_list:
+        #    print('*'*80)
+        #    print(se3)
+        #    print('*'*80)
+
+        Plot3D.plot_array_lines(points_to_be_graphed,self.graph)
+
+    # performs visualization
+    def run(self):
+        print("Visualizing...")
+
+        while self.solver.is_running:
+            if not self.solver.threadLock.acquire(blocking=False):
+                print("pose estimate list being updated. Skipping this run")
+                time.sleep(0.1)
+                continue
+
+            self.visualize_poses(self.solver.pose_estimate_list)
+
+            self.solver.threadLock.release()
+            time.sleep(1)
+
+        print("Exiting Visualizer")
+
+

@@ -9,8 +9,6 @@ from VisualOdometry import GaussNewtonRoutines
 from Visualization import Plot3D
 import time
 
-
-
 def solve_SE3(X, Y, max_its, eps):
     # init
     # array for twist values x, y, z, roll, pitch, yaw
@@ -108,7 +106,6 @@ def solve_SE3(X, Y, max_its, eps):
 
 def solve_photometric(frame_reference,
                       frame_target,
-                      visualizer,
                       max_its,
                       eps,
                       alpha_step,
@@ -297,7 +294,6 @@ def solve_photometric(frame_reference,
         R_est = np.matmul(R_new, R_est)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
-        visualizer.add_pose_to_list(SE_3_est)
         end = time.time()
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
