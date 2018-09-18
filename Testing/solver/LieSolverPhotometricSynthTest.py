@@ -7,6 +7,7 @@ import VisualOdometry.Solver as Solver
 from VisualOdometry import Frame
 from Numerics import ImageProcessing
 from Numerics import SE3
+from Visualization import Visualizer
 
 
 #im_greyscale_reference = cv2.imread('/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Synthetic/framebuffer_fov_90_square_Y.png',cv2.IMREAD_GRAYSCALE)
@@ -65,14 +66,20 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference, depth_reference, camera_reference, False)
 frame_target = Frame.Frame(im_greyscale_target, depth_target, camera_target, True)
 
+visualizer = Visualizer.VisualizerThread(1,"Visualizer")
+visualizer.start()
+
 SE3_est = Solver.solve_photometric(frame_reference,
                                    frame_target,
+                                   visualizer,
                                    20000,
                                    0.00001,
                                    alpha_step=1.0,
                                    use_ndc = use_ndc,
                                    use_robust = False,
                                    debug = False)# - Synth Y
+
+visualizer.stop()
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
 
 print(SE3_est)

@@ -8,6 +8,7 @@ from Numerics import ImageProcessing
 from Benchmark import Parser
 from Benchmark import associate
 from Numerics import SE3
+from Visualization import Visualizer
 import cv2
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
@@ -24,14 +25,14 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 #rgb_id_ref = 1305031102.175304
 #rgb_id_target = 1305031102.211214
 
-#rgb_id_ref = 1305031108.743502
-#rgb_id_target = 1305031108.775493
+rgb_id_ref = 1305031108.743502
+rgb_id_target = 1305031108.775493
 
 #rgb_id_ref = 1305031119.615017
 #rgb_id_target = 1305031119.647903
 
-rgb_id_ref = 1305031106.675279
-rgb_id_target = 1305031106.711508
+#rgb_id_ref = 1305031106.675279
+#rgb_id_target = 1305031106.711508
 
 
 image_groundtruth_dict = dict(associate.match(rgb_text,groundtruth_text))
@@ -80,10 +81,12 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
 frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
 
+visualizer = Visualizer.VisualizerThread(1,"Visualizer")
+
 SE3_est = Solver.solve_photometric(frame_reference,
                                    frame_target,
                                    20000,
-                                   eps = 0.01,
+                                   eps = 0.03,
                                    alpha_step=1.0,
                                    use_ndc=use_ndc,
                                    use_robust = True,

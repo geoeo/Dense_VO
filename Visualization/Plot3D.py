@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from Numerics import  ImageProcessing
+from Numerics import ImageProcessing
 import numpy as np
 import cv2
 
@@ -31,15 +31,12 @@ def scatter_plot_array(points,labels):
     #ax.set_zlabel('Z Label')
 
     plt.legend(loc=2)
-
     plt.show()
 
-def plot_array_lines(points):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    N = len(points)
+def plot_array_lines(points, ax):
     #for i in range(0,N):
-    X,Y,Z = points[0], points[1], points[2]
+    ax.clear()
+    X,Y,Z = points[0, :], points[1, :], points[2, :]
         #label = labels[i]
     for i in range(0,len(X), 2):
         ax.plot(X[i:i+2],Y[i:i+2],Z[i:i+2],'-ro')
@@ -49,7 +46,6 @@ def plot_array_lines(points):
     #ax.set_zlabel('Z Label')
 
     plt.legend(loc=2)
-
     plt.show()
 
 def scatter_plot_sub(plot_1,plot_2,labels_1,labels_2):
