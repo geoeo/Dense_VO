@@ -70,12 +70,15 @@ frame_target = Frame.Frame(im_greyscale_target, depth_target, camera_target, Tru
 
 SE3_est = Solver.solve_photometric(frame_reference,
                                    frame_target,
-                                   20000,
-                                   0.00001,
+                                   threadLock= None,
+                                   pose_estimate_list= None,
+                                   max_its= 20000,
+                                   eps=0.00001,
                                    alpha_step=1.0,
                                    use_ndc = use_ndc,
                                    use_robust = False,
-                                   debug = False)# - Synth Y
+                                   track_pose_estimates = False,
+                                   debug=False)# - Synth Y
 
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
 

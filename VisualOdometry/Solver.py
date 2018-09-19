@@ -106,12 +106,19 @@ def solve_SE3(X, Y, max_its, eps):
 
 def solve_photometric(frame_reference,
                       frame_target,
+                      threadLock,
+                      pose_estimate_list,
                       max_its,
                       eps,
                       alpha_step,
                       use_ndc = False,
                       use_robust = False,
+                      track_pose_estimates = False,
                       debug = False):
+
+    if track_pose_estimates and (threadLock == None or pose_estimate_list == None):
+        raise RuntimeError('Visualization Flag is set, but no list and lock are supplied')
+
     # init
     # array for twist values x, y, z, roll, pitch, yaw
     t_est = np.array([0, 0, 0], dtype=matrix_data_type).reshape((3, 1))
@@ -195,6 +202,12 @@ def solve_photometric(frame_reference,
         normal_matrix = np.zeros((twist_size, twist_size))
         v = np.zeros((N,1), dtype=matrix_data_type,order='F')
         W = np.ones((1,N), dtype=matrix_data_type,order='F')
+
+        # TODO investigate performance impact
+        if track_pose_estimates:
+            threadLock.acquire()
+            pose_estimate_list.append(SE_3_est)
+            threadLock.release()
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X_back_projection)

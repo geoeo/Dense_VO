@@ -57,8 +57,9 @@ class VisualizerThread(threading.Thread):
 
 class Visualizer():
 
-    def __init__(self, solver):
-        self.solver = solver
+    def __init__(self, solver_thread_manager, ground_truth = None):
+        self.solver_thread_manager = solver_thread_manager
+        self.ground_truth = ground_truth
         self.figure = plt.figure()
         self.graph = self.figure.add_subplot(111, projection='3d')
 
@@ -71,28 +72,34 @@ class Visualizer():
     #TODO
     def visualize_poses(self,pose_list):
         points_to_be_graphed = self.point_pair[0:3, :]
-        # for se3 in pose_list:
-        #    print('*'*80)
-        #    print(se3)
-        #    print('*'*80)
+
+        if not self.ground_truth is None:
+            points_transformed = np.matmul(self.ground_truth, self.point_pair)[0:3, :]
+            points_to_be_graphed = np.append(points_to_be_graphed, points_transformed, axis=1)
+
+        for se3 in pose_list:
+            points_transformed = np.matmul(se3,self.point_pair)[0:3,:]
+            # identity gets transformed twice
+            points_to_be_graphed = np.append(points_to_be_graphed,points_transformed,axis=1)
 
         Plot3D.plot_array_lines(points_to_be_graphed,self.graph)
 
     # performs visualization
-    def run(self):
+    def visualize(self):
         print("Visualizing...")
 
-        while self.solver.is_running:
-            if not self.solver.threadLock.acquire(blocking=False):
+        while self.solver_thread_manager.is_running:
+            if not self.solver_thread_manager.threadLock.acquire(blocking=False):
                 print("pose estimate list being updated. Skipping this run")
                 time.sleep(0.1)
                 continue
 
-            self.visualize_poses(self.solver.pose_estimate_list)
+            self.visualize_poses(self.solver_thread_manager.pose_estimate_list)
 
-            self.solver.threadLock.release()
+            self.solver_thread_manager.threadLock.release()
             time.sleep(1)
 
+        plt.show()
         print("Exiting Visualizer")
 
 

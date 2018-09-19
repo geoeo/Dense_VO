@@ -46,7 +46,8 @@ def plot_array_lines(points, ax):
     #ax.set_zlabel('Z Label')
 
     plt.legend(loc=2)
-    plt.show()
+    plt.draw()
+    plt.pause(1)
 
 def scatter_plot_sub(plot_1,plot_2,labels_1,labels_2):
     fig = plt.figure()
