@@ -46,7 +46,12 @@ def generator_z():
 def generator_z_3_4():
     return np.array([[0,0,0,0],
                      [0,0,0,0],
-                     [0,0,0,1]], dtype=matrix_data_type)
+                     [0,0,0,1]], dtype=matrix_data_type)#
+
+def generator_z_3_4_neg():
+    return np.array([[0,0,0,0],
+                     [0,0,0,0],
+                     [0,0,0,-1]], dtype=matrix_data_type)
 
 
 # Rotation Around X
@@ -61,6 +66,11 @@ def generator_roll_3_4():
                      [0,0,-1,0],
                      [0,1,0,0]], dtype=matrix_data_type)
 
+def generator_roll_3_4_neg():
+    return np.array([[0,0,0,0],
+                     [0,0,1,0],
+                     [0,-1,0,0]], dtype=matrix_data_type)
+
 
 # Rotation Around Y
 def generator_pitch():
@@ -73,6 +83,11 @@ def generator_pitch_3_4():
     return np.array([[0,0,1,0],
                      [0,0,0,0],
                      [-1,0,0,0]], dtype=matrix_data_type)
+
+def generator_pitch_3_4_neg():
+    return np.array([[0,0,-1,0],
+                     [0,0,0,0],
+                     [1,0,0,0]], dtype=matrix_data_type)
 
 
 # Rotation Around Z

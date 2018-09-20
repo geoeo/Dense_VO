@@ -162,7 +162,9 @@ def solve_photometric(frame_reference,
     generator_y = Lie.generator_y_3_4()
     #generator_y = Lie.generator_y_3_4_neg()
     generator_z = Lie.generator_z_3_4()
+    #generator_z = Lie.generator_z_3_4_neg()
     generator_roll = Lie.generator_roll_3_4()
+    #generator_roll = Lie.generator_roll_3_4_neg()
     generator_pitch = Lie.generator_pitch_3_4()
     generator_yaw = Lie.generator_yaw_3_4()
 
@@ -182,6 +184,7 @@ def solve_photometric(frame_reference,
                                        X_back_projection,
                                        valid_measurements,
                                        use_ndc,
+                                       #1)
                                        np.sign(fx))
 
     if debug:
@@ -253,6 +256,7 @@ def solve_photometric(frame_reference,
 
         #Gradient_step_manager.track_gradient(v_mean,it)
 
+        # TODO investigate absolute error threshold aswel?
         if 0 <= v_diff <= eps and Gradient_step_manager.check_iteration(it):
             print('done, mean error:', v_mean, 'diff: ', v_diff)
             break
@@ -323,8 +327,11 @@ def solve_photometric(frame_reference,
         R_new = I_3 + np.multiply(A, w_x) + np.multiply(B, w_x_squared)
         V = I_3 + np.multiply(B, w_x) + np.multiply(C, w_x_squared)
 
-        t_est += np.matmul(V, u)
+        t_new = np.matmul(V, u)
+        #t_new[1] *=-1
+        t_est += t_new
         R_est = np.matmul(R_new, R_est)
+
 
         #t_est = np.matmul(V, u)
         #R_est = R_new

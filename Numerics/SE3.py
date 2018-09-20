@@ -56,14 +56,16 @@ def rotationMatrixToEulerAngles(R):
     return np.array([x, y, z])
 
 def makeS03(roll_rad,pitch_rad,yaw_rad):
-    R_x = np.identity(3)
+    #R_x = np.identity(3)
     R_y = np.identity(3)
     R_z = np.identity(3)
 
-    R_x[1,1] = math.cos(roll_rad)
-    R_x[1,2] = -math.sin(roll_rad)
-    R_x[2,1] = math.sin(roll_rad)
-    R_x[2,2] = math.cos(roll_rad)
+    #R_x[1,1] = math.cos(roll_rad)
+    #R_x[1,2] = -math.sin(roll_rad)
+    #R_x[2,1] = math.sin(roll_rad)
+    #R_x[2,2] = math.cos(roll_rad)
+
+    R_x = rotation_around_x(roll_rad)
 
     R_y[0,0] = math.cos(pitch_rad)
     R_y[0,2] = math.sin(pitch_rad)
@@ -168,3 +170,12 @@ def quaternion_to_s03(qx, qy, qz, qw):
 
 
 
+def rotation_around_x(rad):
+    R_x = np.identity(3)
+
+    R_x[1,1] = math.cos(rad)
+    R_x[1,2] = -math.sin(rad)
+    R_x[2,1] = math.sin(rad)
+    R_x[2,2] = math.cos(rad)
+
+    return R_x

@@ -57,9 +57,11 @@ class VisualizerThread(threading.Thread):
 
 class Visualizer():
 
-    def __init__(self, solver_thread_manager, ground_truth = None):
+    def __init__(self, solver_thread_manager, ground_truth_list = None):
         self.solver_thread_manager = solver_thread_manager
-        self.ground_truth = ground_truth
+        self.ground_truth_list = []
+        if ground_truth_list is not None:
+            self.ground_truth_list = ground_truth_list
         self.figure = plt.figure()
         self.graph = self.figure.add_subplot(111, projection='3d')
 
@@ -75,12 +77,21 @@ class Visualizer():
             print('pose list is empty, skipping')
             return
 
+        if len(self.ground_truth_list) > 0:
+            gt_init = self.ground_truth_list[0]
+            points_gt_to_be_graphed = np.matmul(gt_init,self.point_pair)[0:3,:]
+
+            for i in range(1,len(self.ground_truth_list)):
+                se3 = self.ground_truth_list[i]
+                points_transformed = np.matmul(se3,self.point_pair)[0:3,:]
+                # identity gets transformed twice
+                points_gt_to_be_graphed = np.append(points_gt_to_be_graphed,points_transformed,axis=1)
+
+            Plot3D.plot_array_lines(points_gt_to_be_graphed, self.graph, '-go', clear=True, draw=False)
+
         se3_init = pose_list[0]
         points_to_be_graphed = np.matmul(se3_init,self.point_pair)[0:3,:]
 
-        if not self.ground_truth is None:
-            points_transformed = np.matmul(self.ground_truth, self.point_pair)[0:3,:]
-            Plot3D.plot_array_lines(points_transformed, self.graph, '-go', clear = True, draw=False)
         for i in range(1,len(pose_list)):
             se3 = pose_list[i]
             points_transformed = np.matmul(se3,self.point_pair)[0:3,:]
