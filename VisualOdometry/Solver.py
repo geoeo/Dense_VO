@@ -158,7 +158,9 @@ def solve_photometric(frame_reference,
     #SE_3_est_last_valid = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
     generator_x = Lie.generator_x_3_4()
+    #generator_x = Lie.generator_x_3_4_neg()
     generator_y = Lie.generator_y_3_4()
+    #generator_y = Lie.generator_y_3_4_neg()
     generator_z = Lie.generator_z_3_4()
     generator_roll = Lie.generator_roll_3_4()
     generator_pitch = Lie.generator_pitch_3_4()
@@ -179,7 +181,8 @@ def solve_photometric(frame_reference,
                                        frame_reference.pixel_depth,
                                        X_back_projection,
                                        valid_measurements,
-                                       use_ndc)
+                                       use_ndc,
+                                       np.sign(fx))
 
     if debug:
         Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)
@@ -203,7 +206,7 @@ def solve_photometric(frame_reference,
         start = time.time()
         # accumulators
         #TODO: investigate preallocate and clear in a for loop
-        J_v = np.zeros((twist_size, 1))
+        g = np.zeros((twist_size, 1))
         normal_matrix = np.zeros((twist_size, twist_size))
         v = np.zeros((N,1), dtype=matrix_data_type,order='F')
         W = np.ones((1,N), dtype=matrix_data_type,order='F')
@@ -251,14 +254,14 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         if 0 <= v_diff <= eps and Gradient_step_manager.check_iteration(it):
-            print('done, mean error:', v_mean)
+            print('done, mean error:', v_mean, 'diff: ', v_diff)
             break
 
         #Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
-            GaussNewtonRoutines.gauss_newton_step(width,
+            converged = GaussNewtonRoutines.gauss_newton_step(width,
                                               height,
                                               valid_measurements,
                                               W,
@@ -267,9 +270,13 @@ def solve_photometric(frame_reference,
                                               frame_target.grad_x,
                                               frame_target.grad_y,
                                               v,
-                                              J_v,
+                                              g,
                                               normal_matrix,
                                               image_range_offset)
+
+            if converged:
+                print('converged by g matrix: ', np.amax(g))
+                break
 
             # TODO: Investigate faster inversion with QR
             try:
@@ -283,8 +290,9 @@ def solve_photometric(frame_reference,
                 return SE_3_est
 
         #w = np.matmul(pseudo_inv, J_v)
-            w_new = np.matmul(pseudo_inv, J_v)
+            w_new = np.matmul(pseudo_inv, g)
             # coordiante system induced by photometric solver is flipped
+            #w_new[1] *= -1
             #w_new[3] *= -1
             #w_new[4] *= -1
             w = w_new

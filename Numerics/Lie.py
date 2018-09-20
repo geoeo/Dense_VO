@@ -13,6 +13,11 @@ def generator_x_3_4():
                      [0,0,0,0],
                      [0,0,0,0]], dtype=matrix_data_type)
 
+def generator_x_3_4_neg():
+    return np.array([[0,0,0,-1],
+                     [0,0,0,0],
+                     [0,0,0,0]], dtype=matrix_data_type)
+
 
 def generator_y():
     return np.array([[0,0,0,0],
@@ -24,6 +29,12 @@ def generator_y_3_4():
     return np.array([[0,0,0,0],
                      [0,0,0,1],
                      [0,0,0,0]], dtype=matrix_data_type)
+
+def generator_y_3_4_neg():
+    return np.array([[0,0,0,0],
+                     [0,0,0,-1],
+                     [0,0,0,0]], dtype=matrix_data_type)
+
 
 
 def generator_z():

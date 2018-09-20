@@ -6,12 +6,13 @@ import time
 
 
 def back_project_image(width, height, image_range_offset, reference_camera, reference_depth_image, X_back_projection,
-                       valid_measurements, use_ndc ):
+                       valid_measurements, use_ndc, depth_direction ):
     start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
-            depth_ref = reference_depth_image[y, x]
+            #depending on the direction of the focal length, the depth sign has to be adjusted
+            depth_ref = depth_direction*reference_depth_image[y, x]
             # For opencl maybe do this in a simple kernel before
             if depth_ref == 0:
                 depth_ref = 100000
@@ -62,8 +63,9 @@ def compute_residual(width, height, target_index_projections, valid_measurements
     return v
 
 
-def gauss_newton_step(width, height, valid_measurements,W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
-                      J_v_return, normal_matrix_return, image_range_offset):
+def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
+                      g, normal_matrix_return, image_range_offset):
+    convergence = False
     start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
@@ -79,11 +81,15 @@ def gauss_newton_step(width, height, valid_measurements,W, J_pi, J_lie, target_i
             J_t = np.transpose(J_full)
             W_i = W[0,flat_index]
             error_sample = v[flat_index][0]
-            # TODO use max norm for stopping criterion
-            J_v_return += np.multiply(W_i,np.multiply(error_sample, -J_t))
+
+            g += np.multiply(W_i, np.multiply(error_sample, -J_t))
             normal_matrix_return += np.multiply(W_i,np.matmul(J_t, J_full))
+    # different stopping criterion using max norm
+    #if math.fabs(np.amax(g)< 0.001):
+        #convergence = True
     end = time.time()
     #print('Runtime Gauss Newton Step:', end-start)
+    return convergence
 
 
 def compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min, eps):
