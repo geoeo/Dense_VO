@@ -25,8 +25,21 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 #rgb_id_ref = 1305031102.175304
 #rgb_id_target = 1305031102.211214
 
-rgb_id_ref = 1305031108.743502
-rgb_id_target = 1305031108.775493
+#rgb_id_ref = 1305031102.275326
+#rgb_id_target = 1305031102.311267
+#rgb_id_target = 1305031102.311267
+
+rgb_id_ref = 1305031112.643246
+rgb_id_target = 1305031112.679952
+#rgb_id_target = 1305031112.743245
+
+#rgb_id_ref = 1305031105.575449
+#rgb_id_target = 1305031105.611378
+
+
+#rgb_id_ref = 1305031108.743502
+#rgb_id_target = 1305031108.775493
+#rgb_id_target = 1305031108.811244
 
 #rgb_id_ref = 1305031119.615017
 #rgb_id_target = 1305031119.647903
@@ -88,18 +101,23 @@ SE3_est = Solver.solve_photometric(frame_reference,
                                    threadLock=None,
                                    pose_estimate_list=None,
                                    max_its=20000,
-                                   eps = 0.03,
+                                   eps = 0.0005,
                                    alpha_step=1.0,
+                                   gradient_monitoring_window_start=20,
                                    use_ndc=use_ndc,
                                    use_robust = True,
                                    track_pose_estimates = False,
                                    debug=False)
 
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
+euler_angles_gt_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_ref_target))
 
 print('*'*80)
 print('GROUND TRUTH\n')
 print(SE3_ref_target)
+print(Utils.radians_to_degrees(euler_angles_gt_XYZ[0]),
+      Utils.radians_to_degrees(euler_angles_gt_XYZ[1]),
+      Utils.radians_to_degrees(euler_angles_gt_XYZ[2]))
 print('*'*80)
 
 print(SE3_est)

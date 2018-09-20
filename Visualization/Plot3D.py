@@ -33,19 +33,27 @@ def scatter_plot_array(points,labels):
     plt.legend(loc=2)
     plt.show()
 
-def plot_array_lines(points, ax):
+def plot_array_lines(points, ax, style = '-ro',clear = True, draw = True):
     #for i in range(0,N):
-    ax.clear()
+    if clear:
+        ax.clear()
+
     X,Y,Z = points[0, :], points[1, :], points[2, :]
-        #label = labels[i]
     for i in range(0,len(X), 2):
-        ax.plot(X[i:i+2],Y[i:i+2],Z[i:i+2],'-ro')
+        ax.plot(X[i:i+2],Y[i:i+2],Z[i:i+2],style)
+        ax.text(X[i], Y[i], Z[i], '%s' % (i/2))
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     #ax.set_zlabel('Z Label')
 
-    plt.legend(loc=2)
+    #plt.legend(loc=2)
+    if draw:
+        plt.draw()
+        plt.pause(1)
+
+
+def draw():
     plt.draw()
     plt.pause(1)
 

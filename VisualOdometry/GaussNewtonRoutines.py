@@ -78,9 +78,8 @@ def gauss_newton_step(width, height, valid_measurements,W, J_pi, J_lie, target_i
             J_full = np.matmul(J_image, J_pi_lie)
             J_t = np.transpose(J_full)
             W_i = W[0,flat_index]
-            #W_J_full = np.matmul(W,J_full)
-            #J_t_W = np.matmul(J_t,W)
             error_sample = v[flat_index][0]
+            # TODO use max norm for stopping criterion
             J_v_return += np.multiply(W_i,np.multiply(error_sample, -J_t))
             normal_matrix_return += np.multiply(W_i,np.matmul(J_t, J_full))
     end = time.time()

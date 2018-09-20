@@ -111,6 +111,7 @@ def solve_photometric(frame_reference,
                       max_its,
                       eps,
                       alpha_step,
+                      gradient_monitoring_window_start,
                       use_ndc = False,
                       use_robust = False,
                       track_pose_estimates = False,
@@ -135,15 +136,19 @@ def solve_photometric(frame_reference,
     stacked_obs_size = position_vector_size * N
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     variance = -1
-    v_mean = -10000
+    v_mean = 1000
     image_range_offset = 10
     degrees_of_freedom = 5.0 # empirically derived: see paper
-    #w = np.zeros((6,1),dtype=Utils.matrix_data_type)
+    w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
+
+    fx = frame_reference.camera.intrinsic.extract_fx()
+    fy = frame_reference.camera.intrinsic.extract_fy()
+
     Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step,
                                                                     alpha_min = -0.7,
                                                                     alpha_step = -0.01 ,
                                                                     alpha_change_rate = 0,
-                                                                    gradient_monitoring_window_start = 3,
+                                                                    gradient_monitoring_window_start = gradient_monitoring_window_start,
                                                                     gradient_monitoring_window_size = 0)
 
 
@@ -182,7 +187,7 @@ def solve_photometric(frame_reference,
     # Precompute the Jacobian of SE3 around the identity
     J_lie = JacobianGenerator.get_jacobians_lie(generator_x, generator_y, generator_z, generator_yaw,
                                                 generator_pitch,
-                                                generator_roll, X_back_projection, N, stacked_obs_size, coefficient=2.0)
+                                                generator_roll, X_back_projection, N, stacked_obs_size, coefficient=1.0)
 
     # Precompute the Jacobian of the projection function
     J_pi = JacobianGenerator.get_jacobian_camera_model(frame_reference.camera.intrinsic, X_back_projection)
@@ -232,7 +237,7 @@ def solve_photometric(frame_reference,
                 GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
 
 
-        Gradient_step_manager.save_previous_mean_error(v_mean,it)
+        Gradient_step_manager.save_previous_mean_error(v_mean)
 
         GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
 
@@ -241,54 +246,61 @@ def solve_photometric(frame_reference,
         v_mean = v_sum / number_of_valid_measurements
         valid_pixel_ratio = number_of_valid_measurements / N
         v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
+        #v_diff = Gradient_step_manager.last_error_mean_abs - v_mean
 
         #Gradient_step_manager.track_gradient(v_mean,it)
 
-        if v_diff <= eps:
+        if 0 <= v_diff <= eps and Gradient_step_manager.check_iteration(it):
             print('done, mean error:', v_mean)
             break
 
         #Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
-        #if v_mean <= Gradient_step_manager.last_error_mean_abs:
-        GaussNewtonRoutines.gauss_newton_step(width,
-                                          height,
-                                          valid_measurements,
-                                          W,
-                                          J_pi,
-                                          J_lie,
-                                          frame_target.grad_x,
-                                          frame_target.grad_y,
-                                          v,
-                                          J_v,
-                                          normal_matrix,
-                                          image_range_offset)
+        if v_mean <= Gradient_step_manager.last_error_mean_abs:
+            GaussNewtonRoutines.gauss_newton_step(width,
+                                              height,
+                                              valid_measurements,
+                                              W,
+                                              J_pi,
+                                              J_lie,
+                                              frame_target.grad_x,
+                                              frame_target.grad_y,
+                                              v,
+                                              J_v,
+                                              normal_matrix,
+                                              image_range_offset)
 
-        # TODO: Investigate faster inversion with QR
-        try:
-            pseudo_inv = linalg.inv(normal_matrix)
-            #(Q,R) = linalg.qr(normal_matrix)
-            #Q_t = np.transpose(Q)
-            #R_inv = linalg.inv(R)
-            #pseudo_inv = np.multiply(R_inv,Q_t)
-        except:
-            print('Cant invert')
-            return SE_3_est
+            # TODO: Investigate faster inversion with QR
+            try:
+                pseudo_inv = linalg.inv(normal_matrix)
+                #(Q,R) = linalg.qr(normal_matrix)
+                #Q_t = np.transpose(Q)
+                #R_inv = linalg.inv(R)
+                #pseudo_inv = np.multiply(R_inv,Q_t)
+            except:
+                print('Cant invert')
+                return SE_3_est
 
-        w = np.matmul(pseudo_inv, J_v)
-        #w_new = np.matmul(pseudo_inv, J_v)
-        #w = w_new
+        #w = np.matmul(pseudo_inv, J_v)
+            w_new = np.matmul(pseudo_inv, J_v)
+            # coordiante system induced by photometric solver is flipped
+            #w_new[3] *= -1
+            #w_new[4] *= -1
+            w = w_new
         # Apply Step Factor
         w = Gradient_step_manager.current_alpha*w
+        #w += Gradient_step_manager.current_alpha*w
 
-        w_transpose = np.transpose(w)
+        w_angle = w[3:twist_size]
+        w_angle_transpose = np.transpose(w_angle)
         w_x = Utils.skew_symmetric(w[3], w[4], w[5])
         w_x_squared = np.matmul(w_x, w_x)
 
         # closed form solution for exponential map
-        theta = math.sqrt(np.matmul(w_transpose, w))
-        theta_sqred = math.pow(theta, 2)
+        theta_sqred = np.matmul(w_angle_transpose, w_angle)
+        theta = math.sqrt(theta_sqred)
+        #theta_sqred = math.pow(theta, 2)
         # TODO use Taylor Expansion when theta_sqred is small
         try:
             A = math.sin(theta) / theta
@@ -303,8 +315,11 @@ def solve_photometric(frame_reference,
         R_new = I_3 + np.multiply(A, w_x) + np.multiply(B, w_x_squared)
         V = I_3 + np.multiply(B, w_x) + np.multiply(C, w_x_squared)
 
-        t_est += + np.matmul(V, u)
+        t_est += np.matmul(V, u)
         R_est = np.matmul(R_new, R_est)
+
+        #t_est = np.matmul(V, u)
+        #R_est = R_new
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()

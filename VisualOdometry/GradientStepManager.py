@@ -18,9 +18,11 @@ class GradientStepManager:
         if self.gradient_monitoring_window_start < current_iteration < self.gradient_monitoring_window_start + self.gradient_monitoring_window_size:
             self.gradient_monitoring_window[0, current_iteration - self.gradient_monitoring_window_start] = current_error_mean_abs >= self.last_error_mean_abs
 
-    def save_previous_mean_error(self, current_error_mean_abs, current_iteration):
-        if current_iteration > self.gradient_monitoring_window_start:
-            self.last_error_mean_abs = current_error_mean_abs
+    def check_iteration(self,current_iteration):
+        return current_iteration > self.gradient_monitoring_window_start
+
+    def save_previous_mean_error(self, current_error_mean_abs):
+        self.last_error_mean_abs = current_error_mean_abs
 
     def analyze_gradient_history_instantly(self, current_error_mean_abs):
         if current_error_mean_abs > self.last_error_mean_abs:

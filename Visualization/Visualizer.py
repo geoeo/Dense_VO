@@ -69,20 +69,25 @@ class Visualizer():
 
         self.point_pair = Utils.to_homogeneous_positions(X, Y, Z, H)
 
-    #TODO
+
     def visualize_poses(self,pose_list):
-        points_to_be_graphed = self.point_pair[0:3, :]
+        if len(pose_list) == 0:
+            print('pose list is empty, skipping')
+            return
+
+        se3_init = pose_list[0]
+        points_to_be_graphed = np.matmul(se3_init,self.point_pair)[0:3,:]
 
         if not self.ground_truth is None:
-            points_transformed = np.matmul(self.ground_truth, self.point_pair)[0:3, :]
-            points_to_be_graphed = np.append(points_to_be_graphed, points_transformed, axis=1)
-
-        for se3 in pose_list:
+            points_transformed = np.matmul(self.ground_truth, self.point_pair)[0:3,:]
+            Plot3D.plot_array_lines(points_transformed, self.graph, '-go', clear = True, draw=False)
+        for i in range(1,len(pose_list)):
+            se3 = pose_list[i]
             points_transformed = np.matmul(se3,self.point_pair)[0:3,:]
             # identity gets transformed twice
             points_to_be_graphed = np.append(points_to_be_graphed,points_transformed,axis=1)
 
-        Plot3D.plot_array_lines(points_to_be_graphed,self.graph)
+        Plot3D.plot_array_lines(points_to_be_graphed,self.graph,clear=False,draw=True)
 
     # performs visualization
     def visualize(self):
@@ -97,7 +102,7 @@ class Visualizer():
             self.visualize_poses(self.solver_thread_manager.pose_estimate_list)
 
             self.solver_thread_manager.threadLock.release()
-            time.sleep(1)
+            time.sleep(5)
 
         plt.show()
         print("Exiting Visualizer")
