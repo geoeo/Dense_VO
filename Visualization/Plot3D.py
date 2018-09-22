@@ -4,6 +4,8 @@ from Numerics import ImageProcessing
 import numpy as np
 import cv2
 
+def show():
+    plt.show()
 
 def scatter_plot(X,Y,Z):
     fig = plt.figure()

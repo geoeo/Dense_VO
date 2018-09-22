@@ -39,9 +39,6 @@ class VisualizerThread(threading.Thread):
 
             Plot3D.plot_array_lines(points_to_be_graphed,self.graph)
 
-
-
-
             self.threadLock.release()
             time.sleep(1)
 
@@ -57,8 +54,7 @@ class VisualizerThread(threading.Thread):
 
 class Visualizer():
 
-    def __init__(self, solver_thread_manager, ground_truth_list = None):
-        self.solver_thread_manager = solver_thread_manager
+    def __init__(self, ground_truth_list = None):
         self.ground_truth_list = []
         if ground_truth_list is not None:
             self.ground_truth_list = ground_truth_list
@@ -72,7 +68,10 @@ class Visualizer():
         self.point_pair = Utils.to_homogeneous_positions(X, Y, Z, H)
 
 
-    def visualize_poses(self,pose_list):
+    def show(self):
+        Plot3D.show()
+
+    def visualize_poses(self, pose_list, draw = True):
         if len(pose_list) == 0:
             print('pose list is empty, skipping')
             return
@@ -89,6 +88,7 @@ class Visualizer():
 
             Plot3D.plot_array_lines(points_gt_to_be_graphed, self.graph, '-go', clear=True, draw=False)
 
+
         se3_init = pose_list[0]
         points_to_be_graphed = np.matmul(se3_init,self.point_pair)[0:3,:]
 
@@ -98,21 +98,21 @@ class Visualizer():
             # identity gets transformed twice
             points_to_be_graphed = np.append(points_to_be_graphed,points_transformed,axis=1)
 
-        Plot3D.plot_array_lines(points_to_be_graphed,self.graph,clear=False,draw=True)
+        Plot3D.plot_array_lines(points_to_be_graphed,self.graph,clear=False,draw=draw)
 
     # performs visualization
-    def visualize(self):
+    def visualize(self,solver_thread_manager):
         print("Visualizing...")
 
-        while self.solver_thread_manager.is_running:
-            if not self.solver_thread_manager.threadLock.acquire(blocking=False):
+        while solver_thread_manager.is_running:
+            if not solver_thread_manager.threadLock.acquire(blocking=False):
                 print("pose estimate list being updated. Skipping this run")
                 time.sleep(0.1)
                 continue
 
-            self.visualize_poses(self.solver_thread_manager.pose_estimate_list)
+            self.visualize_poses(solver_thread_manager.pose_estimate_list)
 
-            self.solver_thread_manager.threadLock.release()
+            solver_thread_manager.threadLock.release()
             time.sleep(5)
 
         plt.show()
