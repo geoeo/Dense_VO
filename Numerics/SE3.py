@@ -123,15 +123,23 @@ def pose_pose_composition_inverse(SE3_source, SE3_target):
     z_target = SE3_target[2,3]
 
     R_source_inv = np.transpose(R_source)
-    #R_target_inv = np.transpose(R_target)
+    R_target_inv = np.transpose(R_target)
 
     translation_source = np.array([[x_source],[y_source],[z_source]],matrix_data_type)
     translation_target = np.array([[x_target],[y_target],[z_target]],matrix_data_type)
 
-    translation_source_target = translation_target - translation_source
+    translation_source_target = np.subtract(translation_target,translation_source)
     translation_source_target_prime = np.matmul(R_source_inv,translation_source_target)
+    #translation_source_target_prime = np.matmul(translation_source_target_prime,translation_source)
 
     R_origin_target = np.matmul(R_source_inv,R_target)
+    #R_origin_target = np.matmul(R_target_inv,R_source)
+
+    # TODO: investigate this further
+    #R_origin_target = np.matmul(R_target,R_source_inv)
+    #translation_source_target_prime = np.matmul(-R_origin_target,translation_source)
+    #translation_source_target_prime = np.add(translation_source_target_prime,translation_target)
+
 
     se3_source_target = np.identity(4,matrix_data_type)
     se3_source_target[0:3,3:4] = translation_source_target_prime

@@ -3,7 +3,7 @@ import cv2
 import math
 
 #TODO: Refactor this into declarations
-matrix_data_type = np.float32
+matrix_data_type = np.float64
 image_data_type = np.float64
 image_data_type_open_cv = cv2.CV_64F
 depth_data_type_int = np.uint16

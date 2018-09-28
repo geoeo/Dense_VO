@@ -15,7 +15,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             depth_ref = depth_direction*reference_depth_image[y, x]
             # For opencl maybe do this in a simple kernel before
             if depth_ref == 0:
-                depth_ref = 100000
+                depth_ref = depth_direction*100000
                 valid_measurements[flat_index] = False
             # back projection from ndc seems to give better convergence
             x_back = x
@@ -47,15 +47,9 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
-            error = target_image[y_target, x_target] - reference_image[y, x]
-            error_sq = error*error
+            error = reference_image[y, x] - target_image[y_target, x_target]
             v[flat_index][0] = error
-            v_sum += error_sq
 
-    #v_sum = v_sum*v_sum
-    # If the estimate is so bad that all measurements are invalid
-    if v_sum == 0:
-        v_sum = -1000
 
     end = time.time()
     #print('Runtime for Compute Residual:', end-start)

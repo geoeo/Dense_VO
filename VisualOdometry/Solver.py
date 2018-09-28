@@ -128,7 +128,7 @@ def solve_photometric(frame_reference,
     #                  [0, 0, 1]], dtype=matrix_data_type)
     R_est = np.identity(3, dtype=matrix_data_type)
     I_3 = np.identity(3, dtype=matrix_data_type)
-
+    I_4 = np.identity(4,dtype=matrix_data_type)
     (height,width) = frame_target.pixel_image.shape
     N = height*width
     position_vector_size = 3
@@ -137,9 +137,10 @@ def solve_photometric(frame_reference,
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     variance = -1
     v_mean = 1000
-    image_range_offset = 10
+    image_range_offset = 0
     degrees_of_freedom = 5.0 # empirically derived: see paper
     w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
+    v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
 
     fx = frame_reference.camera.intrinsic.extract_fx()
     fy = frame_reference.camera.intrinsic.extract_fy()
@@ -205,6 +206,18 @@ def solve_photometric(frame_reference,
     #number_of_valid_total = np.sum(valid_measurements_total)
     #number_of_valid_measurements = number_of_valid_reference
 
+    #target_index_projections_id = frame_target.camera.apply_perspective_pipeline(I_4)
+
+    v_id = GaussNewtonRoutines.compute_residual(width,
+                                                 height,
+                                                 X_back_projection,
+                                                 valid_measurements,
+                                                 frame_target.pixel_image,
+                                                 frame_reference.pixel_image,
+                                                 v_id,
+                                                 image_range_offset)
+
+
     for it in range(0, max_its, 1):
         start = time.time()
         # accumulators
@@ -249,7 +262,10 @@ def solve_photometric(frame_reference,
 
         v_sum = np.matmul(np.transpose(v),v)[0][0]
 
-        v_mean = v_sum / number_of_valid_measurements
+        if number_of_valid_measurements > 0:
+            v_mean = v_sum / number_of_valid_measurements
+        else:
+            v_mean = 10000
         valid_pixel_ratio = number_of_valid_measurements / N
         v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
         #v_diff = Gradient_step_manager.last_error_mean_abs - v_mean
@@ -301,7 +317,7 @@ def solve_photometric(frame_reference,
             #w_new[4] *= -1
             w = w_new
         # Apply Step Factor
-        w = Gradient_step_manager.current_alpha*w
+        w = np.multiply(Gradient_step_manager.current_alpha,w)
         #w += Gradient_step_manager.current_alpha*w
 
         w_angle = w[3:twist_size]
@@ -329,8 +345,8 @@ def solve_photometric(frame_reference,
 
         t_new = np.matmul(V, u)
         #t_new[1] *=-1
-        t_est += t_new
-        R_est = np.matmul(R_new, R_est)
+        t_est = np.add(t_new,t_est)
+        R_est = np.matmul(R_new,R_est)
 
 
         #t_est = np.matmul(V, u)
