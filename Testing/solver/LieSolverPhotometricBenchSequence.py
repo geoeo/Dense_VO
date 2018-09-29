@@ -20,25 +20,25 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 
 ########
 #rgb_id_ref = 1305031102.175304
-# rgb_id_target = 1305031102.211214
-#
-# rgb_id_ref_2 = 1305031102.211214
-# rgb_id_target_2 = 1305031102.275326
-#
-# rgb_id_ref_3 = 1305031102.275326
-# rgb_id_target_3 = 1305031102.311267
-#
-# rgb_id_ref_4 = 1305031102.311267
-# rgb_id_target_4 = 1305031102.343233
-#
-# rgb_id_ref_5 = 1305031102.343233
-# rgb_id_target_5 = 1305031102.375329
-#
-# rgb_id_ref_6 = 1305031102.375329
-# rgb_id_target_6 = 1305031102.411258
-#
-# rgb_id_ref_7 = 1305031102.411258
-# rgb_id_target_7 = 1305031102.443271
+#rgb_id_target = 1305031102.211214
+
+#rgb_id_ref_2 = 1305031102.211214
+#rgb_id_target_2 = 1305031102.275326
+
+#rgb_id_ref_3 = 1305031102.275326
+#rgb_id_target_3 = 1305031102.311267
+
+#rgb_id_ref_4 = 1305031102.311267
+#rgb_id_target_4 = 1305031102.343233
+
+#rgb_id_ref_5 = 1305031102.343233
+#rgb_id_target_5 = 1305031102.375329
+
+#rgb_id_ref_6 = 1305031102.375329
+#rgb_id_target_6 = 1305031102.411258
+
+#rgb_id_ref_7 = 1305031102.411258
+#rgb_id_target_7 = 1305031102.443271
 #
 # rgb_id_ref_8 = 1305031102.443271
 # rgb_id_target_8 = 1305031102.475318
@@ -260,7 +260,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(-517.3, -516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(1, 516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)

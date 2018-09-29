@@ -191,8 +191,8 @@ def solve_photometric(frame_reference,
                                        X_back_projection,
                                        valid_measurements,
                                        use_ndc,
-                                       #1)
-                                       -np.sign(fx))
+                                       #-1)
+                                       np.sign(fx))
 
     if debug:
         Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)

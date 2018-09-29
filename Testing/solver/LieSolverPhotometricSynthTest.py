@@ -54,7 +54,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # fx and fy affect the resulting coordiante system of the se3 matrix
 intrinsic_identity = Intrinsic.Intrinsic(1, 1, image_width/2, image_height/2)
 if use_ndc:
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 1/2, 1/2) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
 
 
 # reference frame is assumed to be the origin

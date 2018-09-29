@@ -42,7 +42,7 @@ def generate_ground_truth_se3(ground_truth_file_path,image_groundtruth_dict, ref
     #if prior is not None:
     #    SE3_ref_target = np.matmul(prior,SE3_ref_target)
 
-    SE3_ref_target[0,3]*=-1
+    #SE3_ref_target[0,3]*=-1
     SE3_ref_target[1,3]*=-1
     return SE3_ref_target
 
