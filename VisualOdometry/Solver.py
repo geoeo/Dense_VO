@@ -113,6 +113,8 @@ def solve_photometric(frame_reference,
                       alpha_step,
                       gradient_monitoring_window_start,
                       image_range_offset_start,
+                      twist_prior = None,
+                      hessian_prior = None,
                       use_ndc = False,
                       use_robust = False,
                       track_pose_estimates = False,
@@ -140,7 +142,10 @@ def solve_photometric(frame_reference,
     v_mean = 1000
     image_range_offset = image_range_offset_start
     degrees_of_freedom = 5.0 # empirically derived: see paper
+    normal_matrix = np.zeros((twist_size, twist_size))
     w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
+    w_prev = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
+    w_acc = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
 
     fx = frame_reference.camera.intrinsic.extract_fx()
@@ -186,8 +191,8 @@ def solve_photometric(frame_reference,
                                        X_back_projection,
                                        valid_measurements,
                                        use_ndc,
-                                       -1)
-                                       #np.sign(fx))
+                                       #1)
+                                       -np.sign(fx))
 
     if debug:
         Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)
@@ -299,6 +304,8 @@ def solve_photometric(frame_reference,
                 print('converged by g matrix: ', np.amax(g))
                 break
 
+            #TODO add motion prior stuff here
+
             # TODO: Investigate faster inversion with QR
             try:
                 pseudo_inv = linalg.inv(normal_matrix)
@@ -312,14 +319,23 @@ def solve_photometric(frame_reference,
 
         #w = np.matmul(pseudo_inv, J_v)
             w_new = np.matmul(pseudo_inv, g)
+            #w_new[0:3] = np.multiply(Gradient_step_manager.current_alpha, w_new[0:3])
+            #w_new[3:6] = np.multiply(0.1, w_new[3:6])
             # coordiante system induced by photometric solver is flipped
+            #w_new[0] *= -1
             #w_new[1] *= -1
             #w_new[3] *= -1
             #w_new[4] *= -1
+            w_prev = w
+            w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
             w = w_new
-        # Apply Step Factor
-        w = np.multiply(Gradient_step_manager.current_alpha,w)
-        #w += Gradient_step_manager.current_alpha*w
+            w_acc += w
+        else:
+            w_prev = w
+            w = np.multiply(Gradient_step_manager.current_alpha, w)
+            w_acc += w
+
+
 
         w_angle = w[3:twist_size]
         w_angle_transpose = np.transpose(w_angle)
@@ -357,4 +373,4 @@ def solve_photometric(frame_reference,
         end = time.time()
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
-    return SE_3_est
+    return SE_3_est, w_acc, normal_matrix

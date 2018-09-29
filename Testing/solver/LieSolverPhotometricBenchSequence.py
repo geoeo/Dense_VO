@@ -19,36 +19,70 @@ match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 ########
-rgb_id_ref = 1305031102.175304
-rgb_id_target = 1305031102.211214
+#rgb_id_ref = 1305031102.175304
+# rgb_id_target = 1305031102.211214
+#
+# rgb_id_ref_2 = 1305031102.211214
+# rgb_id_target_2 = 1305031102.275326
+#
+# rgb_id_ref_3 = 1305031102.275326
+# rgb_id_target_3 = 1305031102.311267
+#
+# rgb_id_ref_4 = 1305031102.311267
+# rgb_id_target_4 = 1305031102.343233
+#
+# rgb_id_ref_5 = 1305031102.343233
+# rgb_id_target_5 = 1305031102.375329
+#
+# rgb_id_ref_6 = 1305031102.375329
+# rgb_id_target_6 = 1305031102.411258
+#
+# rgb_id_ref_7 = 1305031102.411258
+# rgb_id_target_7 = 1305031102.443271
+#
+# rgb_id_ref_8 = 1305031102.443271
+# rgb_id_target_8 = 1305031102.475318
+#
+# rgb_id_ref_9 = 1305031102.475318
+# rgb_id_target_9 = 1305031102.511219
+#
+# rgb_id_ref_10 = 1305031102.511219
+# rgb_id_target_10 = 1305031102.575286 # jump
+#
+# rgb_id_ref_11 = 1305031102.575286
+# rgb_id_target_11 = 1305031102.611233
+#
+# rgb_id_ref_12 = 1305031102.611233
+# rgb_id_target_12 =1305031102.675285
+#
+# rgb_id_ref_13 = 1305031102.675285
+# rgb_id_target_13 = 1305031102.711263
+#
+# rgb_id_ref_14 = 1305031102.711263
+# rgb_id_target_14 = 1305031102.743234
+#
+# rgb_id_ref_15 = 1305031102.743234
+# rgb_id_target_15 = 1305031102.775472
 
-rgb_id_ref_2 = 1305031102.211214
-rgb_id_target_2 = 1305031102.275326
 
-rgb_id_ref_3 = 1305031102.275326
-rgb_id_target_3 = 1305031102.311267
-
-rgb_id_ref_4 = 1305031102.311267
-rgb_id_target_4 = 1305031102.343233
-
-rgb_id_ref_5 = 1305031102.343233
-rgb_id_target_5 = 1305031102.375329
+#rgb_id_ref_17 = 1305031102.811232
+#rgb_id_target_17 = 1305031102.843290
 #######
 # Y
-#rgb_id_ref = 1305031119.079223
-#rgb_id_target = 1305031119.111328
+rgb_id_ref = 1305031119.079223
+rgb_id_target = 1305031119.111328
 
-#rgb_id_ref_2 = 1305031119.111328
-#rgb_id_target_2 = 1305031119.147616
+rgb_id_ref_2 = 1305031119.111328
+rgb_id_target_2 = 1305031119.147616
 
-#rgb_id_ref_3 = 1305031119.147616
-#rgb_id_target_3 = 1305031119.179226
+rgb_id_ref_3 = 1305031119.147616
+rgb_id_target_3 = 1305031119.179226
 
-#rgb_id_ref_4 = 1305031119.179226
-#rgb_id_target_4 = 1305031119.211364
+rgb_id_ref_4 = 1305031119.179226
+rgb_id_target_4 = 1305031119.211364
 
-#rgb_id_ref_5 = 1305031119.211364
-#rgb_id_target_5 = 1305031119.247399
+rgb_id_ref_5 = 1305031119.211364
+rgb_id_target_5 = 1305031119.247399
 ########
 
 #rgb_id_ref = 1305031105.643273
@@ -117,11 +151,51 @@ rgb_id_target_5 = 1305031102.375329
 #rgb_id_ref_3 = 1305031108.275358
 #rgb_id_target_3 = 1305031108.343278
 
+##
+
+#rgb_id_ref = 1305031108.243347
+#rgb_id_target = 1305031108.275358
+
+#rgb_id_ref_2 = 1305031108.275358
+#rgb_id_target_2 = 1305031108.311332
+
+#rgb_id_ref_3 = 1305031108.311332
+#rgb_id_target_3 = 1305031108.343278
+
+#rgb_id_ref_4 = 1305031108.343278
+#rgb_id_target_4 = 1305031108.375410
+
+#########
+
+# rgb_id_ref = 1305031109.243290
+# rgb_id_target = 1305031109.275308
+#
+# rgb_id_ref_2 = 1305031109.275308
+# rgb_id_target_2 = 1305031109.311329
+#
+# rgb_id_ref_3 = 1305031109.311329
+# rgb_id_target_3 = 1305031109.343248
+#
+# rgb_id_ref_4 = 1305031109.343248
+# rgb_id_target_4 = 1305031109.375397
+#
+# rgb_id_ref_5 = 1305031109.375397
+# rgb_id_target_5 = 1305031109.411329
+#
+# rgb_id_ref_6 = 1305031109.411329
+# rgb_id_target_6 = 1305031109.443302
+#
+# rgb_id_ref_7 = 1305031109.443302
+# rgb_id_target_7 = 1305031109.475363
+
 
 #########
 
 #ref_id_list = [rgb_id_ref]
 #target_id_list = [rgb_id_target]
+
+#ref_id_list = [rgb_id_ref, rgb_id_ref_2]
+#target_id_list = [rgb_id_target, rgb_id_target_2]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2,rgb_id_ref_3]
 #target_id_list = [rgb_id_target, rgb_id_target_2,rgb_id_target_3]
@@ -137,6 +211,12 @@ target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7]
 #target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7]
+
+#ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8 ]
+#target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8]
+
+#ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8, rgb_id_ref_9, rgb_id_ref_10, rgb_id_ref_11, rgb_id_ref_12, rgb_id_ref_13, rgb_id_ref_14, rgb_id_ref_15]
+#target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8, rgb_id_target_9, rgb_id_target_10, rgb_id_target_11, rgb_id_target_12, rgb_id_target_13, rgb_id_target_14, rgb_id_target_15]
 
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
@@ -204,11 +284,13 @@ for i in range(0, len(ref_image_list)):
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
-                                                 max_its=20000,
+                                                 max_its=20,
                                                  eps=0.00001,  #0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.1,  # 0.1, 0.04, 0.005
+                                                 alpha_step=0.04,  # 0.1, 0.04, 0.005
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,
+                                                 twist_prior=None,
+                                                 hessian_prior=None,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,

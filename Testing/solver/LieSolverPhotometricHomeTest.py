@@ -47,7 +47,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # fx and fy affect the resulting coordiante system of the se3 matrix
 intrinsic_identity = Intrinsic.Intrinsic(1, 1, image_width/2, image_height/2)
 if use_ndc:
-    intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 1/2, 1/2) # for ndc
 
 
 # reference frame is assumed to be the origin
@@ -70,6 +70,8 @@ SE3_est = Solver.solve_photometric(frame_reference,
                                    alpha_step=1.0,
                                    gradient_monitoring_window_start=5.0,
                                    image_range_offset_start=0,
+                                   twist_prior=None,
+                                   hessian_prior=None,
                                    use_ndc = use_ndc,
                                    use_robust = True,
                                    track_pose_estimates = False,

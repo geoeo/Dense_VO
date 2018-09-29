@@ -47,7 +47,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
-            error = reference_image[y, x] - target_image[y_target, x_target]
+            error = target_image[y_target, x_target]- reference_image[y, x]
             v[flat_index][0] = error
 
 
