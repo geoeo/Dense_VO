@@ -19,36 +19,36 @@ match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 ########
-#rgb_id_ref = 1305031102.175304
-#rgb_id_target = 1305031102.211214
+rgb_id_ref = 1305031102.175304
+rgb_id_target = 1305031102.211214
 
-#rgb_id_ref_2 = 1305031102.211214
-#rgb_id_target_2 = 1305031102.275326
+rgb_id_ref_2 = 1305031102.211214
+rgb_id_target_2 = 1305031102.275326
 
-#rgb_id_ref_3 = 1305031102.275326
-#rgb_id_target_3 = 1305031102.311267
+rgb_id_ref_3 = 1305031102.275326
+rgb_id_target_3 = 1305031102.311267
 
-#rgb_id_ref_4 = 1305031102.311267
-#rgb_id_target_4 = 1305031102.343233
+rgb_id_ref_4 = 1305031102.311267
+rgb_id_target_4 = 1305031102.343233
 
-#rgb_id_ref_5 = 1305031102.343233
-#rgb_id_target_5 = 1305031102.375329
+rgb_id_ref_5 = 1305031102.343233
+rgb_id_target_5 = 1305031102.375329
 #######
 # Y
-rgb_id_ref = 1305031119.079223
-rgb_id_target = 1305031119.111328
+#rgb_id_ref = 1305031119.079223
+#rgb_id_target = 1305031119.111328
 
-rgb_id_ref_2 = 1305031119.111328
-rgb_id_target_2 = 1305031119.147616
+#rgb_id_ref_2 = 1305031119.111328
+#rgb_id_target_2 = 1305031119.147616
 
-rgb_id_ref_3 = 1305031119.147616
-rgb_id_target_3 = 1305031119.179226
+#rgb_id_ref_3 = 1305031119.147616
+#rgb_id_target_3 = 1305031119.179226
 
-rgb_id_ref_4 = 1305031119.179226
-rgb_id_target_4 = 1305031119.211364
+#rgb_id_ref_4 = 1305031119.179226
+#rgb_id_target_4 = 1305031119.211364
 
-rgb_id_ref_5 = 1305031119.211364
-rgb_id_target_5 = 1305031119.247399
+#rgb_id_ref_5 = 1305031119.211364
+#rgb_id_target_5 = 1305031119.247399
 ########
 
 #rgb_id_ref = 1305031105.643273
@@ -67,7 +67,6 @@ rgb_id_target_5 = 1305031119.247399
 #rgb_id_target_5 = 1305031105.843271
 
 ##
-
 
 #rgb_id_ref = 1305031105.643273
 #rgb_id_target = 1305031105.711309
@@ -90,11 +89,45 @@ rgb_id_target_5 = 1305031119.247399
 #rgb_id_ref_7 = 1305031106.075330
 #rgb_id_target_7 = 1305031106.143355
 
+#############
+# X
+#rgb_id_ref = 1305031108.143334
+#rgb_id_target = 1305031108.176058
+
+#rgb_id_ref_2 = 1305031108.176058
+#rgb_id_target_2 = 1305031108.211475
+
+#rgb_id_ref_3 = 1305031108.211475
+#rgb_id_target_3 = 1305031108.243347
+
+#rgb_id_ref_4 = 1305031108.243347
+#rgb_id_target_4 = 1305031108.275358
+
+#rgb_id_ref_5 = 1305031108.275358
+#rgb_id_target_5 = 1305031108.311332
+
+##
+
+#rgb_id_ref = 1305031108.143334
+#rgb_id_target = 1305031108.211475
+
+#rgb_id_ref_2 = 1305031108.211475
+#rgb_id_target_2 = 1305031108.275358
+
+#rgb_id_ref_3 = 1305031108.275358
+#rgb_id_target_3 = 1305031108.343278
+
+
+#########
+
 #ref_id_list = [rgb_id_ref]
 #target_id_list = [rgb_id_target]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2,rgb_id_ref_3]
 #target_id_list = [rgb_id_target, rgb_id_target_2,rgb_id_target_3]
+
+#ref_id_list = [rgb_id_ref, rgb_id_ref_2,rgb_id_ref_3, rgb_id_ref_4]
+#target_id_list = [rgb_id_target, rgb_id_target_2,rgb_id_target_3, rgb_id_target_4]
 
 #ref_id_list = [rgb_id_target_3,rgb_id_target_2, rgb_id_target]
 #target_id_list = [rgb_id_ref_3, rgb_id_ref_2, rgb_id_ref]
@@ -146,7 +179,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
 intrinsic_identity = Intrinsic.Intrinsic(-517.3, -516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
-    #intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 1/2, 1/2) # for ndc
+    #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
     intrinsic_identity = Intrinsic.Intrinsic(1, 516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
 
 
@@ -154,6 +187,7 @@ camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
 camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 
 visualizer = Visualizer.Visualizer(ground_truth_list)
+
 
 for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
@@ -166,21 +200,19 @@ for i in range(0, len(ref_image_list)):
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
     frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
 
-
-    # TODO: Dont allocate new class every iteraiton
     solver_manager = SolverThreadManager.Manager(1,
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=20000,
-                                                 eps=0.00001, #0.00005, 0.00000001
-                                                 alpha_step=0.04, #0.1
+                                                 eps=0.00001,  #0.00001, 0.00005, 0.00000001
+                                                 alpha_step=0.1,  # 0.1, 0.04, 0.005
                                                  gradient_monitoring_window_start=0,
+                                                 image_range_offset_start=0,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
                                                  debug=False)
-
 
     solver_manager.start()
     solver_manager.join()  # wait to complete

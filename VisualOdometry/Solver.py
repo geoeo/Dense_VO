@@ -112,6 +112,7 @@ def solve_photometric(frame_reference,
                       eps,
                       alpha_step,
                       gradient_monitoring_window_start,
+                      image_range_offset_start,
                       use_ndc = False,
                       use_robust = False,
                       track_pose_estimates = False,
@@ -137,7 +138,7 @@ def solve_photometric(frame_reference,
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     variance = -1
     v_mean = 1000
-    image_range_offset = 0
+    image_range_offset = image_range_offset_start
     degrees_of_freedom = 5.0 # empirically derived: see paper
     w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
@@ -185,8 +186,8 @@ def solve_photometric(frame_reference,
                                        X_back_projection,
                                        valid_measurements,
                                        use_ndc,
-                                       #1)
-                                       np.sign(fx))
+                                       -1)
+                                       #np.sign(fx))
 
     if debug:
         Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)
@@ -346,7 +347,7 @@ def solve_photometric(frame_reference,
         t_new = np.matmul(V, u)
         #t_new[1] *=-1
         t_est = np.add(t_new,t_est)
-        R_est = np.matmul(R_new,R_est)
+        R_est = np.matmul(R_est,R_new)
 
 
         #t_est = np.matmul(V, u)
