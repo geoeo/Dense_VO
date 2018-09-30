@@ -268,6 +268,8 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 
 visualizer = Visualizer.Visualizer(ground_truth_list)
 
+motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
+twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
 
 for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
@@ -284,20 +286,24 @@ for i in range(0, len(ref_image_list)):
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
-                                                 max_its=20,
+                                                 max_its=100,
                                                  eps=0.00001,  #0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.04,  # 0.1, 0.04, 0.005
+                                                 alpha_step=0.55,  # 0.1, 0.04, 0.005, 0.55 - motion prior
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,
-                                                 twist_prior=None,
-                                                 hessian_prior=None,
+                                                 twist_prior=twist_prior,
+                                                 motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
+                                                 use_motion_prior=True,
                                                  debug=False)
 
     solver_manager.start()
     solver_manager.join()  # wait to complete
+
+    motion_cov_inv = solver_manager.motion_cov_inv
+    twist_prior = solver_manager.twist_final
     se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
     pose_estimate_list.append(se3_estimate_acc)
 visualizer.visualize_poses(pose_estimate_list, draw= False)

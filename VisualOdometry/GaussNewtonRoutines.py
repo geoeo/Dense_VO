@@ -56,6 +56,36 @@ def compute_residual(width, height, target_index_projections, valid_measurements
     #return v_sum
     return v
 
+def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
+                      g, normal_matrix_return, motion_cov_inv, twist_prior, twist_prev, image_range_offset):
+    convergence = False
+    start = time.time()
+    for y in range(image_range_offset, height - image_range_offset, 1):
+        for x in range(image_range_offset, width - image_range_offset, 1):
+            flat_index = matrix_to_flat_index_rows(y, x, height)
+            if not valid_measurements[flat_index]:
+                continue
+            J_image = get_jacobian_image(target_image_grad_x, target_image_grad_y, x, y)
+            J_pi_element = J_pi[flat_index]
+            J_lie_element = J_lie[flat_index]
+
+            J_pi_lie = np.matmul(J_pi_element, J_lie_element)
+            J_full = np.matmul(J_image, J_pi_lie)
+            J_t = np.transpose(J_full)
+            w_i = W[0,flat_index]
+            error_sample = v[flat_index][0]
+
+            twist_delta = np.subtract(twist_prior,twist_prev)
+            motion_prior = np.matmul(motion_cov_inv, twist_delta)
+            g += np.add(np.multiply(w_i,np.multiply(-J_t, error_sample)),motion_prior)
+            normal_matrix_return += np.add(np.multiply(w_i,np.matmul(J_t, J_full)),motion_cov_inv)
+    # different stopping criterion using max norm
+    #if math.fabs(np.amax(g)< 0.001):
+        #convergence = True
+    end = time.time()
+    #print('Runtime Gauss Newton Step:', end-start)
+    return convergence
+
 
 def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
                       g, normal_matrix_return, image_range_offset):
@@ -73,11 +103,11 @@ def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_
             J_pi_lie = np.matmul(J_pi_element, J_lie_element)
             J_full = np.matmul(J_image, J_pi_lie)
             J_t = np.transpose(J_full)
-            W_i = W[0,flat_index]
+            w_i = W[0,flat_index]
             error_sample = v[flat_index][0]
 
-            g += np.multiply(W_i, np.multiply(error_sample, -J_t))
-            normal_matrix_return += np.multiply(W_i,np.matmul(J_t, J_full))
+            g += np.multiply(w_i,np.multiply(-J_t, error_sample))
+            normal_matrix_return += np.multiply(w_i,np.matmul(J_t, J_full))
     # different stopping criterion using max norm
     #if math.fabs(np.amax(g)< 0.001):
         #convergence = True

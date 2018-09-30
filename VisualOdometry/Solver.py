@@ -114,10 +114,11 @@ def solve_photometric(frame_reference,
                       gradient_monitoring_window_start,
                       image_range_offset_start,
                       twist_prior = None,
-                      hessian_prior = None,
+                      motion_cov_inv_in = None,
                       use_ndc = False,
                       use_robust = False,
                       track_pose_estimates = False,
+                      use_motion_prior = False,
                       debug = False):
 
     if track_pose_estimates and (threadLock == None or pose_estimate_list == None):
@@ -132,6 +133,7 @@ def solve_photometric(frame_reference,
     R_est = np.identity(3, dtype=matrix_data_type)
     I_3 = np.identity(3, dtype=matrix_data_type)
     I_4 = np.identity(4,dtype=matrix_data_type)
+    I_6 = np.identity(6,dtype=matrix_data_type)
     (height,width) = frame_target.pixel_image.shape
     N = height*width
     position_vector_size = 3
@@ -142,7 +144,8 @@ def solve_photometric(frame_reference,
     v_mean = 1000
     image_range_offset = image_range_offset_start
     degrees_of_freedom = 5.0 # empirically derived: see paper
-    normal_matrix = np.zeros((twist_size, twist_size))
+    normal_matrix_ret = np.identity(6, dtype=Utils.matrix_data_type)
+    motion_cov_inv = motion_cov_inv_in
     w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_prev = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_acc = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
@@ -229,7 +232,7 @@ def solve_photometric(frame_reference,
         # accumulators
         #TODO: investigate preallocate and clear in a for loop
         g = np.zeros((twist_size, 1))
-        normal_matrix = np.zeros((twist_size, twist_size))
+        normal_matrix = np.identity(twist_size, dtype=matrix_data_type)
         v = np.zeros((N,1), dtype=matrix_data_type,order='F')
         W = np.ones((1,N), dtype=matrix_data_type,order='F')
 
@@ -287,22 +290,41 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
-            converged = GaussNewtonRoutines.gauss_newton_step(width,
-                                              height,
-                                              valid_measurements,
-                                              W,
-                                              J_pi,
-                                              J_lie,
-                                              frame_target.grad_x,
-                                              frame_target.grad_y,
-                                              v,
-                                              g,
-                                              normal_matrix,
-                                              image_range_offset)
 
-            if converged:
-                print('converged by g matrix: ', np.amax(g))
-                break
+            if use_motion_prior:
+                converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
+                                                  height,
+                                                  valid_measurements,
+                                                  W,
+                                                  J_pi,
+                                                  J_lie,
+                                                  frame_target.grad_x,
+                                                  frame_target.grad_y,
+                                                  v,
+                                                  g,
+                                                  normal_matrix,
+                                                  motion_cov_inv,
+                                                  twist_prior,
+                                                  w_prev,
+                                                  image_range_offset)
+            else:
+                converged = GaussNewtonRoutines.gauss_newton_step(width,
+                                                  height,
+                                                  valid_measurements,
+                                                  W,
+                                                  J_pi,
+                                                  J_lie,
+                                                  frame_target.grad_x,
+                                                  frame_target.grad_y,
+                                                  v,
+                                                  g,
+                                                  normal_matrix,
+                                                  image_range_offset)
+            normal_matrix_ret = normal_matrix
+
+            #if converged:
+                #print('converged by g matrix: ', np.amax(g))
+                #break
 
             #TODO add motion prior stuff here
 
@@ -373,4 +395,8 @@ def solve_photometric(frame_reference,
         end = time.time()
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
-    return SE_3_est, w_acc, normal_matrix
+    if use_motion_prior:
+        motion_cov_inv = normal_matrix_ret
+    else:
+        motion_cov_inv = I_6
+    return SE_3_est, w_acc, motion_cov_inv
