@@ -70,20 +70,20 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 #rgb_id_target_17 = 1305031102.843290
 #######
 # Y
-#rgb_id_ref = 1305031119.079223
-#rgb_id_target = 1305031119.111328
+rgb_id_ref = 1305031119.079223
+rgb_id_target = 1305031119.111328
 
-#rgb_id_ref_2 = 1305031119.111328
-#rgb_id_target_2 = 1305031119.147616
+rgb_id_ref_2 = 1305031119.111328
+rgb_id_target_2 = 1305031119.147616
 
-#rgb_id_ref_3 = 1305031119.147616
-#rgb_id_target_3 = 1305031119.179226
+rgb_id_ref_3 = 1305031119.147616
+rgb_id_target_3 = 1305031119.179226
 
-#rgb_id_ref_4 = 1305031119.179226
-#rgb_id_target_4 = 1305031119.211364
+rgb_id_ref_4 = 1305031119.179226
+rgb_id_target_4 = 1305031119.211364
 
-#rgb_id_ref_5 = 1305031119.211364
-#rgb_id_target_5 = 1305031119.247399
+rgb_id_ref_5 = 1305031119.211364
+rgb_id_target_5 = 1305031119.247399
 ########
 
 #rgb_id_ref = 1305031105.643273
@@ -126,20 +126,20 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 
 #############
 # X
-rgb_id_ref = 1305031108.143334
-rgb_id_target = 1305031108.176058
+#rgb_id_ref = 1305031108.143334
+#rgb_id_target = 1305031108.176058
 
-rgb_id_ref_2 = 1305031108.176058
-rgb_id_target_2 = 1305031108.211475
+#rgb_id_ref_2 = 1305031108.176058
+#rgb_id_target_2 = 1305031108.211475
 
-rgb_id_ref_3 = 1305031108.211475
-rgb_id_target_3 = 1305031108.243347
+#rgb_id_ref_3 = 1305031108.211475
+#rgb_id_target_3 = 1305031108.243347
 
-rgb_id_ref_4 = 1305031108.243347
-rgb_id_target_4 = 1305031108.275358
+#rgb_id_ref_4 = 1305031108.243347
+#rgb_id_target_4 = 1305031108.275358
 
-rgb_id_ref_5 = 1305031108.275358
-rgb_id_target_5 = 1305031108.311332
+#rgb_id_ref_5 = 1305031108.275358
+#rgb_id_target_5 = 1305031108.311332
 
 ##
 
@@ -283,12 +283,10 @@ for i in range(0, len(ref_image_list)):
     im_depth_target /= depth_factor
 
 
-    # Since our virtual image plane is on the same side as our depth values
-    # we push all depth values out to guarantee that they are always infront of the image plane
-    depth_t = (im_depth_reference != 0).astype(Utils.depth_data_type_float)
-    im_depth_reference = np.add(im_depth_reference,depth_t)
-    depth_t = (im_depth_target != 0).astype(Utils.depth_data_type_float)
-    im_depth_target = np.add(im_depth_target,depth_t)
+    #depth_t = (im_depth_reference != 0).astype(Utils.depth_data_type_float)
+    #im_depth_reference = np.add(im_depth_reference,depth_t)
+    #depth_t = (im_depth_target != 0).astype(Utils.depth_data_type_float)
+    #im_depth_target = np.add(im_depth_target,depth_t)
 
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
