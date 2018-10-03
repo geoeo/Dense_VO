@@ -297,7 +297,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=100,
-                                                 eps=0.001,  #0.00001, 0.00005, 0.00000001
+                                                 eps=0.001,  #0.001, 0.00001, 0.00005, 0.00000001
                                                  alpha_step=0.6,  # 0.1, 0.04, 0.005, 0.55 - motion prior
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,

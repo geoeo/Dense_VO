@@ -258,7 +258,7 @@ def solve_photometric(frame_reference,
 
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
-        target_index_projections[2,:] -= depth_factor*1
+        #target_index_projections[2,:] -= depth_factor*1
 
 
         v = GaussNewtonRoutines.compute_residual(width,
@@ -297,7 +297,7 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         # TODO investigate absolute error threshold aswel?
-        if (0 <= v_diff <= eps or valid_pixel_ratio < 0.6) and Gradient_step_manager.check_iteration(it) :
+        if (0 <= v_diff <= eps or valid_pixel_ratio < 0.85) and Gradient_step_manager.check_iteration(it) :
             print('done, mean error:', v_mean, 'diff: ', v_diff)
             break
 
