@@ -4,6 +4,7 @@ import math
 from scipy import linalg
 from Numerics import Lie, Utils, ImageProcessing, JacobianGenerator
 from Numerics.Utils import matrix_data_type
+from Numerics import SE3
 from VisualOdometry import GradientStepManager
 from VisualOdometry import GaussNewtonRoutines
 from Visualization import Plot3D
@@ -194,8 +195,13 @@ def solve_photometric(frame_reference,
                                        X_back_projection,
                                        valid_measurements,
                                        use_ndc,
-                                       #-1)
-                                       np.sign(fx))
+                                       -1)
+                                       #np.sign(fx))
+
+    z_rot = SE3.makeS03(0,0,math.pi)
+    se3_rot = np.identity(4, dtype=matrix_data_type)
+    se3_rot[0:3,0:3] = z_rot
+    #X_back_projection = np.matmul(se3_rot,X_back_projection)
 
     if debug:
         Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)
@@ -244,6 +250,7 @@ def solve_photometric(frame_reference,
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X_back_projection)
+        #Y_est_z_rot = np.matmul(se3_rot,Y_est)
 
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
@@ -282,7 +289,7 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         # TODO investigate absolute error threshold aswel?
-        if 0 <= v_diff <= eps and Gradient_step_manager.check_iteration(it):
+        if (0 <= v_diff <= eps or valid_pixel_ratio < 0.9) and Gradient_step_manager.check_iteration(it) :
             print('done, mean error:', v_mean, 'diff: ', v_diff)
             break
 
@@ -348,6 +355,7 @@ def solve_photometric(frame_reference,
             #w_new[1] *= -1
             #w_new[3] *= -1
             #w_new[4] *= -1
+            #w_new[5] *= -1
             w_prev = w
             w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
             w = w_new

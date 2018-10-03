@@ -4,6 +4,7 @@ from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate
 from Visualization import Visualizer
+from math import pi
 
 
 
@@ -18,7 +19,7 @@ depth_text = dataset_root+'depth.txt'
 match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
-########
+#######
 #rgb_id_ref = 1305031102.175304
 #rgb_id_target = 1305031102.211214
 
@@ -69,20 +70,20 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 #rgb_id_target_17 = 1305031102.843290
 #######
 # Y
-rgb_id_ref = 1305031119.079223
-rgb_id_target = 1305031119.111328
+#rgb_id_ref = 1305031119.079223
+#rgb_id_target = 1305031119.111328
 
-rgb_id_ref_2 = 1305031119.111328
-rgb_id_target_2 = 1305031119.147616
+#rgb_id_ref_2 = 1305031119.111328
+#rgb_id_target_2 = 1305031119.147616
 
-rgb_id_ref_3 = 1305031119.147616
-rgb_id_target_3 = 1305031119.179226
+#rgb_id_ref_3 = 1305031119.147616
+#rgb_id_target_3 = 1305031119.179226
 
-rgb_id_ref_4 = 1305031119.179226
-rgb_id_target_4 = 1305031119.211364
+#rgb_id_ref_4 = 1305031119.179226
+#rgb_id_target_4 = 1305031119.211364
 
-rgb_id_ref_5 = 1305031119.211364
-rgb_id_target_5 = 1305031119.247399
+#rgb_id_ref_5 = 1305031119.211364
+#rgb_id_target_5 = 1305031119.247399
 ########
 
 #rgb_id_ref = 1305031105.643273
@@ -125,20 +126,20 @@ rgb_id_target_5 = 1305031119.247399
 
 #############
 # X
-#rgb_id_ref = 1305031108.143334
-#rgb_id_target = 1305031108.176058
+rgb_id_ref = 1305031108.143334
+rgb_id_target = 1305031108.176058
 
-#rgb_id_ref_2 = 1305031108.176058
-#rgb_id_target_2 = 1305031108.211475
+rgb_id_ref_2 = 1305031108.176058
+rgb_id_target_2 = 1305031108.211475
 
-#rgb_id_ref_3 = 1305031108.211475
-#rgb_id_target_3 = 1305031108.243347
+rgb_id_ref_3 = 1305031108.211475
+rgb_id_target_3 = 1305031108.243347
 
-#rgb_id_ref_4 = 1305031108.243347
-#rgb_id_target_4 = 1305031108.275358
+rgb_id_ref_4 = 1305031108.243347
+rgb_id_target_4 = 1305031108.275358
 
-#rgb_id_ref_5 = 1305031108.275358
-#rgb_id_target_5 = 1305031108.311332
+rgb_id_ref_5 = 1305031108.275358
+rgb_id_target_5 = 1305031108.311332
 
 ##
 
@@ -232,9 +233,12 @@ use_ndc = True
 
 
 image_groundtruth_dict = dict(associate.match(rgb_text,groundtruth_text))
-se3_ground_truth_prior = np.transpose(SE3.quaternion_to_s03(0.6132, 0.5962, -0.3311, -0.3986))
+#se3_ground_truth_prior = np.transpose(SE3.quaternion_to_s03(0.6132, 0.5962, -0.3311, -0.3986))
+se3_ground_truth_prior = SE3.makeS03(0,0,pi)
 se3_ground_truth_prior = np.append(se3_ground_truth_prior,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
 se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
+#se3_ground_truth_prior = SE3.invert(se3_ground_truth_prior)
+se3_ground_truth_prior[0:3,3] = 0
 
 
 for i in range(0, len(ref_id_list)):
@@ -242,7 +246,7 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id,None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 
@@ -278,6 +282,14 @@ for i in range(0, len(ref_image_list)):
     im_depth_reference /= depth_factor
     im_depth_target /= depth_factor
 
+
+    # Since our virtual image plane is on the same side as our depth values
+    # we push all depth values out to guarantee that they are always infront of the image plane
+    depth_t = (im_depth_reference != 0).astype(Utils.depth_data_type_float)
+    im_depth_reference = np.add(im_depth_reference,depth_t)
+    depth_t = (im_depth_target != 0).astype(Utils.depth_data_type_float)
+    im_depth_target = np.add(im_depth_target,depth_t)
+
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
     frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
@@ -287,8 +299,8 @@ for i in range(0, len(ref_image_list)):
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=100,
-                                                 eps=0.00001,  #0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.55,  # 0.1, 0.04, 0.005, 0.55 - motion prior
+                                                 eps=0.001,  #0.00001, 0.00005, 0.00000001
+                                                 alpha_step=0.6,  # 0.1, 0.04, 0.005, 0.55 - motion prior
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,

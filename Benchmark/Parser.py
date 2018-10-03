@@ -15,9 +15,17 @@ def generate_se3_from_groundtruth(groundtruth_list):
     qz = float(groundtruth_list[5])
     qw = float(groundtruth_list[6])
 
+    #qx *= -1
+    #qy *= -1
+    #qz *= -1
+    #qw *= -1
+
     se3 = np.identity(4)
 
-    roll, pitch, yaw = SE3.Quaternion_toEulerianRadians(qx,qy,qz,qw)
+    roll, pitch, yaw = SE3.Quaternion_toEulerianRadians(qx, qy, qz, qw)
+    #roll*=-1
+    #pitch*=-1
+    #yaw*=-1
     SO3 = SE3.makeS03(roll, pitch, yaw) #  seems to be more precise
     #SO3 = SE3.quaternion_to_s03(qx,qy,qz,qw)
 
@@ -39,11 +47,11 @@ def generate_ground_truth_se3(ground_truth_file_path,image_groundtruth_dict, ref
 
     SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref, SE3_target)
 
-    #if prior is not None:
-    #    SE3_ref_target = np.matmul(prior,SE3_ref_target)
+    if prior is not None:
+        SE3_ref_target = np.matmul(prior,SE3_ref_target)
 
-    SE3_ref_target[0,3]*=-1
-    SE3_ref_target[1,3]*=-1
+    SE3_ref_target[0,3]*= -1
+    SE3_ref_target[1,3] = np.multiply(-1,SE3_ref_target[1,3])
     return SE3_ref_target
 
 def generate_image_depth_pair(dataset_root, rgb_file_path, depth_file_path, match_text, image_id):
