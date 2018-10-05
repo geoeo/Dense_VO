@@ -232,7 +232,7 @@ depth_factor = 5000.0
 use_ndc = True
 
 
-image_groundtruth_dict = dict(associate.match(rgb_text,groundtruth_text))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 #se3_ground_truth_prior = np.transpose(SE3.quaternion_to_s03(0.6132, 0.5962, -0.3311, -0.3986))
 se3_ground_truth_prior = SE3.makeS03(0,0,pi)
 se3_ground_truth_prior = np.append(se3_ground_truth_prior,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
