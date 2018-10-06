@@ -20,20 +20,20 @@ match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 #######
-#rgb_id_ref = 1305031102.175304
-#rgb_id_target = 1305031102.211214
+rgb_id_ref = 1305031102.175304
+rgb_id_target = 1305031102.211214
 
-#rgb_id_ref_2 = 1305031102.211214
-#rgb_id_target_2 = 1305031102.275326
+rgb_id_ref_2 = 1305031102.211214
+rgb_id_target_2 = 1305031102.275326
 
-#rgb_id_ref_3 = 1305031102.275326
-#rgb_id_target_3 = 1305031102.311267
+rgb_id_ref_3 = 1305031102.275326
+rgb_id_target_3 = 1305031102.311267
 
-#rgb_id_ref_4 = 1305031102.311267
-#rgb_id_target_4 = 1305031102.343233
+rgb_id_ref_4 = 1305031102.311267
+rgb_id_target_4 = 1305031102.343233
 
-#rgb_id_ref_5 = 1305031102.343233
-#rgb_id_target_5 = 1305031102.375329
+rgb_id_ref_5 = 1305031102.343233
+rgb_id_target_5 = 1305031102.375329
 
 #rgb_id_ref_6 = 1305031102.375329
 #rgb_id_target_6 = 1305031102.411258
@@ -70,20 +70,20 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 #rgb_id_target_17 = 1305031102.843290
 #######
 # Y
-rgb_id_ref = 1305031119.079223
-rgb_id_target = 1305031119.111328
+#rgb_id_ref = 1305031119.079223
+#rgb_id_target = 1305031119.111328
 
-rgb_id_ref_2 = 1305031119.111328
-rgb_id_target_2 = 1305031119.147616
+#rgb_id_ref_2 = 1305031119.111328
+#rgb_id_target_2 = 1305031119.147616
 
-rgb_id_ref_3 = 1305031119.147616
-rgb_id_target_3 = 1305031119.179226
+#rgb_id_ref_3 = 1305031119.147616
+#rgb_id_target_3 = 1305031119.179226
 
-rgb_id_ref_4 = 1305031119.179226
-rgb_id_target_4 = 1305031119.211364
+#rgb_id_ref_4 = 1305031119.179226
+#rgb_id_target_4 = 1305031119.211364
 
-rgb_id_ref_5 = 1305031119.211364
-rgb_id_target_5 = 1305031119.247399
+#rgb_id_ref_5 = 1305031119.211364
+#rgb_id_target_5 = 1305031119.247399
 ########
 
 #rgb_id_ref = 1305031105.643273
@@ -296,9 +296,9 @@ for i in range(0, len(ref_image_list)):
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
-                                                 max_its=100,
-                                                 eps=0.001,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.6,  # 0.1, 0.04, 0.005, 0.55 - motion prior
+                                                 max_its=50,
+                                                 eps=0.002,  #0.001, 0.00001, 0.00005, 0.00000001
+                                                 alpha_step=0.5,  # 0.1, 0.04, 0.005, 0.55 - motion prior
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,
@@ -312,8 +312,10 @@ for i in range(0, len(ref_image_list)):
     solver_manager.start()
     solver_manager.join()  # wait to complete
 
-    motion_cov_inv = solver_manager.motion_cov_inv
-    twist_prior = solver_manager.twist_final
+    #motion_cov_inv = solver_manager.motion_cov_inv_final
+    motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
+    #twist_prior = solver_manager.twist_final
+    twist_prior = np.add(twist_prior,solver_manager.twist_final)
     se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
     pose_estimate_list.append(se3_estimate_acc)
 visualizer.visualize_poses(pose_estimate_list, draw= False)

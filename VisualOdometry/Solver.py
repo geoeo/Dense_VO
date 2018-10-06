@@ -151,6 +151,7 @@ def solve_photometric(frame_reference,
     w_prev = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_acc = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
+    not_better = False
 
     depth_factor = -1
 
@@ -298,14 +299,14 @@ def solve_photometric(frame_reference,
 
         # TODO investigate absolute error threshold aswel?
         if (0 <= v_diff <= eps or valid_pixel_ratio < 0.85) and Gradient_step_manager.check_iteration(it) :
-            print('done, mean error:', v_mean, 'diff: ', v_diff)
+            print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ration:', valid_pixel_ratio)
             break
 
         #Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
-
+            not_better = False
             if use_motion_prior:
                 converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
                                                   height,
@@ -341,7 +342,6 @@ def solve_photometric(frame_reference,
                 #print('converged by g matrix: ', np.amax(g))
                 #break
 
-            #TODO add motion prior stuff here
 
             # TODO: Investigate faster inversion with QR
             try:
@@ -369,6 +369,9 @@ def solve_photometric(frame_reference,
             w = w_new
             w_acc += w
         else:
+            not_better = True
+            #motion_cov_inv*=math.pow(2.0,it+1)
+
             w_prev = w
             w = np.multiply(Gradient_step_manager.current_alpha, w)
             w_acc += w
@@ -399,6 +402,7 @@ def solve_photometric(frame_reference,
         V = I_3 + np.multiply(B, w_x) + np.multiply(C, w_x_squared)
 
         t_new = np.matmul(V, u)
+
         #t_new[1] *=-1
         t_est = np.add(t_new,t_est)
         R_est = np.matmul(R_est,R_new)
@@ -415,4 +419,12 @@ def solve_photometric(frame_reference,
         motion_cov_inv = normal_matrix_ret
     else:
         motion_cov_inv = I_6
+
+    #w_acc[0] = 0
+    #w_acc[1] = 0
+    #w_acc[2] = 0
+    # Rotation estimates are still noisy i.e. dont use them in the prior
+    w_acc[3] = 0
+    w_acc[4] = 0
+    w_acc[5] = 0
     return SE_3_est, w_acc, motion_cov_inv

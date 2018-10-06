@@ -22,6 +22,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             #depending on the direction of the focal length, the depth sign has to be adjusted
             # Since our virtual image plane is on the same side as our depth values
             # we push all depth values out to guarantee that they are always infront of the image plane
+            # Better depth results without pushing it out (?)
             depth_ref = depth_direction*(1.0 + depth)
             #depth_ref = depth_direction*(depth)
 
