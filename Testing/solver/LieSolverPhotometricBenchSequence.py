@@ -35,26 +35,26 @@ rgb_id_target_4 = 1305031102.343233
 rgb_id_ref_5 = 1305031102.343233
 rgb_id_target_5 = 1305031102.375329
 
-#rgb_id_ref_6 = 1305031102.375329
-#rgb_id_target_6 = 1305031102.411258
+rgb_id_ref_6 = 1305031102.375329
+rgb_id_target_6 = 1305031102.411258
 
-#rgb_id_ref_7 = 1305031102.411258
-#rgb_id_target_7 = 1305031102.443271
+rgb_id_ref_7 = 1305031102.411258
+rgb_id_target_7 = 1305031102.443271
 #
-# rgb_id_ref_8 = 1305031102.443271
-# rgb_id_target_8 = 1305031102.475318
+rgb_id_ref_8 = 1305031102.443271
+rgb_id_target_8 = 1305031102.475318
 #
-# rgb_id_ref_9 = 1305031102.475318
-# rgb_id_target_9 = 1305031102.511219
+rgb_id_ref_9 = 1305031102.475318
+rgb_id_target_9 = 1305031102.511219
 #
-# rgb_id_ref_10 = 1305031102.511219
-# rgb_id_target_10 = 1305031102.575286 # jump
+rgb_id_ref_10 = 1305031102.511219
+rgb_id_target_10 = 1305031102.575286 # jump
 #
-# rgb_id_ref_11 = 1305031102.575286
-# rgb_id_target_11 = 1305031102.611233
+rgb_id_ref_11 = 1305031102.575286
+rgb_id_target_11 = 1305031102.611233
 #
-# rgb_id_ref_12 = 1305031102.611233
-# rgb_id_target_12 =1305031102.675285
+rgb_id_ref_12 = 1305031102.611233
+rgb_id_target_12 =1305031102.675285
 #
 # rgb_id_ref_13 = 1305031102.675285
 # rgb_id_target_13 = 1305031102.711263
@@ -207,14 +207,17 @@ rgb_id_target_5 = 1305031102.375329
 #ref_id_list = [rgb_id_target_3,rgb_id_target_2, rgb_id_target]
 #target_id_list = [rgb_id_ref_3, rgb_id_ref_2, rgb_id_ref]
 
-ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5]
-target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5]
+#ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5]
+#target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7]
 #target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8 ]
 #target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8]
+
+ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8, rgb_id_ref_9, rgb_id_ref_10, rgb_id_ref_11, rgb_id_ref_12]
+target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8, rgb_id_target_9, rgb_id_target_10, rgb_id_target_11, rgb_id_target_12]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8, rgb_id_ref_9, rgb_id_ref_10, rgb_id_ref_11, rgb_id_ref_12, rgb_id_ref_13, rgb_id_ref_14, rgb_id_ref_15]
 #target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8, rgb_id_target_9, rgb_id_target_10, rgb_id_target_11, rgb_id_target_12, rgb_id_target_13, rgb_id_target_14, rgb_id_target_15]
@@ -298,7 +301,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.002,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.5,  # 0.1, 0.04, 0.005, 0.55 - motion prior
+                                                 alpha_step=0.63,  # 0.1, 0.04, 0.005, 0.55 - motion prior
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,
@@ -312,10 +315,10 @@ for i in range(0, len(ref_image_list)):
     solver_manager.start()
     solver_manager.join()  # wait to complete
 
-    #motion_cov_inv = solver_manager.motion_cov_inv_final
-    motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
-    #twist_prior = solver_manager.twist_final
-    twist_prior = np.add(twist_prior,solver_manager.twist_final)
+    motion_cov_inv = solver_manager.motion_cov_inv_final
+    #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
+    twist_prior = solver_manager.twist_final
+    #twist_prior = np.add(twist_prior,solver_manager.twist_final)
     se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
     pose_estimate_list.append(se3_estimate_acc)
 visualizer.visualize_poses(pose_estimate_list, draw= False)

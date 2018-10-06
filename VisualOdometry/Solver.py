@@ -147,11 +147,14 @@ def solve_photometric(frame_reference,
     degrees_of_freedom = 5.0 # empirically derived: see paper
     normal_matrix_ret = np.identity(6, dtype=Utils.matrix_data_type)
     motion_cov_inv = motion_cov_inv_in
+    #motion_cov_inv = np.linalg.inv(motion_cov_inv_in)
     w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_prev = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_acc = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
+    pseudo_inv = np.identity(twist_size,dtype=matrix_data_type)
     not_better = False
+
 
     depth_factor = -1
 
@@ -417,6 +420,7 @@ def solve_photometric(frame_reference,
 
     if use_motion_prior:
         motion_cov_inv = normal_matrix_ret
+        #motion_cov_inv = np.add(motion_cov_inv, pseudo_inv)
     else:
         motion_cov_inv = I_6
 
