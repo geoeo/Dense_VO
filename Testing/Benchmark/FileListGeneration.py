@@ -11,6 +11,7 @@ depth_text = dataset_root+'depth.txt'
 match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
+match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 rgb_folder = dataset_root+rgb_folder
@@ -25,7 +26,10 @@ depth_file_total = len(depth_files)
 id_refs, id_targets, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=0,
-    ref_max=20,
+    max_count=20,
     offset=1,
-    ground_truth_dict=image_groundtruth_dict)
+    ground_truth_dict=image_groundtruth_dict,
+    match_dict=match_dict)
+
+debug = 1
 
