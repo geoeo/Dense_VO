@@ -11,12 +11,21 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
-            #depending on the direction of the focal length, the depth sign has to be adjusted
-            depth_ref = depth_direction*reference_depth_image[y, x]
+            depth = reference_depth_image[y, x]
+            valid_measurements[flat_index] = True
             # For opencl maybe do this in a simple kernel before
-            if depth_ref == 0:
-                depth_ref = depth_direction*100000
+            if depth == 0:
+                depth = depth_direction*100000
                 valid_measurements[flat_index] = False
+                #continue
+
+            #depending on the direction of the focal length, the depth sign has to be adjusted
+            # Since our virtual image plane is on the same side as our depth values
+            # we push all depth values out to guarantee that they are always infront of the image plane
+            # Better depth results without pushing it out (?)
+            depth_ref = depth_direction*(1.0 + depth)
+            #depth_ref = depth_direction*(depth)
+
             # back projection from ndc seems to give better convergence
             x_back = x
             y_back = y
@@ -30,31 +39,65 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
     #print('Runtime for Back Project Image:', end - start)
 
 
-def compute_residual(width, height, target_index_projections, valid_measurements, target_image, reference_image, v, image_range_offset):
+def compute_residual(width, height, target_index_projections, valid_measurements, target_image, reference_image,
+                     target_depth, reference_depth, v,
+                     image_range_offset):
     v_sum = 0
     start = time.time()
-    for y in range(image_range_offset, height-image_range_offset, 1):
-        for x in range(image_range_offset, width-image_range_offset, 1):
+    for y in range(image_range_offset, height - image_range_offset, 1):
+        for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
+            v[flat_index][0] = 0
+            # At the moment invalid depth measurements are still being considered
+            #if reference_depth[y,x] == 0:
+            #    continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
-            v[flat_index][0] = 0
+
             if not 0 < y_index < height or not 0 < x_index < width:
                 valid_measurements[flat_index] = False
-                v[flat_index][0] = 0
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
-            error = target_image[y_target, x_target]- reference_image[y, x]
+            error = target_image[y_target, x_target] - reference_image[y, x]
             v[flat_index][0] = error
 
-
     end = time.time()
-    #print('Runtime for Compute Residual:', end-start)
-    #return v_sum
+    # print('Runtime for Compute Residual:', end-start)
+    # return v_sum
     return v
+
+def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
+                      g, normal_matrix_return, motion_cov_inv, twist_prior, twist_prev, image_range_offset):
+    convergence = False
+    start = time.time()
+    for y in range(image_range_offset, height - image_range_offset, 1):
+        for x in range(image_range_offset, width - image_range_offset, 1):
+            flat_index = matrix_to_flat_index_rows(y, x, height)
+            if not valid_measurements[flat_index]:
+                continue
+            J_image = get_jacobian_image(target_image_grad_x, target_image_grad_y, x, y)
+            J_pi_element = J_pi[flat_index]
+            J_lie_element = J_lie[flat_index]
+
+            J_pi_lie = np.matmul(J_pi_element, J_lie_element)
+            J_full = np.matmul(J_image, J_pi_lie)
+            J_t = np.transpose(J_full)
+            w_i = W[0,flat_index]
+            error_sample = v[flat_index][0]
+
+            twist_delta = np.subtract(twist_prior,twist_prev)
+            motion_prior = np.matmul(motion_cov_inv, twist_delta)
+            g += np.add(np.multiply(w_i,np.multiply(-J_t, error_sample)),motion_prior)
+            normal_matrix_return += np.add(np.multiply(w_i,np.matmul(J_t, J_full)),motion_cov_inv)
+    # different stopping criterion using max norm
+    #if math.fabs(np.amax(g)< 0.001):
+        #convergence = True
+    end = time.time()
+    #print('Runtime Gauss Newton Step:', end-start)
+    return convergence
 
 
 def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
@@ -73,11 +116,11 @@ def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_
             J_pi_lie = np.matmul(J_pi_element, J_lie_element)
             J_full = np.matmul(J_image, J_pi_lie)
             J_t = np.transpose(J_full)
-            W_i = W[0,flat_index]
+            w_i = W[0,flat_index]
             error_sample = v[flat_index][0]
 
-            g += np.multiply(W_i, np.multiply(error_sample, -J_t))
-            normal_matrix_return += np.multiply(W_i,np.matmul(J_t, J_full))
+            g += np.multiply(w_i,np.multiply(-J_t, error_sample))
+            normal_matrix_return += np.multiply(w_i,np.matmul(J_t, J_full))
     # different stopping criterion using max norm
     #if math.fabs(np.amax(g)< 0.001):
         #convergence = True

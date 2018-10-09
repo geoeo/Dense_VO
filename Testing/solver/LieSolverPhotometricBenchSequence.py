@@ -4,6 +4,7 @@ from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate
 from Visualization import Visualizer
+from math import pi
 
 
 
@@ -18,42 +19,42 @@ depth_text = dataset_root+'depth.txt'
 match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
-########
-#rgb_id_ref = 1305031102.175304
-#rgb_id_target = 1305031102.211214
+#######
+rgb_id_ref = 1305031102.175304
+rgb_id_target = 1305031102.211214
 
-#rgb_id_ref_2 = 1305031102.211214
-#rgb_id_target_2 = 1305031102.275326
+rgb_id_ref_2 = 1305031102.211214
+rgb_id_target_2 = 1305031102.275326
 
-#rgb_id_ref_3 = 1305031102.275326
-#rgb_id_target_3 = 1305031102.311267
+rgb_id_ref_3 = 1305031102.275326
+rgb_id_target_3 = 1305031102.311267
 
-#rgb_id_ref_4 = 1305031102.311267
-#rgb_id_target_4 = 1305031102.343233
+rgb_id_ref_4 = 1305031102.311267
+rgb_id_target_4 = 1305031102.343233
 
-#rgb_id_ref_5 = 1305031102.343233
-#rgb_id_target_5 = 1305031102.375329
+rgb_id_ref_5 = 1305031102.343233
+rgb_id_target_5 = 1305031102.375329
 
-#rgb_id_ref_6 = 1305031102.375329
-#rgb_id_target_6 = 1305031102.411258
+rgb_id_ref_6 = 1305031102.375329
+rgb_id_target_6 = 1305031102.411258
 
-#rgb_id_ref_7 = 1305031102.411258
-#rgb_id_target_7 = 1305031102.443271
+rgb_id_ref_7 = 1305031102.411258
+rgb_id_target_7 = 1305031102.443271
 #
-# rgb_id_ref_8 = 1305031102.443271
-# rgb_id_target_8 = 1305031102.475318
+rgb_id_ref_8 = 1305031102.443271
+rgb_id_target_8 = 1305031102.475318
 #
-# rgb_id_ref_9 = 1305031102.475318
-# rgb_id_target_9 = 1305031102.511219
+rgb_id_ref_9 = 1305031102.475318
+rgb_id_target_9 = 1305031102.511219
 #
-# rgb_id_ref_10 = 1305031102.511219
-# rgb_id_target_10 = 1305031102.575286 # jump
+rgb_id_ref_10 = 1305031102.511219
+rgb_id_target_10 = 1305031102.575286 # jump
 #
-# rgb_id_ref_11 = 1305031102.575286
-# rgb_id_target_11 = 1305031102.611233
+rgb_id_ref_11 = 1305031102.575286
+rgb_id_target_11 = 1305031102.611233
 #
-# rgb_id_ref_12 = 1305031102.611233
-# rgb_id_target_12 =1305031102.675285
+rgb_id_ref_12 = 1305031102.611233
+rgb_id_target_12 =1305031102.675285
 #
 # rgb_id_ref_13 = 1305031102.675285
 # rgb_id_target_13 = 1305031102.711263
@@ -69,20 +70,20 @@ groundtruth_text = dataset_root+'groundtruth.txt'
 #rgb_id_target_17 = 1305031102.843290
 #######
 # Y
-rgb_id_ref = 1305031119.079223
-rgb_id_target = 1305031119.111328
+#rgb_id_ref = 1305031119.079223
+#rgb_id_target = 1305031119.111328
 
-rgb_id_ref_2 = 1305031119.111328
-rgb_id_target_2 = 1305031119.147616
+#rgb_id_ref_2 = 1305031119.111328
+#rgb_id_target_2 = 1305031119.147616
 
-rgb_id_ref_3 = 1305031119.147616
-rgb_id_target_3 = 1305031119.179226
+#rgb_id_ref_3 = 1305031119.147616
+#rgb_id_target_3 = 1305031119.179226
 
-rgb_id_ref_4 = 1305031119.179226
-rgb_id_target_4 = 1305031119.211364
+#rgb_id_ref_4 = 1305031119.179226
+#rgb_id_target_4 = 1305031119.211364
 
-rgb_id_ref_5 = 1305031119.211364
-rgb_id_target_5 = 1305031119.247399
+#rgb_id_ref_5 = 1305031119.211364
+#rgb_id_target_5 = 1305031119.247399
 ########
 
 #rgb_id_ref = 1305031105.643273
@@ -206,14 +207,17 @@ rgb_id_target_5 = 1305031119.247399
 #ref_id_list = [rgb_id_target_3,rgb_id_target_2, rgb_id_target]
 #target_id_list = [rgb_id_ref_3, rgb_id_ref_2, rgb_id_ref]
 
-ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5]
-target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5]
+#ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5]
+#target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7]
 #target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8 ]
 #target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8]
+
+ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8, rgb_id_ref_9, rgb_id_ref_10, rgb_id_ref_11, rgb_id_ref_12]
+target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8, rgb_id_target_9, rgb_id_target_10, rgb_id_target_11, rgb_id_target_12]
 
 #ref_id_list = [rgb_id_ref, rgb_id_ref_2, rgb_id_ref_3, rgb_id_ref_4, rgb_id_ref_5, rgb_id_ref_6, rgb_id_ref_7, rgb_id_ref_8, rgb_id_ref_9, rgb_id_ref_10, rgb_id_ref_11, rgb_id_ref_12, rgb_id_ref_13, rgb_id_ref_14, rgb_id_ref_15]
 #target_id_list = [rgb_id_target, rgb_id_target_2, rgb_id_target_3, rgb_id_target_4, rgb_id_target_5, rgb_id_target_6, rgb_id_target_7, rgb_id_target_8, rgb_id_target_9, rgb_id_target_10, rgb_id_target_11, rgb_id_target_12, rgb_id_target_13, rgb_id_target_14, rgb_id_target_15]
@@ -231,10 +235,13 @@ depth_factor = 5000.0
 use_ndc = True
 
 
-image_groundtruth_dict = dict(associate.match(rgb_text,groundtruth_text))
-se3_ground_truth_prior = np.transpose(SE3.quaternion_to_s03(0.6132, 0.5962, -0.3311, -0.3986))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
+#se3_ground_truth_prior = np.transpose(SE3.quaternion_to_s03(0.6132, 0.5962, -0.3311, -0.3986))
+se3_ground_truth_prior = SE3.makeS03(0,0,pi)
 se3_ground_truth_prior = np.append(se3_ground_truth_prior,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
 se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
+#se3_ground_truth_prior = SE3.invert(se3_ground_truth_prior)
+se3_ground_truth_prior[0:3,3] = 0
 
 
 for i in range(0, len(ref_id_list)):
@@ -242,7 +249,7 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id,None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 
@@ -268,6 +275,8 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 
 visualizer = Visualizer.Visualizer(ground_truth_list)
 
+motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
+twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
 
 for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
@@ -275,6 +284,12 @@ for i in range(0, len(ref_image_list)):
 
     im_depth_reference /= depth_factor
     im_depth_target /= depth_factor
+
+
+    #depth_t = (im_depth_reference != 0).astype(Utils.depth_data_type_float)
+    #im_depth_reference = np.add(im_depth_reference,depth_t)
+    #depth_t = (im_depth_target != 0).astype(Utils.depth_data_type_float)
+    #im_depth_target = np.add(im_depth_target,depth_t)
 
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
@@ -284,20 +299,26 @@ for i in range(0, len(ref_image_list)):
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
-                                                 max_its=20,
-                                                 eps=0.00001,  #0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.04,  # 0.1, 0.04, 0.005
+                                                 max_its=50,
+                                                 eps=0.002,  #0.001, 0.00001, 0.00005, 0.00000001
+                                                 alpha_step=0.63,  # 0.1, 0.04, 0.005, 0.55 - motion prior
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,
-                                                 twist_prior=None,
-                                                 hessian_prior=None,
+                                                 twist_prior=twist_prior,
+                                                 motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
+                                                 use_motion_prior=True,
                                                  debug=False)
 
     solver_manager.start()
     solver_manager.join()  # wait to complete
+
+    motion_cov_inv = solver_manager.motion_cov_inv_final
+    #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
+    twist_prior = solver_manager.twist_final
+    #twist_prior = np.add(twist_prior,solver_manager.twist_final)
     se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
     pose_estimate_list.append(se3_estimate_acc)
 visualizer.visualize_poses(pose_estimate_list, draw= False)

@@ -4,6 +4,7 @@ import math
 from scipy import linalg
 from Numerics import Lie, Utils, ImageProcessing, JacobianGenerator
 from Numerics.Utils import matrix_data_type
+from Numerics import SE3
 from VisualOdometry import GradientStepManager
 from VisualOdometry import GaussNewtonRoutines
 from Visualization import Plot3D
@@ -114,10 +115,11 @@ def solve_photometric(frame_reference,
                       gradient_monitoring_window_start,
                       image_range_offset_start,
                       twist_prior = None,
-                      hessian_prior = None,
+                      motion_cov_inv_in = None,
                       use_ndc = False,
                       use_robust = False,
                       track_pose_estimates = False,
+                      use_motion_prior = False,
                       debug = False):
 
     if track_pose_estimates and (threadLock == None or pose_estimate_list == None):
@@ -132,6 +134,7 @@ def solve_photometric(frame_reference,
     R_est = np.identity(3, dtype=matrix_data_type)
     I_3 = np.identity(3, dtype=matrix_data_type)
     I_4 = np.identity(4,dtype=matrix_data_type)
+    I_6 = np.identity(6,dtype=matrix_data_type)
     (height,width) = frame_target.pixel_image.shape
     N = height*width
     position_vector_size = 3
@@ -142,11 +145,18 @@ def solve_photometric(frame_reference,
     v_mean = 1000
     image_range_offset = image_range_offset_start
     degrees_of_freedom = 5.0 # empirically derived: see paper
-    normal_matrix = np.zeros((twist_size, twist_size))
+    normal_matrix_ret = np.identity(6, dtype=Utils.matrix_data_type)
+    motion_cov_inv = motion_cov_inv_in
+    #motion_cov_inv = np.linalg.inv(motion_cov_inv_in)
     w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_prev = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_acc = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
+    pseudo_inv = np.identity(twist_size,dtype=matrix_data_type)
+    not_better = False
+
+
+    depth_factor = -1
 
     fx = frame_reference.camera.intrinsic.extract_fx()
     fy = frame_reference.camera.intrinsic.extract_fy()
@@ -191,8 +201,13 @@ def solve_photometric(frame_reference,
                                        X_back_projection,
                                        valid_measurements,
                                        use_ndc,
-                                       #-1)
-                                       np.sign(fx))
+                                       depth_factor)
+                                       #np.sign(fx))
+
+    z_rot = SE3.makeS03(0,0,math.pi)
+    se3_rot = np.identity(4, dtype=matrix_data_type)
+    se3_rot[0:3,0:3] = z_rot
+    #X_back_projection = np.matmul(se3_rot,X_back_projection)
 
     if debug:
         Plot3D.save_projection_of_back_projected(height,width,frame_reference,X_back_projection)
@@ -220,6 +235,8 @@ def solve_photometric(frame_reference,
                                                  valid_measurements,
                                                  frame_target.pixel_image,
                                                  frame_reference.pixel_image,
+                                                frame_target.pixel_depth,
+                                                frame_reference.pixel_depth,
                                                  v_id,
                                                  image_range_offset)
 
@@ -229,7 +246,7 @@ def solve_photometric(frame_reference,
         # accumulators
         #TODO: investigate preallocate and clear in a for loop
         g = np.zeros((twist_size, 1))
-        normal_matrix = np.zeros((twist_size, twist_size))
+        normal_matrix = np.identity(twist_size, dtype=matrix_data_type)
         v = np.zeros((N,1), dtype=matrix_data_type,order='F')
         W = np.ones((1,N), dtype=matrix_data_type,order='F')
 
@@ -241,9 +258,12 @@ def solve_photometric(frame_reference,
 
         # Warp with the current SE3 estimate
         Y_est = np.matmul(SE_3_est, X_back_projection)
+        #Y_est_z_rot = np.matmul(se3_rot,Y_est)
 
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
+        #target_index_projections[2,:] -= depth_factor*1
+
 
         v = GaussNewtonRoutines.compute_residual(width,
                                                  height,
@@ -251,6 +271,8 @@ def solve_photometric(frame_reference,
                                                  valid_measurements,
                                                  frame_target.pixel_image,
                                                  frame_reference.pixel_image,
+                                                 frame_target.pixel_depth,
+                                                 frame_reference.pixel_depth,
                                                  v,
                                                  image_range_offset)
 
@@ -279,32 +301,50 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         # TODO investigate absolute error threshold aswel?
-        if 0 <= v_diff <= eps and Gradient_step_manager.check_iteration(it):
-            print('done, mean error:', v_mean, 'diff: ', v_diff)
+        if (0 <= v_diff <= eps or valid_pixel_ratio < 0.85) and Gradient_step_manager.check_iteration(it) :
+            print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ration:', valid_pixel_ratio)
             break
 
         #Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
-            converged = GaussNewtonRoutines.gauss_newton_step(width,
-                                              height,
-                                              valid_measurements,
-                                              W,
-                                              J_pi,
-                                              J_lie,
-                                              frame_target.grad_x,
-                                              frame_target.grad_y,
-                                              v,
-                                              g,
-                                              normal_matrix,
-                                              image_range_offset)
+            not_better = False
+            if use_motion_prior:
+                converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
+                                                  height,
+                                                  valid_measurements,
+                                                  W,
+                                                  J_pi,
+                                                  J_lie,
+                                                  frame_target.grad_x,
+                                                  frame_target.grad_y,
+                                                  v,
+                                                  g,
+                                                  normal_matrix,
+                                                  motion_cov_inv,
+                                                  twist_prior,
+                                                  w_prev,
+                                                  image_range_offset)
+            else:
+                converged = GaussNewtonRoutines.gauss_newton_step(width,
+                                                  height,
+                                                  valid_measurements,
+                                                  W,
+                                                  J_pi,
+                                                  J_lie,
+                                                  frame_target.grad_x,
+                                                  frame_target.grad_y,
+                                                  v,
+                                                  g,
+                                                  normal_matrix,
+                                                  image_range_offset)
+            normal_matrix_ret = normal_matrix
 
-            if converged:
-                print('converged by g matrix: ', np.amax(g))
-                break
+            #if converged:
+                #print('converged by g matrix: ', np.amax(g))
+                #break
 
-            #TODO add motion prior stuff here
 
             # TODO: Investigate faster inversion with QR
             try:
@@ -326,12 +366,19 @@ def solve_photometric(frame_reference,
             #w_new[1] *= -1
             #w_new[3] *= -1
             #w_new[4] *= -1
+            #w_new[5] *= -1
+
             w_prev = w
+
             w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
             w = w_new
             w_acc += w
         else:
+            not_better = True
+            #motion_cov_inv*=math.pow(2.0,it+1)
+
             w_prev = w
+
             w = np.multiply(Gradient_step_manager.current_alpha, w)
             w_acc += w
 
@@ -361,16 +408,35 @@ def solve_photometric(frame_reference,
         V = I_3 + np.multiply(B, w_x) + np.multiply(C, w_x_squared)
 
         t_new = np.matmul(V, u)
+
         #t_new[1] *=-1
-        t_est = np.add(t_new,t_est)
-        R_est = np.matmul(R_est,R_new)
+        #t_est = np.add(t_new,t_est)
+        #R_est = np.matmul(R_est,R_new)
 
 
-        #t_est = np.matmul(V, u)
-        #R_est = R_new
+        t_est = t_new
+        R_est = R_new
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
-    return SE_3_est, w_acc, normal_matrix
+    if use_motion_prior:
+        motion_cov_inv = normal_matrix_ret
+        #motion_cov_inv = np.add(motion_cov_inv, pseudo_inv)
+    else:
+        motion_cov_inv = I_6
+
+    #w_acc[0] = 0
+    #w_acc[1] = 0
+    #w_acc[2] = 0
+    # Rotation estimates are still noisy i.e. dont use them in the prior
+    w_acc[3] = 0
+    w_acc[4] = 0
+    w_acc[5] = 0
+
+    w[3] = 0
+    w[4] = 0
+    w[5] = 0
+
+    return SE_3_est, w, motion_cov_inv

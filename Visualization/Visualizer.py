@@ -113,7 +113,7 @@ class Visualizer():
             self.visualize_poses(solver_thread_manager.pose_estimate_list)
 
             solver_thread_manager.threadLock.release()
-            time.sleep(5)
+            time.sleep(1)
 
         plt.show()
         print("Exiting Visualizer")
