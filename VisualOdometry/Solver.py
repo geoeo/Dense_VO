@@ -367,7 +367,9 @@ def solve_photometric(frame_reference,
             #w_new[3] *= -1
             #w_new[4] *= -1
             #w_new[5] *= -1
+
             w_prev = w
+
             w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
             w = w_new
             w_acc += w
@@ -376,6 +378,7 @@ def solve_photometric(frame_reference,
             #motion_cov_inv*=math.pow(2.0,it+1)
 
             w_prev = w
+
             w = np.multiply(Gradient_step_manager.current_alpha, w)
             w_acc += w
 
@@ -407,12 +410,12 @@ def solve_photometric(frame_reference,
         t_new = np.matmul(V, u)
 
         #t_new[1] *=-1
-        t_est = np.add(t_new,t_est)
-        R_est = np.matmul(R_est,R_new)
+        #t_est = np.add(t_new,t_est)
+        #R_est = np.matmul(R_est,R_new)
 
 
-        #t_est = np.matmul(V, u)
-        #R_est = R_new
+        t_est = t_new
+        R_est = R_new
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
@@ -431,4 +434,9 @@ def solve_photometric(frame_reference,
     w_acc[3] = 0
     w_acc[4] = 0
     w_acc[5] = 0
-    return SE_3_est, w_acc, motion_cov_inv
+
+    w[3] = 0
+    w[4] = 0
+    w[5] = 0
+
+    return SE_3_est, w, motion_cov_inv
