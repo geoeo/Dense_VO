@@ -149,6 +149,7 @@ def solve_photometric(frame_reference,
     motion_cov_inv = motion_cov_inv_in
     #motion_cov_inv = np.linalg.inv(motion_cov_inv_in)
     w = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
+    w_empty = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_prev = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     w_acc = np.zeros((twist_size,1),dtype=Utils.matrix_data_type)
     v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
@@ -366,22 +367,22 @@ def solve_photometric(frame_reference,
 
 
             w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
-            # TODO: investigate traditional exp -> add -> log instead of adding in lie algebra
-            w  += w_new
-            #w = w_new
         else:
             not_better = True
-            #w = np.multiply(Gradient_step_manager.current_alpha, w)
+            w_new = w_empty
 
-        #t_est = t_new
-        #R_est = R_new
-        try:
-            R_est, t_est = Lie.exp(w,twist_size)
-        except:
-            return SE_3_est, w, motion_cov_inv
+        R_cur, t_cur = Lie.exp(w,twist_size)
+        R_new, t_new = Lie.exp(w_new,twist_size)
 
-        #t_est = np.add(np.matmul(R_est,t_new),t_est)
-        #R_est = np.matmul(R_est,R_new)
+        # C_new . C_cur
+        t_est = np.add(np.matmul(R_new, t_cur), t_new)
+        R_est = np.matmul(R_new, R_cur)
+
+        # C_Cur . C_new
+        #t_est = np.add(np.matmul(R_cur, t_new), t_cur)
+        #R_est = np.matmul(R_cur,R_new)
+
+        w = Lie.ln(R_est, t_est, twist_size)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
@@ -394,8 +395,8 @@ def solve_photometric(frame_reference,
         motion_cov_inv = I_6
 
     # paper memtions camera speed, implying that rotation should be set to 0(?)
-    w[3] = 0
-    w[4] = 0
-    w[5] = 0
+    #w[3] = 0
+    #w[4] = 0
+    #w[5] = 0
 
     return SE_3_est, w, motion_cov_inv

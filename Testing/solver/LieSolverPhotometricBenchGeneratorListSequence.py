@@ -51,10 +51,10 @@ se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
 se3_ground_truth_prior[0:3,3] = 0
 
 # start
-#start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
+start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
 # Y Trans
-start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # X Trans
 #start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
@@ -64,7 +64,7 @@ start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=5,
+    max_count=50,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
@@ -120,7 +120,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.002,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=1.0,  # 0.1, 0.015, 0.04, 0.005, 0.55 - motion prior
+                                                 alpha_step=1.0,  # 0.03, 1.0 - motion pri
                                                  gradient_monitoring_window_start=0,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,
@@ -139,6 +139,7 @@ for i in range(0, len(ref_image_list)):
     twist_prior = np.multiply(1.0,solver_manager.twist_final)
     #twist_prior = np.add(twist_prior,solver_manager.twist_final)
     se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
+    #se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
     pose_estimate_list.append(se3_estimate_acc)
 visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()
