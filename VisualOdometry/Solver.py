@@ -172,6 +172,7 @@ def solve_photometric(frame_reference,
 
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
+    SE_3_prev = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
     #SE_3_est_orig = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
     #SE_3_est_last_valid = np.append(np.append(R_est, t_est, axis=1), Utils.homogenous_for_SE3(), axis=0)
 
@@ -192,6 +193,8 @@ def solve_photometric(frame_reference,
     #valid_measurements_last = np.full(N,False)
     #valid_measurements_target = np.full(N,False)
     valid_measurements = valid_measurements_reference
+    number_of_valid_measurements = N
+    #v = np.zeros((N, 1), dtype=matrix_data_type, order='F')
 
     # Precompute back projection of pixels
     GaussNewtonRoutines.back_project_image(width,
@@ -241,6 +244,7 @@ def solve_photometric(frame_reference,
                                                  v_id,
                                                  image_range_offset)
 
+    v = v_id
 
     for it in range(0, max_its, 1):
         start = time.time()
@@ -248,7 +252,6 @@ def solve_photometric(frame_reference,
         #TODO: investigate preallocate and clear in a for loop
         g = np.zeros((twist_size, 1))
         normal_matrix = np.identity(twist_size, dtype=matrix_data_type)
-        v = np.zeros((N,1), dtype=matrix_data_type,order='F')
         W = np.ones((1,N), dtype=matrix_data_type,order='F')
 
         # TODO investigate performance impact
@@ -257,44 +260,6 @@ def solve_photometric(frame_reference,
             pose_estimate_list.append(SE_3_est)
             threadLock.release()
 
-        # Warp with the current SE3 estimate
-        Y_est = np.matmul(SE_3_est, X_back_projection)
-        #Y_est_z_rot = np.matmul(se3_rot,Y_est)
-
-
-        target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
-        #target_index_projections[2,:] -= depth_factor*1
-
-
-        v = GaussNewtonRoutines.compute_residual(width,
-                                                 height,
-                                                 target_index_projections,
-                                                 valid_measurements,
-                                                 frame_target.pixel_image,
-                                                 frame_reference.pixel_image,
-                                                 frame_target.pixel_depth,
-                                                 frame_reference.pixel_depth,
-                                                 v,
-                                                 image_range_offset)
-
-        number_of_valid_measurements = np.sum(valid_measurements_reference)
-
-        if use_robust:
-            variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)
-            if variance > 0.0:
-                GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
-
-
-        Gradient_step_manager.save_previous_mean_error(v_mean)
-
-        GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
-
-        v_sum = np.matmul(np.transpose(v),v)[0][0]
-
-        if number_of_valid_measurements > 0:
-            v_mean = v_sum / number_of_valid_measurements
-        else:
-            v_mean = 10000
         valid_pixel_ratio = number_of_valid_measurements / N
         v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
         #v_diff = Gradient_step_manager.last_error_mean_abs - v_mean
@@ -308,8 +273,6 @@ def solve_photometric(frame_reference,
 
         #Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
-
-        w_prev = w
 
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
             not_better = False
@@ -375,18 +338,66 @@ def solve_photometric(frame_reference,
         R_new, t_new = Lie.exp(w_new,twist_size)
 
         # C_new . C_cur
-        t_est = np.add(np.matmul(R_new, t_cur), t_new)
-        R_est = np.matmul(R_new, R_cur)
+        #t_est = np.add(np.matmul(R_new, t_cur), t_new)
+        #R_est = np.matmul(R_new, R_cur)
 
         # C_Cur . C_new
-        #t_est = np.add(np.matmul(R_cur, t_new), t_cur)
-        #R_est = np.matmul(R_cur,R_new)
+        t_est = np.add(np.matmul(R_cur, t_new), t_cur)
+        R_est = np.matmul(R_cur,R_new)
 
+        #t_est = t_new
+        #R_est = R_new
+
+        w_prev = w
+        #w_prev[3] = 0
+        #w_prev[4] = 0
+        #w_prev[5] = 0
         w = Lie.ln(R_est, t_est, twist_size)
 
+        SE_3_prev = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
+
+        # Compute residual around delta_twist = 0 i.e SE_3_prev
+        # Warp with the current SE3 estimate
+        Y_est = np.matmul(SE_3_prev, X_back_projection)
+        #Y_est = np.matmul(SE_3_prev, X_back_projection)
+        #Y_est_z_rot = np.matmul(se3_rot,Y_est)
+
+
+        target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
+        #target_index_projections[2,:] -= depth_factor*1
+
+        v = GaussNewtonRoutines.compute_residual(width,
+                                                 height,
+                                                 target_index_projections,
+                                                 valid_measurements,
+                                                 frame_target.pixel_image,
+                                                 frame_reference.pixel_image,
+                                                 frame_target.pixel_depth,
+                                                 frame_reference.pixel_depth,
+                                                 v,
+                                                 image_range_offset)
+
+        number_of_valid_measurements = np.sum(valid_measurements_reference)
+
+        if use_robust:
+            variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)
+            if variance > 0.0:
+                GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
+
+
+        Gradient_step_manager.save_previous_mean_error(v_mean)
+
+        GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
+
+        v_sum = np.matmul(np.transpose(v),v)[0][0]
+
+        if number_of_valid_measurements > 0:
+            v_mean = v_sum / number_of_valid_measurements
+        else:
+            v_mean = 10000
 
     if use_motion_prior:
         motion_cov_inv = normal_matrix_ret

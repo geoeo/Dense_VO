@@ -64,7 +64,7 @@ start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=50,
+    max_count=5,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
@@ -78,7 +78,7 @@ for i in range(0, len(ref_id_list)):
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    ground_truth_acc = np.matmul(SE3_ref_target,ground_truth_acc)
+    ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 
     ground_truth_list.append(ground_truth_acc)
     ref_image_list.append((im_greyscale_reference, im_depth_reference))
@@ -120,8 +120,8 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.002,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=1.0,  # 0.03, 1.0 - motion pri
-                                                 gradient_monitoring_window_start=0,
+                                                 alpha_step=0.5,  # 0.001, 1.0 - motion pri
+                                                 gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
@@ -138,8 +138,8 @@ for i in range(0, len(ref_image_list)):
     #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
     twist_prior = np.multiply(1.0,solver_manager.twist_final)
     #twist_prior = np.add(twist_prior,solver_manager.twist_final)
-    se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
-    #se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
+    #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
+    se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
     pose_estimate_list.append(se3_estimate_acc)
 visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()

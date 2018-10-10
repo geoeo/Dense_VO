@@ -89,7 +89,12 @@ def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J
             error_sample = v[flat_index][0]
 
             twist_delta = np.subtract(twist_prior,twist_prev)
+            #motion_cov_inv = np.multiply(-1,motion_cov_inv)
+            #twist_delta = twist_prior
+            #twist_delta[0] *= -1
+            #twist_delta[1] *= -1
             motion_prior = np.matmul(motion_cov_inv, twist_delta)
+            #motion_prior = np.multiply(-1,motion_prior)
             g += np.add(np.multiply(w_i,np.multiply(-J_t, error_sample)),motion_prior)
             normal_matrix_return += np.add(np.multiply(w_i,np.matmul(J_t, J_full)),motion_cov_inv)
     # different stopping criterion using max norm
