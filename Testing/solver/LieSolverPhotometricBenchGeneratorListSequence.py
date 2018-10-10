@@ -54,10 +54,12 @@ se3_ground_truth_prior[0:3,3] = 0
 #start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
 # Y Trans
-#start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
+start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # X Trans
-start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
+
+#start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
@@ -107,12 +109,6 @@ for i in range(0, len(ref_image_list)):
 
     im_depth_reference /= depth_factor
     im_depth_target /= depth_factor
-
-
-    #depth_t = (im_depth_reference != 0).astype(Utils.depth_data_type_float)
-    #im_depth_reference = np.add(im_depth_reference,depth_t)
-    #depth_t = (im_depth_target != 0).astype(Utils.depth_data_type_float)
-    #im_depth_target = np.add(im_depth_target,depth_t)
 
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)

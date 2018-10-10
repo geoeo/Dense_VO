@@ -302,14 +302,17 @@ def solve_photometric(frame_reference,
 
         # TODO investigate absolute error threshold aswel?
         if (0 <= v_diff <= eps or valid_pixel_ratio < 0.85) and Gradient_step_manager.check_iteration(it) :
-            print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ration:', valid_pixel_ratio)
+            print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
             break
 
         #Gradient_step_manager.analyze_gradient_history(it)
         #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
 
+        w_prev = w
+
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
             not_better = False
+
             if use_motion_prior:
                 converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
                                                   height,
@@ -340,12 +343,6 @@ def solve_photometric(frame_reference,
                                                   normal_matrix,
                                                   image_range_offset)
             normal_matrix_ret = normal_matrix
-
-            #if converged:
-                #print('converged by g matrix: ', np.amax(g))
-                #break
-
-
             # TODO: Investigate faster inversion with QR
             try:
                 pseudo_inv = linalg.inv(normal_matrix)
@@ -357,7 +354,6 @@ def solve_photometric(frame_reference,
                 print('Cant invert')
                 return SE_3_est
 
-        #w = np.matmul(pseudo_inv, J_v)
             w_new = np.matmul(pseudo_inv, g)
             #w_new[0:3] = np.multiply(Gradient_step_manager.current_alpha, w_new[0:3])
             #w_new[3:6] = np.multiply(0.1, w_new[3:6])
@@ -368,20 +364,12 @@ def solve_photometric(frame_reference,
             #w_new[4] *= -1
             #w_new[5] *= -1
 
-            w_prev = w
 
             w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
-            w = w_new
-            w_acc += w
+            w += w_new
         else:
             not_better = True
-            #motion_cov_inv*=math.pow(2.0,it+1)
-
-            w_prev = w
-
-            w = np.multiply(Gradient_step_manager.current_alpha, w)
-            w_acc += w
-
+            #w = np.multiply(Gradient_step_manager.current_alpha, w)
 
 
         w_angle = w[3:twist_size]
@@ -400,7 +388,7 @@ def solve_photometric(frame_reference,
             C = (1 - A) / theta_sqred
         except:
             print('bad theta')
-            return SE_3_est
+            return SE_3_est, w, motion_cov_inv
 
         u = np.array([w[0], w[1], w[2]]).reshape((3, 1))
 
@@ -408,11 +396,6 @@ def solve_photometric(frame_reference,
         V = I_3 + np.multiply(B, w_x) + np.multiply(C, w_x_squared)
 
         t_new = np.matmul(V, u)
-
-        #t_new[1] *=-1
-        #t_est = np.add(t_new,t_est)
-        #R_est = np.matmul(R_est,R_new)
-
 
         t_est = t_new
         R_est = R_new
@@ -427,14 +410,7 @@ def solve_photometric(frame_reference,
     else:
         motion_cov_inv = I_6
 
-    #w_acc[0] = 0
-    #w_acc[1] = 0
-    #w_acc[2] = 0
-    # Rotation estimates are still noisy i.e. dont use them in the prior
-    w_acc[3] = 0
-    w_acc[4] = 0
-    w_acc[5] = 0
-
+    # paper memtions camera speed, implying that rotation should be set to 0(?)
     w[3] = 0
     w[4] = 0
     w[5] = 0
