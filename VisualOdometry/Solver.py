@@ -366,39 +366,22 @@ def solve_photometric(frame_reference,
 
 
             w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
-            w += w_new
+            # TODO: investigate traditional exp -> add -> log instead of adding in lie algebra
+            w  += w_new
+            #w = w_new
         else:
             not_better = True
             #w = np.multiply(Gradient_step_manager.current_alpha, w)
 
-
-        w_angle = w[3:twist_size]
-        w_angle_transpose = np.transpose(w_angle)
-        w_x = Utils.skew_symmetric(w[3], w[4], w[5])
-        w_x_squared = np.matmul(w_x, w_x)
-
-        # closed form solution for exponential map
-        theta_sqred = np.matmul(w_angle_transpose, w_angle)
-        theta = math.sqrt(theta_sqred)
-        #theta_sqred = math.pow(theta, 2)
-        # TODO use Taylor Expansion when theta_sqred is small
+        #t_est = t_new
+        #R_est = R_new
         try:
-            A = math.sin(theta) / theta
-            B = (1 - math.cos(theta)) / theta_sqred
-            C = (1 - A) / theta_sqred
+            R_est, t_est = Lie.exp(w,twist_size)
         except:
-            print('bad theta')
             return SE_3_est, w, motion_cov_inv
 
-        u = np.array([w[0], w[1], w[2]]).reshape((3, 1))
-
-        R_new = I_3 + np.multiply(A, w_x) + np.multiply(B, w_x_squared)
-        V = I_3 + np.multiply(B, w_x) + np.multiply(C, w_x_squared)
-
-        t_new = np.matmul(V, u)
-
-        t_est = t_new
-        R_est = R_new
+        #t_est = np.add(np.matmul(R_est,t_new),t_est)
+        #R_est = np.matmul(R_est,R_new)
 
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
         end = time.time()
