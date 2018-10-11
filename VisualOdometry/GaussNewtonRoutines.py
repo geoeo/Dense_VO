@@ -91,8 +91,12 @@ def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J
             w_i = W[0,flat_index]
             error_sample = v[flat_index][0]
 
-            g += np.add(np.multiply(w_i,np.multiply(-J_t, error_sample)),motion_prior)
-            normal_matrix_return += np.add(np.multiply(w_i,np.matmul(J_t, J_full)),motion_cov_inv)
+            g += np.multiply(w_i,np.multiply(-J_t, error_sample))
+            normal_matrix_return += np.multiply(w_i,np.matmul(J_t, J_full))
+
+            # TODO: Can optimize this into one mult and 1 add per line
+            g += motion_prior
+            normal_matrix_return += motion_cov_inv
     # different stopping criterion using max norm
     #if math.fabs(np.amax(g)< 0.001):
         #convergence = True

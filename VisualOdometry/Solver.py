@@ -135,6 +135,7 @@ def solve_photometric(frame_reference,
     I_3 = np.identity(3, dtype=matrix_data_type)
     I_4 = np.identity(4,dtype=matrix_data_type)
     I_6 = np.identity(6,dtype=matrix_data_type)
+    zero_cov = np.zeros((6,6),dtype=matrix_data_type)
     (height,width) = frame_target.pixel_image.shape
     N = height*width
     position_vector_size = 3
@@ -281,7 +282,7 @@ def solve_photometric(frame_reference,
                     twist_prior[4] == 0 and twist_prior[5] == 0:
                 prior_empty = True
 
-            if use_motion_prior:
+            if use_motion_prior and not prior_empty:
                 converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
                                                   height,
                                                   valid_measurements,
@@ -323,20 +324,16 @@ def solve_photometric(frame_reference,
                 return SE_3_est
 
             w_new = np.matmul(pseudo_inv, g)
-            #w_new[0:3] = np.multiply(Gradient_step_manager.current_alpha, w_new[0:3])
-            #w_new[3:6] = np.multiply(0.1, w_new[3:6])
-            # coordiante system induced by photometric solver is flipped
-            #w_new[0] *= -1
-            #w_new[1] *= -1
-            #w_new[3] *= -1
-            #w_new[4] *= -1
-            #w_new[5] *= -1
 
+            if not use_motion_prior or prior_empty:
+                w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
+            else:
+                w_new = np.multiply(50.0*Gradient_step_manager.current_alpha, w_new)
 
-            w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
         else:
             not_better = True
             w_new = w_empty
+            #w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
 
         R_cur, t_cur = Lie.exp(w,twist_size)
         R_new, t_new = Lie.exp(w_new,twist_size)
@@ -353,9 +350,6 @@ def solve_photometric(frame_reference,
         #R_est = R_new
 
         w_prev = w
-        #w_prev[3] = 0
-        #w_prev[4] = 0
-        #w_prev[5] = 0
         w = Lie.ln(R_est, t_est, twist_size)
 
         SE_3_prev = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
@@ -406,7 +400,7 @@ def solve_photometric(frame_reference,
     if use_motion_prior:
         motion_cov_inv = normal_matrix_ret
     else:
-        motion_cov_inv = np.zeros((6,6),dtype=matrix_data_type)
+        motion_cov_inv = zero_cov
 
     # paper mentions camera speed, implying that rotation should be set to 0(?)
     #w[3] = 0

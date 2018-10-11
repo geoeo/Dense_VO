@@ -40,8 +40,20 @@ def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict
 
         assert i_ref < i_target
 
-    assert len(ref_files_to_load) == len(target_files_to_load)
+    ref_len = len(ref_files_to_load)
+    target_len = len(target_files_to_load)
 
+    # fill up if the last i_target happens to be invalid
+    while target_len < ref_len:
+        target_file = rgb_list[i_target]
+        if validate(target_file, ground_truth_dict,match_dict):
+            target_files_to_load.append(target_file)
+            i_target+=offset
+            target_len += 1
+        else:
+            i_target += 1
+
+    assert len(ref_files_to_load) == len(target_files_to_load)
 
     return ref_files_to_load, target_files_to_load , ref_file_failed_to_load
 

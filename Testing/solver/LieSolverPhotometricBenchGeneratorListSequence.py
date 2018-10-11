@@ -59,7 +59,6 @@ se3_ground_truth_prior[0:3,3] = 0
 # X Trans
 start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
 
-#start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
@@ -121,7 +120,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.002,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.01,  # 0.001, 1.0 - motion pri
+                                                 alpha_step=0.005,  # 0.001, 1.0 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,
