@@ -350,7 +350,6 @@ def solve_photometric(frame_reference,
 
         SE_3_prev = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
-        print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
         # Compute residual around delta_twist = 0 i.e SE_3_prev
         # Warp with the current SE3 estimate
@@ -387,12 +386,14 @@ def solve_photometric(frame_reference,
 
         v_sum = np.matmul(np.transpose(v),v)[0][0]
 
+        end = time.time()
+
+        print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
+
         if number_of_valid_measurements > 0:
             v_mean = v_sum / number_of_valid_measurements
         else:
             v_mean = 10000
-
-        end = time.time()
 
     if use_motion_prior:
         motion_cov_inv = normal_matrix_ret
