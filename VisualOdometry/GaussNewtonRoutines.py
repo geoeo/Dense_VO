@@ -73,6 +73,9 @@ def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J
                       g, normal_matrix_return, motion_cov_inv, twist_prior, twist_prev, image_range_offset):
     convergence = False
     start = time.time()
+    twist_delta = np.subtract(twist_prior, twist_prev)
+    motion_prior = np.matmul(motion_cov_inv, twist_delta)
+
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
@@ -88,19 +91,15 @@ def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J
             w_i = W[0,flat_index]
             error_sample = v[flat_index][0]
 
-            twist_delta = np.subtract(twist_prior,twist_prev)
-            #motion_cov_inv = np.multiply(-1,motion_cov_inv)
-            #twist_delta = twist_prior
-            #twist_delta[0] *= -1
-            #twist_delta[1] *= -1
-            motion_prior = np.matmul(motion_cov_inv, twist_delta)
-            #motion_prior = np.multiply(-1,motion_prior)
             g += np.add(np.multiply(w_i,np.multiply(-J_t, error_sample)),motion_prior)
             normal_matrix_return += np.add(np.multiply(w_i,np.matmul(J_t, J_full)),motion_cov_inv)
     # different stopping criterion using max norm
     #if math.fabs(np.amax(g)< 0.001):
         #convergence = True
+    #g += motion_prior
+    #normal_matrix_return += motion_cov_inv
     end = time.time()
+
     #print('Runtime Gauss Newton Step:', end-start)
     return convergence
 
@@ -126,6 +125,7 @@ def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_
 
             g += np.multiply(w_i,np.multiply(-J_t, error_sample))
             normal_matrix_return += np.multiply(w_i,np.matmul(J_t, J_full))
+
     # different stopping criterion using max norm
     #if math.fabs(np.amax(g)< 0.001):
         #convergence = True

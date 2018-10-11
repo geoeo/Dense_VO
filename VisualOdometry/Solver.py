@@ -276,6 +276,10 @@ def solve_photometric(frame_reference,
 
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
             not_better = False
+            prior_empty = False
+            if twist_prior[0] == 0 and twist_prior[1] == 0 and twist_prior[2] == 0 and twist_prior[3] == 0 and \
+                    twist_prior[4] == 0 and twist_prior[5] == 0:
+                prior_empty = True
 
             if use_motion_prior:
                 converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
@@ -291,7 +295,7 @@ def solve_photometric(frame_reference,
                                                   normal_matrix,
                                                   motion_cov_inv,
                                                   twist_prior,
-                                                  w_prev,
+                                                  w,
                                                   image_range_offset)
             else:
                 converged = GaussNewtonRoutines.gauss_newton_step(width,
@@ -401,11 +405,10 @@ def solve_photometric(frame_reference,
 
     if use_motion_prior:
         motion_cov_inv = normal_matrix_ret
-        #motion_cov_inv = np.add(motion_cov_inv, pseudo_inv)
     else:
-        motion_cov_inv = I_6
+        motion_cov_inv = np.zeros((6,6),dtype=matrix_data_type)
 
-    # paper memtions camera speed, implying that rotation should be set to 0(?)
+    # paper mentions camera speed, implying that rotation should be set to 0(?)
     #w[3] = 0
     #w[4] = 0
     #w[5] = 0
