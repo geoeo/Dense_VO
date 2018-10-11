@@ -333,7 +333,6 @@ def solve_photometric(frame_reference,
         else:
             not_better = True
             w_new = w_empty
-            #w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
 
         R_cur, t_cur = Lie.exp(w,twist_size)
         R_new, t_new = Lie.exp(w_new,twist_size)
@@ -346,15 +345,11 @@ def solve_photometric(frame_reference,
         t_est = np.add(np.matmul(R_cur, t_new), t_cur)
         R_est = np.matmul(R_cur,R_new)
 
-        #t_est = t_new
-        #R_est = R_new
-
         w_prev = w
         w = Lie.ln(R_est, t_est, twist_size)
 
         SE_3_prev = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
-        end = time.time()
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
         # Compute residual around delta_twist = 0 i.e SE_3_prev
@@ -396,6 +391,8 @@ def solve_photometric(frame_reference,
             v_mean = v_sum / number_of_valid_measurements
         else:
             v_mean = 10000
+
+        end = time.time()
 
     if use_motion_prior:
         motion_cov_inv = normal_matrix_ret

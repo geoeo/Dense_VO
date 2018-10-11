@@ -51,13 +51,13 @@ se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
 se3_ground_truth_prior[0:3,3] = 0
 
 # start
-#start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
+start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
 # Y Trans
 #start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # X Trans
-start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
 
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
