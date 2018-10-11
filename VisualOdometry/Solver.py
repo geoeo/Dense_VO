@@ -268,7 +268,7 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         # TODO investigate absolute error threshold aswel?
-        if (0 <= v_diff <= eps or valid_pixel_ratio < 0.85) and Gradient_step_manager.check_iteration(it) :
+        if (0 <= v_diff <= eps or valid_pixel_ratio < 0.95) and Gradient_step_manager.check_iteration(it) :
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
             break
 
@@ -282,7 +282,7 @@ def solve_photometric(frame_reference,
                     twist_prior[4] == 0 and twist_prior[5] == 0:
                 prior_empty = True
 
-            if use_motion_prior and not prior_empty:
+            if use_motion_prior:
                 converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
                                                   height,
                                                   valid_measurements,
@@ -323,12 +323,13 @@ def solve_photometric(frame_reference,
                 print('Cant invert')
                 return SE_3_est
 
+            # if using motion prior and we have no prior i.e first it => do this
             w_new = np.matmul(pseudo_inv, g)
 
-            if not use_motion_prior or prior_empty:
-                w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
+            if use_motion_prior and prior_empty:
+                w_new = np.multiply(Gradient_step_manager.current_alpha/2.0, w_new)
             else:
-                w_new = np.multiply(1.0*Gradient_step_manager.current_alpha, w_new)
+                w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
 
         else:
             not_better = True
@@ -400,14 +401,10 @@ def solve_photometric(frame_reference,
     else:
         motion_cov_inv = zero_cov
 
-    # paper mentions camera speed, implying that rotation should be set to 0(?)
-    #w[3] = 0
-    #w[4] = 0
-    #w[5] = 0
-    trans_norm = math.sqrt(math.pow(w[0],2.0)+math.pow(w[1],2.0)+math.pow(w[2],2.0))
-    rot_norm = math.sqrt(math.pow(w[3],2.0)+math.pow(w[4],2.0)+math.pow(w[5],2.0))
+    w[3] = 0
+    w[4] = 0
+    w[5] = 0
 
-    w[0:3] /= trans_norm
-    w[3:twist_size] /= rot_norm
+    w /= np.linalg.norm(w)
 
     return SE_3_est, w, motion_cov_inv

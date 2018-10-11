@@ -63,7 +63,7 @@ start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=10,
+    max_count=6,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
@@ -99,8 +99,8 @@ camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 
 visualizer = Visualizer.Visualizer(ground_truth_list)
 
-#motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
-motion_cov_inv = np.zeros((6,6),dtype=Utils.matrix_data_type)
+motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
+#motion_cov_inv = np.zeros((6,6),dtype=Utils.matrix_data_type)
 twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
 
 for i in range(0, len(ref_image_list)):
@@ -119,8 +119,8 @@ for i in range(0, len(ref_image_list)):
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=50,
-                                                 eps=0.002,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.005,  # 0.001, 1.0 - motion pri
+                                                 eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
+                                                 alpha_step=0.0055,  # 0.001, 1.0 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,
