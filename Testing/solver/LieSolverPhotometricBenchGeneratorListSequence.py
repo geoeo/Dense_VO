@@ -51,10 +51,10 @@ se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
 se3_ground_truth_prior[0:3,3] = 0
 
 # start
-start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
 # Y Trans
-#start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
+start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # X Trans
 #start = ListGenerator.get_index_of_id(1305031108.143334,rgb_files)
@@ -141,6 +141,7 @@ for i in range(0, len(ref_image_list)):
     #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
     se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
     pose_estimate_list.append(se3_estimate_acc)
+print("visualizing..")
 visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()
 

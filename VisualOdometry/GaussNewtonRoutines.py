@@ -95,13 +95,13 @@ def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J
             normal_matrix_return += np.multiply(w_i,np.matmul(J_t, J_full))
 
             # TODO: Can optimize this into one mult and 1 add per line
-            g += motion_prior
-            normal_matrix_return += motion_cov_inv
+            #g += motion_prior
+            #normal_matrix_return += motion_cov_inv
     # different stopping criterion using max norm
     #if math.fabs(np.amax(g)< 0.001):
         #convergence = True
-    #g += motion_prior
-    #normal_matrix_return += motion_cov_inv
+    g += motion_prior
+    normal_matrix_return += motion_cov_inv
     end = time.time()
 
     #print('Runtime Gauss Newton Step:', end-start)

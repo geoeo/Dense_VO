@@ -328,7 +328,7 @@ def solve_photometric(frame_reference,
             if not use_motion_prior or prior_empty:
                 w_new = np.multiply(Gradient_step_manager.current_alpha,w_new)
             else:
-                w_new = np.multiply(50.0*Gradient_step_manager.current_alpha, w_new)
+                w_new = np.multiply(1.0*Gradient_step_manager.current_alpha, w_new)
 
         else:
             not_better = True
@@ -404,5 +404,10 @@ def solve_photometric(frame_reference,
     #w[3] = 0
     #w[4] = 0
     #w[5] = 0
+    trans_norm = math.sqrt(math.pow(w[0],2.0)+math.pow(w[1],2.0)+math.pow(w[2],2.0))
+    rot_norm = math.sqrt(math.pow(w[3],2.0)+math.pow(w[4],2.0)+math.pow(w[5],2.0))
+
+    w[0:3] /= trans_norm
+    w[3:twist_size] /= rot_norm
 
     return SE_3_est, w, motion_cov_inv
