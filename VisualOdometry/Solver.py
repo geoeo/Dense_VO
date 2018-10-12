@@ -272,9 +272,6 @@ def solve_photometric(frame_reference,
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
             break
 
-        #Gradient_step_manager.analyze_gradient_history(it)
-        #Gradient_step_manager.analyze_gradient_history_instantly(v_mean_abs)
-
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
             not_better = False
             prior_empty = False
@@ -349,15 +346,10 @@ def solve_photometric(frame_reference,
         w_prev = w
         w = Lie.ln(R_est, t_est, twist_size)
 
-        SE_3_prev = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
-        SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
+        SE_3_current = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
 
-        # Compute residual around delta_twist = 0 i.e SE_3_prev
-        # Warp with the current SE3 estimate
-        Y_est = np.matmul(SE_3_prev, X_back_projection)
-        #Y_est = np.matmul(SE_3_prev, X_back_projection)
-        #Y_est_z_rot = np.matmul(se3_rot,Y_est)
-
+        # Compute residual around delta_twist = 0 i.e SE_3_current
+        Y_est = np.matmul(SE_3_current, X_back_projection)
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
         #target_index_projections[2,:] -= depth_factor*1
@@ -395,6 +387,8 @@ def solve_photometric(frame_reference,
             v_mean = v_sum / number_of_valid_measurements
         else:
             v_mean = 10000
+
+    SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
     if use_motion_prior:
         motion_cov_inv = normal_matrix_ret
