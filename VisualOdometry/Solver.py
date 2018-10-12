@@ -320,9 +320,9 @@ def solve_photometric(frame_reference,
                 print('Cant invert')
                 return SE_3_est
 
-            # if using motion prior and we have no prior i.e first it => do this
             w_new = np.matmul(pseudo_inv, g)
 
+            # initial step with empty motion prior seems to be quite large
             if use_motion_prior and prior_empty:
                 w_new = np.multiply(Gradient_step_manager.current_alpha/2.0, w_new)
             else:
@@ -343,7 +343,6 @@ def solve_photometric(frame_reference,
         t_est = np.add(np.matmul(R_cur, t_new), t_cur)
         R_est = np.matmul(R_cur,R_new)
 
-        w_prev = w
         w = Lie.ln(R_est, t_est, twist_size)
 
         SE_3_current = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
