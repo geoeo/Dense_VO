@@ -31,6 +31,8 @@ def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict
         else:
             ref_file_failed_to_load.append(ref_file)
             i_ref+=1
+            i_target+=1
+            continue
 
         if validate(target_file, ground_truth_dict,match_dict):
             target_files_to_load.append(target_file)

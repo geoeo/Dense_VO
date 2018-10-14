@@ -54,7 +54,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # fx and fy affect the resulting coordiante system of the se3 matrix
 intrinsic_identity = Intrinsic.Intrinsic(1, 1, image_width/2, image_height/2)
 if use_ndc:
-    intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -1, 1/2, 1/2) # for ndc
 
 
 # reference frame is assumed to be the origin
@@ -68,20 +68,24 @@ frame_target = Frame.Frame(im_greyscale_target, depth_target, camera_target, Tru
 
 #visualizer = Visualizer.Visualizer(photometric_solver)
 
-SE3_est = Solver.solve_photometric(frame_reference,
+motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
+twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
+
+SE3_est, w, cov_inv = Solver.solve_photometric(frame_reference,
                                    frame_target,
                                    threadLock= None,
                                    pose_estimate_list= None,
                                    max_its= 20000,
                                    eps=0.00001,
-                                   alpha_step=1.0,
+                                   alpha_step=0.1,
                                    gradient_monitoring_window_start=5.0,
                                    image_range_offset_start=0,
-                                   twist_prior=None,
-                                   hessian_prior=None,
+                                   twist_prior=twist_prior,
+                                   motion_cov_inv_in=motion_cov_inv,
                                    use_ndc = use_ndc,
                                    use_robust = False,
                                    track_pose_estimates = False,
+                                   use_motion_prior=False,
                                    debug=False)# - Synth Y
 
 euler_angles_XYZ = SE3.rotationMatrixToEulerAngles(SE3.extract_rotation(SE3_est))
