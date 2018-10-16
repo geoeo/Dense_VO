@@ -60,7 +60,7 @@ se3_ground_truth_prior[0:3,3] = 0
 #start = ListGenerator.get_index_of_id(1305031118.143256,rgb_files)
 
 # X Trans - Right
-#start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
+start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
 
 # X Trans - Left
 
@@ -68,18 +68,22 @@ se3_ground_truth_prior[0:3,3] = 0
 # may be the cause of the bad vo results
 #start = ListGenerator.get_index_of_id(1305031108.876515,rgb_files)
 
-start = ListGenerator.get_index_of_id(1305031109.275308,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031109.275308,rgb_files)
 
 # first moition is bad i.e. motion prior indices wrong estimate
 #start = ListGenerator.get_index_of_id(1305031109.375397,rgb_files)
 #start = ListGenerator.get_index_of_id(1305031109.543294,rgb_files)
 
+# Good estiamte w.o motion prior
+#start = ListGenerator.get_index_of_id(1305031109.675263,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031109.743274,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031110.011256,rgb_files)
 
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=4,
+    max_count=5,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
