@@ -177,7 +177,6 @@ def quaternion_to_s03(qx, qy, qz, qw):
     return so3
 
 
-
 def rotation_around_x(rad):
     R_x = np.identity(3)
 
@@ -187,3 +186,40 @@ def rotation_around_x(rad):
     R_x[2,2] = math.cos(rad)
 
     return R_x
+
+
+def relative_pose_error(rel_gt, rel_est):
+    return np.matmul(np.linalg.inv(rel_gt), rel_est)
+
+
+def root_mean_square_error(gt_list, pose_list):
+    assert len(gt_list) == len(pose_list)
+
+    length = len(gt_list)
+
+    acc = 0
+
+    for i in range(0,length):
+        gt = gt_list[i]
+        est = pose_list[i]
+
+        e = relative_pose_error(gt,est)
+        translation = extract_translation(e)
+        e_x = translation[0,0]
+        e_y = translation[1,0]
+        e_z = translation[2,0]
+
+        acc += (math.pow(e_x,2.0) + math.pow(e_y,2.0) + math.pow(e_z,2.0))
+
+    acc /= length
+    return math.sqrt(acc)
+
+def root_mean_square_error_for_entire_list(gt_list, pose_list):
+    length = len(gt_list)
+
+    rmse_list = np.zeros(length)
+
+    for i in range(0,length):
+        rmse_list[i] = root_mean_square_error(gt_list[0:i+1],pose_list[0:i+1])
+
+    return rmse_list

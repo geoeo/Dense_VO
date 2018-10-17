@@ -66,14 +66,17 @@ class Visualizer():
         if ground_truth_list is not None:
             self.ground_truth_list = ground_truth_list
         self.figure = plt.figure()
-        self.se3_graph = self.figure.add_subplot(211, projection='3d')
-        self.x_graph = self.figure.add_subplot(234)
-        self.y_graph = self.figure.add_subplot(235)
-        self.z_graph = self.figure.add_subplot(236)
+        self.se3_graph = self.figure.add_subplot(311, projection='3d')
+        self.x_graph = self.figure.add_subplot(334)
+        self.y_graph = self.figure.add_subplot(335)
+        self.z_graph = self.figure.add_subplot(336)
+        self.rmse_graph = self.figure.add_subplot(313)
 
+        self.se3_graph.set_title("relative pose estimate")
         self.x_graph.set_title("x")
         self.y_graph.set_title("y")
         self.z_graph.set_title("z")
+        self.rmse_graph.set_title("root mean square error")
 
         # These points will be plotted with incomming se3 matricies
         X, Y, Z = [0, 0], [0, 0], [0, -1]
@@ -117,6 +120,7 @@ class Visualizer():
         Plot3D.plot_translation_component(0, self.ground_truth_list, pose_list, self.x_graph, clear=False, draw=draw)
         Plot3D.plot_translation_component(1, self.ground_truth_list, pose_list, self.y_graph, clear=False, draw=draw)
         Plot3D.plot_translation_component(2, self.ground_truth_list, pose_list, self.z_graph, clear=False, draw=draw)
+        Plot3D.plot_rmse(self.ground_truth_list, pose_list, self.rmse_graph, clear=False, draw=draw)
 
     # performs visualization
     def visualize(self,solver_thread_manager):

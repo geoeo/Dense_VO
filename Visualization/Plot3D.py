@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from Numerics import ImageProcessing
+from mpl_toolkits.mplot3d import Axes3D # used implicitly for projection = '3d'!
+from Numerics import ImageProcessing, SE3
 import numpy as np
 import cv2
 
@@ -54,7 +54,7 @@ def plot_array_lines(points, ax, style = '-ro',clear = True, draw = True):
         plt.draw()
         plt.pause(1)
 
-def plot_translation_component(index, se3_gt_list, se3_est_list, ax,style_gt='-gx' ,style_est ='-rx', clear = False, draw = True):
+def plot_translation_component(index, se3_gt_list, se3_est_list, ax, style_gt='-gx' ,style_est ='-rx', clear = False, draw = True):
     #for i in range(0,N):
     if clear:
         ax.clear()
@@ -67,16 +67,25 @@ def plot_translation_component(index, se3_gt_list, se3_est_list, ax,style_gt='-g
 
         ax.plot([i],[translation_comp_gt],style_gt)
         ax.plot([i],[translation_comp_est],style_est)
-        #ax.text(X[i], Y[i], Z[i], '%s' % (i/2))
 
-    #ax.set_xlabel('X Label')
-    #ax.set_ylabel('Y Label')
-    #ax.set_zlabel('Z Label')
-
-    #plt.legend(loc=2)
     if draw:
         plt.draw()
         plt.pause(1)
+
+def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw = True):
+    if clear:
+        ax.clear()
+
+    rmse_list = SE3.root_mean_square_error_for_entire_list(se3_gt_list,se3_est_list)
+
+    for i in range(0,len(se3_gt_list), 1):
+        rmse = rmse_list[i]
+        ax.plot([i],[rmse],style)
+
+    if draw:
+        plt.draw()
+        plt.pause(1)
+
 
 
 def draw():
