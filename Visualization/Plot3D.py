@@ -45,8 +45,32 @@ def plot_array_lines(points, ax, style = '-ro',clear = True, draw = True):
         ax.plot(X[i:i+2],Y[i:i+2],Z[i:i+2],style)
         ax.text(X[i], Y[i], Z[i], '%s' % (i/2))
 
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
+    #ax.set_xlabel('X Label')
+    #ax.set_ylabel('Y Label')
+    #ax.set_zlabel('Z Label')
+
+    #plt.legend(loc=2)
+    if draw:
+        plt.draw()
+        plt.pause(1)
+
+def plot_translation_component(index, se3_gt_list, se3_est_list, ax,style_gt='-gx' ,style_est ='-rx', clear = False, draw = True):
+    #for i in range(0,N):
+    if clear:
+        ax.clear()
+
+    for i in range(0,len(se3_gt_list), 1):
+        se3_gt = se3_gt_list[i]
+        se3_est = se3_est_list[i]
+        translation_comp_gt = se3_gt[index,3]
+        translation_comp_est = se3_est[index,3]
+
+        ax.plot([i],[translation_comp_gt],style_gt)
+        ax.plot([i],[translation_comp_est],style_est)
+        #ax.text(X[i], Y[i], Z[i], '%s' % (i/2))
+
+    #ax.set_xlabel('X Label')
+    #ax.set_ylabel('Y Label')
     #ax.set_zlabel('Z Label')
 
     #plt.legend(loc=2)

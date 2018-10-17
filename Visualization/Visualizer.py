@@ -16,7 +16,14 @@ class VisualizerThread(threading.Thread):
         self.running = True
         self.pose_estimate_list.append(np.identity(4,dtype=Utils.matrix_data_type))
         self.figure = plt.figure()
-        self.graph = self.figure.add_subplot(111, projection='3d')
+        self.se3_graph = self.figure.add_subplot(211, projection='3d')
+        self.x_graph = self.figure.add_subplot(234, projection='2d')
+        self.y_graph = self.figure.add_subplot(235, projection='2d')
+        self.z_graph = self.figure.add_subplot(236, projection='2d')
+
+        self.x_graph.set_title("x")
+        self.y_graph.set_title("y")
+        self.z_graph.set_title("z")
 
         # These points will be plotted with incomming se3 matricies
         X, Y, Z = [0, 0], [0, 0], [0, -1]
@@ -37,7 +44,7 @@ class VisualizerThread(threading.Thread):
             #    print(se3)
             #    print('*'*80)
 
-            Plot3D.plot_array_lines(points_to_be_graphed,self.graph)
+            Plot3D.plot_array_lines(points_to_be_graphed, self.se3_graph)
 
             self.threadLock.release()
             time.sleep(1)
@@ -59,7 +66,14 @@ class Visualizer():
         if ground_truth_list is not None:
             self.ground_truth_list = ground_truth_list
         self.figure = plt.figure()
-        self.graph = self.figure.add_subplot(111, projection='3d')
+        self.se3_graph = self.figure.add_subplot(211, projection='3d')
+        self.x_graph = self.figure.add_subplot(234)
+        self.y_graph = self.figure.add_subplot(235)
+        self.z_graph = self.figure.add_subplot(236)
+
+        self.x_graph.set_title("x")
+        self.y_graph.set_title("y")
+        self.z_graph.set_title("z")
 
         # These points will be plotted with incomming se3 matricies
         X, Y, Z = [0, 0], [0, 0], [0, -1]
@@ -86,7 +100,7 @@ class Visualizer():
                 # identity gets transformed twice
                 points_gt_to_be_graphed = np.append(points_gt_to_be_graphed,points_transformed,axis=1)
 
-            Plot3D.plot_array_lines(points_gt_to_be_graphed, self.graph, '-go', clear=True, draw=False)
+            Plot3D.plot_array_lines(points_gt_to_be_graphed, self.se3_graph, '-go', clear=True, draw=False)
 
 
         se3_init = pose_list[0]
@@ -98,7 +112,11 @@ class Visualizer():
             # identity gets transformed twice
             points_to_be_graphed = np.append(points_to_be_graphed,points_transformed,axis=1)
 
-        Plot3D.plot_array_lines(points_to_be_graphed,self.graph,clear=False,draw=draw)
+        Plot3D.plot_array_lines(points_to_be_graphed, self.se3_graph, clear=False, draw=draw)
+
+        Plot3D.plot_translation_component(0, self.ground_truth_list, pose_list, self.x_graph, clear=False, draw=draw)
+        Plot3D.plot_translation_component(1, self.ground_truth_list, pose_list, self.y_graph, clear=False, draw=draw)
+        Plot3D.plot_translation_component(2, self.ground_truth_list, pose_list, self.z_graph, clear=False, draw=draw)
 
     # performs visualization
     def visualize(self,solver_thread_manager):

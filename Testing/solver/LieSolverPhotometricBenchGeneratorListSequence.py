@@ -83,7 +83,7 @@ start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=5,
+    max_count=6,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
@@ -140,7 +140,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.0055,  # 0.001, 1.0 - motion pri
+                                                 alpha_step=0.002,  # 0.0005, 0.0055 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,
@@ -148,7 +148,7 @@ for i in range(0, len(ref_image_list)):
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
-                                                 use_motion_prior=True,
+                                                 use_motion_prior=False,
                                                  debug=False)
 
     solver_manager.start()
