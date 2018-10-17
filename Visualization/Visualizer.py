@@ -105,7 +105,6 @@ class Visualizer():
 
             Plot3D.plot_array_lines(points_gt_to_be_graphed, self.se3_graph, '-go', clear=True, draw=False)
 
-
         se3_init = pose_list[0]
         points_to_be_graphed = np.matmul(se3_init,self.point_pair)[0:3,:]
 

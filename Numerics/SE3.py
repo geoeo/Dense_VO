@@ -196,7 +196,6 @@ def root_mean_square_error(gt_list, pose_list):
     assert len(gt_list) == len(pose_list)
 
     length = len(gt_list)
-
     acc = 0
 
     for i in range(0,length):
@@ -213,6 +212,7 @@ def root_mean_square_error(gt_list, pose_list):
 
     acc /= length
     return math.sqrt(acc)
+
 
 def root_mean_square_error_for_entire_list(gt_list, pose_list):
     length = len(gt_list)

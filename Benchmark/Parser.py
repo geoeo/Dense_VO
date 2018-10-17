@@ -45,13 +45,15 @@ def generate_ground_truth_se3(ground_truth_file_path,image_groundtruth_dict, ref
     groundtruth_data_target = associate.return_groundtruth(ground_truth_file_path, groundtruth_ts_target)
     SE3_target = generate_se3_from_groundtruth(groundtruth_data_target)
 
+    #SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref, SE3_target)
+
+    #if prior is not None:
+        #SE3_ref_target = np.matmul(prior,SE3_ref_target)
+        #SE3_ref = np.matmul(prior,SE3_ref)
+        #SE3_target = np.matmul(prior,SE3_target)
+
     SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref, SE3_target)
 
-    if prior is not None:
-        SE3_ref_target = np.matmul(prior,SE3_ref_target)
-
-    #SE3_ref_target[0,3] = -SE3_ref_target[0,3]
-    SE3_ref_target[1,3] = -SE3_ref_target[1,3]
     return SE3_ref_target
 
 def generate_image_depth_pair(dataset_root, rgb_file_path, depth_file_path, match_text, image_id):
