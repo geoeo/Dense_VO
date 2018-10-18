@@ -111,41 +111,9 @@ def Quaternion_toEulerianRadians(x_raw, y_raw, z_raw, w_raw):
 '''Source will become new origin of coordiante system'''
 def pose_pose_composition_inverse(SE3_source, SE3_target):
 
-    R_source = SE3_source[0:3,0:3]
-    R_target = SE3_target[0:3,0:3]
+    source_inv = invert(SE3_source)
 
-    x_source = SE3_source[0,3]
-    y_source = SE3_source[1,3]
-    z_source = SE3_source[2,3]
-
-    x_target = SE3_target[0,3]
-    y_target = SE3_target[1,3]
-    z_target = SE3_target[2,3]
-
-    R_source_inv = np.transpose(R_source)
-    R_target_inv = np.transpose(R_target)
-
-    translation_source = np.array([[x_source],[y_source],[z_source]],matrix_data_type)
-    translation_target = np.array([[x_target],[y_target],[z_target]],matrix_data_type)
-
-    translation_source_target = np.subtract(translation_target,translation_source)
-    translation_source_target_prime = np.matmul(R_source_inv,translation_source_target)
-    #translation_source_target_prime = np.matmul(translation_source_target_prime,translation_source)
-
-    R_origin_target = np.matmul(R_source_inv,R_target)
-    #R_origin_target = np.matmul(R_target_inv,R_source)
-
-    # TODO: investigate this further
-    #R_origin_target = np.matmul(R_target,R_source_inv)
-    #translation_source_target_prime = np.matmul(-R_origin_target,translation_source)
-    #translation_source_target_prime = np.add(translation_source_target_prime,translation_target)
-
-
-    se3_source_target = np.identity(4,matrix_data_type)
-    se3_source_target[0:3,3:4] = translation_source_target_prime
-    se3_source_target[0:3,0:3] = R_origin_target[0:3,0:3]
-
-    return se3_source_target
+    return np.matmul(source_inv,SE3_target)
 
 def quaternion_to_s03(qx, qy, qz, qw):
     mag = math.sqrt(qx*qx+qy*qy+qz*qz+qw*qw)
@@ -221,5 +189,15 @@ def root_mean_square_error_for_entire_list(gt_list, pose_list):
 
     for i in range(0,length):
         rmse_list[i] = root_mean_square_error(gt_list[0:i+1],pose_list[0:i+1])
+
+    return rmse_list
+
+def root_mean_square_error_for_consecutive_frames(gt_list, pose_list):
+    length = len(gt_list)
+
+    rmse_list = np.zeros(length)
+
+    for i in range(0,length):
+        rmse_list[i] = root_mean_square_error(gt_list[i:i+1],pose_list[i:i+1])
 
     return rmse_list

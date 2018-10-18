@@ -28,8 +28,8 @@ def scatter_plot_array(points,labels):
         label = labels[i]
         ax.scatter(X,Y,Z,label=label)
 
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
     #ax.set_zlabel('Z Label')
 
     plt.legend(loc=2)
@@ -45,8 +45,8 @@ def plot_array_lines(points, ax, style = '-ro',clear = True, draw = True):
         ax.plot(X[i:i+2],Y[i:i+2],Z[i:i+2],style)
         ax.text(X[i], Y[i], Z[i], '%s' % (i/2))
 
-    #ax.set_xlabel('X Label')
-    #ax.set_ylabel('Y Label')
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
     #ax.set_zlabel('Z Label')
 
     #plt.legend(loc=2)
@@ -76,7 +76,8 @@ def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw 
     if clear:
         ax.clear()
 
-    rmse_list = SE3.root_mean_square_error_for_entire_list(se3_gt_list,se3_est_list)
+    #rmse_list = SE3.root_mean_square_error_for_entire_list(se3_gt_list,se3_est_list)
+    rmse_list = SE3.root_mean_square_error_for_consecutive_frames(se3_gt_list,se3_est_list)
 
     for i in range(0,len(se3_gt_list), 1):
         rmse = rmse_list[i]

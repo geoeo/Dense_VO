@@ -3,7 +3,7 @@ import os
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-xyz_dataset = 'rgbd_dataset_freiburg1_desk/'
+xyz_dataset = 'rgbd_dataset_freiburg2_desk/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 

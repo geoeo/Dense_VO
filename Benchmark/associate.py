@@ -47,7 +47,8 @@ import numpy
 
 
 offset_default = 0.0
-max_difference_default = 0.02
+#max_difference_default = 1.0
+max_difference_default = 0.02 # orig
 
 def return_rgb_depth_from_rgb_selection(rgb_text_filepath, depth_text_filepath, match_text_filepath,dataset_root, rgb_image_index):
 

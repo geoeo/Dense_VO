@@ -30,10 +30,11 @@ depth_file_total = len(depth_files)
 
 so3 = SE3.quaternion_to_s03(0.7907,  0.4393 , -0.1770,  -0.3879)
 euler = SE3.rotationMatrixToEulerAngles(so3)
-se3_ground_truth_prior = np.transpose(so3)
-euler_t = SE3.rotationMatrixToEulerAngles(se3_ground_truth_prior)
+so3_t = np.transpose(so3)
+euler_t = SE3.rotationMatrixToEulerAngles(so3_t)
+so3_z = SE3.makeS03(0,0,euler[2])
 #se3_ground_truth_prior = SE3.makeS03(0,0,-pi/2)
-se3_ground_truth_prior = np.append(se3_ground_truth_prior,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
+se3_ground_truth_prior = np.append(so3_z,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
 se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
 
 
@@ -58,15 +59,15 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 #se3_ground_truth_prior[0:3,3] = 0
 
 # start
-start = ListGenerator.get_index_of_id(1305031453.359684,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031453.359684,rgb_files)
 
-#start = ListGenerator.get_index_of_id(1305031456.727693,rgb_files)
+start = ListGenerator.get_index_of_id(1305031456.727693,rgb_files)
 
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=8,
+    max_count=4,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
@@ -81,7 +82,7 @@ for i in range(0, len(ref_id_list)):
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 
     # TODO investigate this
-    SE3_ref_target[0,3] = -SE3_ref_target[0,3]
+    #SE3_ref_target[0,3] = -SE3_ref_target[0,3]
     SE3_ref_target[1,3] = -SE3_ref_target[1,3]
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)

@@ -158,10 +158,9 @@ def solve_photometric(frame_reference,
     not_better = False
 
 
-    depth_factor = -1
-
     fx = frame_reference.camera.intrinsic.extract_fx()
     fy = frame_reference.camera.intrinsic.extract_fy()
+    depth_factor = np.sign(fx)
 
     Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step,
                                                                     alpha_min = -0.7,
@@ -207,7 +206,6 @@ def solve_photometric(frame_reference,
                                        valid_measurements,
                                        use_ndc,
                                        depth_factor)
-                                       #np.sign(fx))
 
     z_rot = SE3.makeS03(0,0,math.pi)
     se3_rot = np.identity(4, dtype=matrix_data_type)
