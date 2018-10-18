@@ -97,8 +97,7 @@ for i in range(0, len(ref_id_list)):
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 
     # TODO investigate this
-    #SE3_ref_target[0,3] = -SE3_ref_target[0,3]
-    #SE3_ref_target[1,3] = -SE3_ref_target[1,3]
+    SE3_ref_target[1,3] = -SE3_ref_target[1,3]
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 
