@@ -33,14 +33,15 @@ so3 = SE3.quaternion_to_s03(0.6453, -0.5498, 0.3363, -0.4101)
 euler = SE3.rotationMatrixToEulerAngles(so3)
 so3_t = np.transpose(so3)
 euler_t = SE3.rotationMatrixToEulerAngles(so3_t)
+# TODO investiagte this
 so3_z = SE3.makeS03(0,euler[1],euler[2])
 #se3_ground_truth_prior = SE3.makeS03(0,0,-pi/2)
 se3_ground_truth_prior = np.append(so3_z,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
 se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
 
 
-#ground_truth_acc = np.identity(4,Utils.matrix_data_type)
-ground_truth_acc = se3_ground_truth_prior
+ground_truth_acc = np.identity(4,Utils.matrix_data_type)
+#ground_truth_acc = se3_ground_truth_prior
 se3_estimate_acc = np.identity(4,Utils.matrix_data_type)
 ground_truth_list = []
 pose_estimate_list = []
@@ -64,20 +65,22 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 # Y Up
 #
-#start = ListGenerator.get_index_of_id(1311868205.105654,rgb_files)
-#start = ListGenerator.get_index_of_id(1311868205.773626,rgb_files)
-start = ListGenerator.get_index_of_id(1311868215.842289,rgb_files)
-
+#start = ListGenerator.get_index_of_id(1311868216.474357,rgb_files)
 
 # Y Down
-#start = ListGenerator.get_index_of_id(1311868208.773982,rgb_files)
+start = ListGenerator.get_index_of_id(1311868219.210391,rgb_files)
 
 #X Right
+#start = ListGenerator.get_index_of_id(1311868164.899132,rgb_files)
 #start = ListGenerator.get_index_of_id(1311868166.631287,rgb_files)
+# rotation fools into thinking its x translation
 #start = ListGenerator.get_index_of_id(1311868169.199452,rgb_files)
 #start = ListGenerator.get_index_of_id(1311868169.163498,rgb_files)
 
 #start = ListGenerator.get_index_of_id(1311868171.399409,rgb_files)
+
+# good x/y values
+#start = ListGenerator.get_index_of_id(1311868235.279710,rgb_files)
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
@@ -97,7 +100,11 @@ for i in range(0, len(ref_id_list)):
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 
     # TODO investigate this
-    SE3_ref_target[1,3] = -SE3_ref_target[1,3]
+    rot = SE3.extract_rotation(SE3_ref_target)
+    euler = SE3.rotationMatrixToEulerAngles(rot)
+    rot_new = SE3.makeS03(euler[0],-euler[1],euler[2])
+    SE3_ref_target[0:3,0:3] = rot_new
+    #SE3_ref_target[1,3] = -SE3_ref_target[1,3]
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 
@@ -110,10 +117,10 @@ im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 (image_height, image_width) = im_greyscale_reference_1.shape
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
-intrinsic_identity = Intrinsic.Intrinsic(-517.3, -516.5, 318.6, 239.5) # freiburg_1
+intrinsic_identity = Intrinsic.Intrinsic(-520.9, -521.0, 321.5, 249.7) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -521.0/520.9, 321.5/image_width, 249.7/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
@@ -140,11 +147,11 @@ for i in range(0, len(ref_image_list)):
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
-                                                 max_its=50,
+                                                 max_its=10,
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.004,  # 0.005, 0.002 - motion pri
+                                                 alpha_step=0.0025,  # 0.005, 0.002 - motion pri
                                                  gradient_monitoring_window_start=1,
-                                                 image_range_offset_start=0,
+                                                 image_range_offset_start=50,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
