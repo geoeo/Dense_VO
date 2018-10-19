@@ -138,7 +138,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=10,
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.03,  # 0.008, 0.003 - motion pri
+                                                 alpha_step=0.01,  # 0.008, 0.001 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,

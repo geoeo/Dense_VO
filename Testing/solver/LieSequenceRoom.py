@@ -48,7 +48,9 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 #se3_ground_truth_prior[0:3,3] = 0
 
 # start
-start = ListGenerator.get_index_of_id(1305031453.359684,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031453.359684,rgb_files)
+
+start = ListGenerator.get_index_of_id(1305031911.097196,rgb_files)
 
 #start = ListGenerator.get_index_of_id(1305031910.765238,rgb_files)
 
@@ -60,7 +62,7 @@ start = ListGenerator.get_index_of_id(1305031453.359684,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=10,
+    max_count=6,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)

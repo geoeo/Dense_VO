@@ -76,7 +76,7 @@ class Visualizer():
         self.x_graph.set_title("x")
         self.y_graph.set_title("y")
         self.z_graph.set_title("z")
-        self.rmse_graph.set_title("root mean square error")
+        self.rmse_graph.set_title("drift per frame (pose error)")
 
         # These points will be plotted with incomming se3 matricies
         X, Y, Z = [0, 0], [0, 0], [0, -1]

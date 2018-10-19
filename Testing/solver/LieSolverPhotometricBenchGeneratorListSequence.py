@@ -45,7 +45,7 @@ target_image_list = []
 # start
 #start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
-# Y Trans - down
+# Y Trans - down / better with motion prior
 start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # Y Trans - up
@@ -75,7 +75,7 @@ start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=5,
+    max_count=8,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
