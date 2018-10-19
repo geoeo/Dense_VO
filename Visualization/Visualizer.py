@@ -2,7 +2,7 @@ import threading
 import matplotlib.pyplot as plt
 import time
 import numpy as np
-from Numerics import Utils
+from Numerics import Utils, SE3
 from Visualization import Plot3D
 
 class VisualizerThread(threading.Thread):
@@ -109,7 +109,9 @@ class Visualizer():
         points_to_be_graphed = np.matmul(se3_init,self.point_pair)[0:3,:]
 
         for i in range(1,len(pose_list)):
+
             se3 = pose_list[i]
+
             points_transformed = np.matmul(se3,self.point_pair)[0:3,:]
             # identity gets transformed twice
             points_to_be_graphed = np.append(points_to_be_graphed,points_transformed,axis=1)

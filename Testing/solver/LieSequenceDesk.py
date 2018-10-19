@@ -28,18 +28,7 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder, delimiter='.'
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-so3 = SE3.quaternion_to_s03(0.7907,  0.4393 , -0.1770,  -0.3879)
-euler = SE3.rotationMatrixToEulerAngles(so3)
-so3_t = np.transpose(so3)
-euler_t = SE3.rotationMatrixToEulerAngles(so3_t)
-so3_z = SE3.makeS03(0,0,euler[2])
-#se3_ground_truth_prior = SE3.makeS03(0,0,-pi/2)
-se3_ground_truth_prior = np.append(so3_z,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
-se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
-
-
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
-#ground_truth_acc = se3_ground_truth_prior
 se3_estimate_acc = np.identity(4,Utils.matrix_data_type)
 ground_truth_list = []
 pose_estimate_list = []
@@ -77,7 +66,7 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id,se3_ground_truth_prior)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 

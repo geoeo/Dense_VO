@@ -36,7 +36,7 @@ def generate_se3_from_groundtruth(groundtruth_list):
 
     return se3
 
-def generate_ground_truth_se3(ground_truth_file_path,image_groundtruth_dict, reference_id, target_id, prior = None):
+def generate_ground_truth_se3(ground_truth_file_path,image_groundtruth_dict, reference_id, target_id):
     groundtruth_ts_ref = image_groundtruth_dict[reference_id]
     groundtruth_data_ref = associate.return_groundtruth(ground_truth_file_path, groundtruth_ts_ref)
     SE3_ref = generate_se3_from_groundtruth(groundtruth_data_ref)
@@ -44,13 +44,6 @@ def generate_ground_truth_se3(ground_truth_file_path,image_groundtruth_dict, ref
     groundtruth_ts_target = image_groundtruth_dict[target_id]
     groundtruth_data_target = associate.return_groundtruth(ground_truth_file_path, groundtruth_ts_target)
     SE3_target = generate_se3_from_groundtruth(groundtruth_data_target)
-
-    #SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref, SE3_target)
-
-    #if prior is not None:
-        #SE3_ref_target = np.matmul(prior,SE3_ref_target)
-        #SE3_ref = np.matmul(prior,SE3_ref)
-        #SE3_target = np.matmul(prior,SE3_target)
 
     SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref, SE3_target)
 

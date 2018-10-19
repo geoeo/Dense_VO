@@ -182,9 +182,13 @@ def solve_photometric(frame_reference,
     #generator_y = Lie.generator_y_3_4_neg()
     generator_z = Lie.generator_z_3_4()
     #generator_z = Lie.generator_z_3_4_neg()
+
+    # Depth factor of -1.0 leads to inverted roll and pitch when displaying
+    # This will be dealt with as post process
     generator_roll = Lie.generator_roll_3_4()
     #generator_roll = Lie.generator_roll_3_4_neg()
     generator_pitch = Lie.generator_pitch_3_4()
+    #generator_pitch = Lie.generator_pitch_3_4_neg()
     generator_yaw = Lie.generator_yaw_3_4()
 
     X_back_projection = np.ones((4, N), Utils.matrix_data_type)
@@ -238,8 +242,8 @@ def solve_photometric(frame_reference,
                                                  valid_measurements,
                                                  frame_target.pixel_image,
                                                  frame_reference.pixel_image,
-                                                frame_target.pixel_depth,
-                                                frame_reference.pixel_depth,
+                                                 frame_target.pixel_depth,
+                                                 frame_reference.pixel_depth,
                                                  v_id,
                                                  image_range_offset)
 
@@ -266,7 +270,7 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         # TODO investigate absolute error threshold aswel?
-        if (0 <= v_diff <= eps or valid_pixel_ratio < 0.95) and Gradient_step_manager.check_iteration(it) :
+        if (0 <= v_diff <= eps) and Gradient_step_manager.check_iteration(it) :
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
             break
 

@@ -35,18 +35,7 @@ use_ndc = True
 match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
-so3 = SE3.quaternion_to_s03(0.6132, 0.5962, -0.3311, -0.3986)
-euler = SE3.rotationMatrixToEulerAngles(so3)
-so3_t = np.transpose(so3)
-euler_t = SE3.rotationMatrixToEulerAngles(so3_t)
-so3_z = SE3.makeS03(0, euler[1], 0)
-#so3_z = SE3.makeS03(0,0,pi/2)
-se3_ground_truth_prior = np.append(so3_z,np.zeros((3,1),dtype=Utils.matrix_data_type),axis=1)
-se3_ground_truth_prior = SE3.append_homogeneous_along_y(se3_ground_truth_prior)
-
-
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
-#ground_truth_acc = se3_ground_truth_prior
 se3_estimate_acc = np.identity(4,Utils.matrix_data_type)
 ground_truth_list = []
 pose_estimate_list = []
@@ -57,7 +46,7 @@ target_image_list = []
 #start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
 # Y Trans - down
-#start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
+start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # Y Trans - up
 #start = ListGenerator.get_index_of_id(1305031118.143256,rgb_files)
@@ -78,7 +67,7 @@ target_image_list = []
 #start = ListGenerator.get_index_of_id(1305031109.543294,rgb_files)
 
 # Good estiamte w.o motion prior
-start = ListGenerator.get_index_of_id(1305031109.675263,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031109.675263,rgb_files)
 #start = ListGenerator.get_index_of_id(1305031109.743274,rgb_files)
 #start = ListGenerator.get_index_of_id(1305031110.011256,rgb_files)
 
@@ -86,7 +75,7 @@ start = ListGenerator.get_index_of_id(1305031109.675263,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=4,
+    max_count=5,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
@@ -96,14 +85,14 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id,se3_ground_truth_prior)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    #rot = SE3.extract_rotation(SE3_ref_target)
-    #euler = SE3.rotationMatrixToEulerAngles(rot)
-    #rot_new = SE3.makeS03(euler[0],-euler[1],euler[2])
-    #SE3_ref_target[0:3,0:3] = rot_new
+    rot = SE3.extract_rotation(SE3_ref_target)
+    euler = SE3.rotationMatrixToEulerAngles(rot)
+    rot_new = SE3.makeS03(euler[0],-euler[1],euler[2])
+    SE3_ref_target[0:3,0:3] = rot_new
     SE3_ref_target[1,3] = -SE3_ref_target[1,3]
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
@@ -149,15 +138,15 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.002,  # 0.002, 0.0055 - motion pri
+                                                 alpha_step=0.0055,  # 0.002, 0.0055 - motion pri
                                                  gradient_monitoring_window_start=1,
-                                                 image_range_offset_start=0,
+                                                 image_range_offset_start=15,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
-                                                 use_motion_prior=False,
+                                                 use_motion_prior=True,
                                                  debug=False)
 
     solver_manager.start()
@@ -171,6 +160,7 @@ for i in range(0, len(ref_image_list)):
     se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
     pose_estimate_list.append(se3_estimate_acc)
 print("visualizing..")
+SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()
 
