@@ -28,6 +28,9 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder, delimiter='.'
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
+euler = SE3.Quaternion_toEulerianRadians(0.6453, -0.5498, 0.3363, -0.4101)
+
+
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
 se3_estimate_acc = np.identity(4,Utils.matrix_data_type)
@@ -138,7 +141,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=10,
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.01,  # 0.008, 0.001 - motion pri
+                                                 alpha_step=0.008,  # 0.001, 0.008 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  twist_prior=twist_prior,

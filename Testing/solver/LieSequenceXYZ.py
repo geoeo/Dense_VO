@@ -32,10 +32,15 @@ depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
 
+euler_prior = SE3.Quaternion_toEulerianRadians(0.6132, 0.5962, -0.3311, -0.3986)
+so3_prior = SE3.makeS03(0,0,-euler_prior[0])
+#so3_prior = SE3.makeS03(0,0,pi)
+
 match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
+#ground_truth_acc[0:3,0:3] = so3_prior
 se3_estimate_acc = np.identity(4,Utils.matrix_data_type)
 ground_truth_list = []
 pose_estimate_list = []
@@ -49,6 +54,7 @@ target_image_list = []
 start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # Y Trans - up
+
 #start = ListGenerator.get_index_of_id(1305031118.143256,rgb_files)
 
 # X Trans - Right

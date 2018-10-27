@@ -28,6 +28,8 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder, delimiter='.'
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
+euler = SE3.Quaternion_toEulerianRadians(0.8772, -0.1170, 0.0666, -0.4608)
+
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
 se3_estimate_acc = np.identity(4,Utils.matrix_data_type)
 ground_truth_list = []
