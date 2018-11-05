@@ -59,9 +59,11 @@ def generate_image_depth_pair(dataset_root, rgb_file_path, depth_file_path, matc
     return im_greyscale_reference, im_depth_reference
 
 # No match.txt means image and depth have same ts
-def generate_image_depth_pair(dataset_root, rgb_folder, depth_folder, image_id):
-    rgb_ref_file_path = dataset_root + rgb_folder + image_id
-    depth_ref_file_path = dataset_root + depth_folder + image_id
+def generate_image_depth_pair(dataset_root, rgb_folder, depth_folder, image_id, ext):
+
+    image_id_str = f'{image_id:.9f}'
+    rgb_ref_file_path = dataset_root + rgb_folder + image_id_str + ext
+    depth_ref_file_path = dataset_root + depth_folder + image_id_str + ext
 
     im_greyscale_reference = cv2.imread(rgb_ref_file_path, cv2.IMREAD_GRAYSCALE).astype(Utils.image_data_type)
     im_greyscale_reference = ImageProcessing.z_standardise(im_greyscale_reference)
