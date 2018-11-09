@@ -49,7 +49,7 @@ def generate_ground_truth_se3(ground_truth_file_path,image_groundtruth_dict, ref
 
     return SE3_ref_target
 
-def generate_image_depth_pair(dataset_root, rgb_file_path, depth_file_path, match_text, image_id):
+def generate_image_depth_pair_match(dataset_root, rgb_file_path, depth_file_path, match_text, image_id):
     rgb_ref_file_path, depth_ref_file_path = associate.return_rgb_depth_from_rgb_selection(rgb_file_path, depth_file_path,
                                                                                            match_text, dataset_root,
                                                                                            image_id)

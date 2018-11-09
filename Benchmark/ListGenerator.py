@@ -12,7 +12,7 @@ def get_files_from_directory(dir_path, delimiter=''):
     files_float.sort()
     return files_float
 
-def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict, match_dict):
+def generate_files_to_load_match(rgb_list, start, max_count, offset, ground_truth_dict, match_dict):
     ref_files_to_load = []
     target_files_to_load = []
     ref_file_failed_to_load = []
@@ -25,7 +25,7 @@ def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict
         ref_file = rgb_list[i_ref]
         target_file = rgb_list[i_target]
 
-        if validate(ref_file, ground_truth_dict,match_dict):
+        if validate_match(ref_file, ground_truth_dict,match_dict):
             ref_files_to_load.append(ref_file)
             i_ref+=offset
         else:
@@ -34,7 +34,7 @@ def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict
             i_target+=1
             continue
 
-        if validate(target_file, ground_truth_dict,match_dict):
+        if validate_match(target_file, ground_truth_dict,match_dict):
             target_files_to_load.append(target_file)
             i_target+=offset
         else:
@@ -108,7 +108,7 @@ def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict
     return ref_files_to_load, target_files_to_load , ref_file_failed_to_load
 
 
-def validate(key, ground_truth_dict,match_dict):
+def validate_match(key, ground_truth_dict,match_dict):
     does_ground_truth_exist = key in ground_truth_dict
     does_depth_match_exist = key in match_dict
     return does_ground_truth_exist and does_depth_match_exist

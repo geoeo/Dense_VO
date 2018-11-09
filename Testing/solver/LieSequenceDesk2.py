@@ -51,7 +51,7 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 start = ListGenerator.get_index_of_id(1305031526.671473,rgb_files)
 
 
-ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
+ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
     rgb_files,
     start=start,
     max_count=6,
@@ -65,8 +65,8 @@ for i in range(0, len(ref_id_list)):
     target_id = target_id_list[i]
 
     SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id)
-    im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,ref_id)
-    im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_text,depth_text,match_text,target_id)
+    im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
+    im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,target_id)
 
     rot = SE3.extract_rotation(SE3_ref_target)
     euler = SE3.rotationMatrixToEulerAngles(rot)
