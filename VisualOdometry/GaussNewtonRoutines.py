@@ -14,7 +14,8 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             depth = reference_depth_image[y, x]
             valid_measurements[flat_index] = True
             # For opencl maybe do this in a simple kernel before
-            if depth == 0:
+            # (Re)sets invalid depth measurements to False such that they do not impact the gauss newton step
+            if depth == 0 or depth == depth_direction*100000:
                 depth = depth_direction*100000
                 valid_measurements[flat_index] = False
                 #continue
@@ -49,7 +50,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             # At the moment invalid depth measurements are still being considered
-            #if reference_depth[y,x] == 0:
+            #if not valid_measurements[flat_index]:
             #    continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
@@ -59,6 +60,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             # TODO: investigate this flag in thesis
+            # Might set invalid depth measurements to True such that they can contribute to the residual
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
