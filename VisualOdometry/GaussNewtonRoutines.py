@@ -58,6 +58,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
                 valid_measurements[flat_index] = False
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
+            # TODO: investigate this flag in thesis
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)

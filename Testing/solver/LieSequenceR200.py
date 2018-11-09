@@ -79,6 +79,7 @@ im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 (image_height, image_width) = im_greyscale_reference_1.shape
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
+
 #TODO use correct instrinsics
 intrinsic_identity = Intrinsic.Intrinsic(-517.3, -516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
@@ -101,6 +102,8 @@ for i in range(0, len(ref_image_list)):
 
     im_depth_reference /= depth_factor
     im_depth_target /= depth_factor
+
+    #count = np.count_nonzero(im_depth_reference)
 
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)

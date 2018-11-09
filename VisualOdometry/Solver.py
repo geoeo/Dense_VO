@@ -156,6 +156,7 @@ def solve_photometric(frame_reference,
     v_id = np.zeros((N, 1), dtype=matrix_data_type, order='F')
     pseudo_inv = np.identity(twist_size,dtype=matrix_data_type)
     not_better = False
+    valid_pixel_ratio = 1.0
 
 
     fx = frame_reference.camera.intrinsic.extract_fx()
@@ -211,6 +212,8 @@ def solve_photometric(frame_reference,
                                        use_ndc,
                                        depth_factor)
 
+    count = np.sum(valid_measurements)
+
     z_rot = SE3.makeS03(0,0,math.pi)
     se3_rot = np.identity(4, dtype=matrix_data_type)
     se3_rot[0:3,0:3] = z_rot
@@ -263,7 +266,6 @@ def solve_photometric(frame_reference,
             pose_estimate_list.append(SE_3_est)
             threadLock.release()
 
-        valid_pixel_ratio = number_of_valid_measurements / N
         v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
         #v_diff = Gradient_step_manager.last_error_mean_abs - v_mean
 
@@ -366,7 +368,8 @@ def solve_photometric(frame_reference,
                                                  v,
                                                  image_range_offset)
 
-        number_of_valid_measurements = np.sum(valid_measurements_reference)
+        number_of_valid_measurements = np.sum(valid_measurements)
+        valid_pixel_ratio = number_of_valid_measurements / N
 
         if use_robust:
             variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)
