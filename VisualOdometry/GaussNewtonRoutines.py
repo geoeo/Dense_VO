@@ -14,8 +14,8 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             depth = reference_depth_image[y, x]
             valid_measurements[flat_index] = True
             # For opencl maybe do this in a simple kernel before
-            # (Re)sets invalid depth measurements to False such that they do not impact the gauss newton step
-            if depth == 0 or depth == depth_direction*100000:
+            # Sets invalid depth measurements to False such that they do not impact the gauss newton step
+            if depth == 0:
                 depth = depth_direction*100000
                 valid_measurements[flat_index] = False
                 #continue

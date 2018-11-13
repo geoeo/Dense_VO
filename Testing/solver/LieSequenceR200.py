@@ -4,6 +4,7 @@ from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate, ListGenerator
 from Visualization import Visualizer
+from math import pi
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
@@ -61,6 +62,8 @@ for i in range(0, len(ref_id_list)):
 
     # Optitrack capture X and Z are flipped
     rot = SE3.extract_rotation(SE3_ref_target)
+    #conv = SE3.rotation_around_x(pi/2)
+    #rot_new = np.matmul(conv,rot)
     euler = SE3.rotationMatrixToEulerAngles(rot)
     rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
     SE3_ref_target[0:3,0:3] = rot_new
