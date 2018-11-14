@@ -167,6 +167,7 @@ for i in range(0, len(ref_image_list)):
     pose_estimate_list.append(se3_estimate_acc)
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
+visualizer.visualize_ground_truth(clear=True,draw=False)
 visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()
 

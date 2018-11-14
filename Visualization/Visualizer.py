@@ -88,11 +88,7 @@ class Visualizer():
     def show(self):
         Plot3D.show()
 
-    def visualize_poses(self, pose_list, draw = True):
-        if len(pose_list) == 0:
-            print('pose list is empty, skipping')
-            return
-
+    def visualize_ground_truth(self, clear= True, draw=False):
         if len(self.ground_truth_list) > 0:
             gt_init = self.ground_truth_list[0]
             points_gt_to_be_graphed = np.matmul(gt_init,self.point_pair)[0:3,:]
@@ -103,7 +99,16 @@ class Visualizer():
                 # identity gets transformed twice
                 points_gt_to_be_graphed = np.append(points_gt_to_be_graphed,points_transformed,axis=1)
 
-            Plot3D.plot_array_lines(points_gt_to_be_graphed, self.se3_graph, '-go', clear=True, draw=False)
+            Plot3D.plot_array_lines(points_gt_to_be_graphed, self.se3_graph, '-go', clear=clear, draw=False)
+
+            Plot3D.plot_translation_component(0, self.ground_truth_list, self.x_graph, style='-gx', clear=False, draw=draw)
+            Plot3D.plot_translation_component(1, self.ground_truth_list, self.y_graph, style='-gx', clear=False, draw=draw)
+            Plot3D.plot_translation_component(2, self.ground_truth_list, self.z_graph, style='-gx', clear=False, draw=draw)
+
+    def visualize_poses(self, pose_list, draw = True):
+        if len(pose_list) == 0:
+            print('pose list is empty, skipping')
+            return
 
         se3_init = pose_list[0]
         points_to_be_graphed = np.matmul(se3_init,self.point_pair)[0:3,:]
@@ -118,9 +123,9 @@ class Visualizer():
 
         Plot3D.plot_array_lines(points_to_be_graphed, self.se3_graph, clear=False, draw=draw)
 
-        Plot3D.plot_translation_component(0, self.ground_truth_list, pose_list, self.x_graph, clear=False, draw=draw)
-        Plot3D.plot_translation_component(1, self.ground_truth_list, pose_list, self.y_graph, clear=False, draw=draw)
-        Plot3D.plot_translation_component(2, self.ground_truth_list, pose_list, self.z_graph, clear=False, draw=draw)
+        Plot3D.plot_translation_component(0, pose_list, self.x_graph, style='-rx', clear=False, draw=draw)
+        Plot3D.plot_translation_component(1, pose_list, self.y_graph, style='-rx', clear=False, draw=draw)
+        Plot3D.plot_translation_component(2, pose_list, self.z_graph, style='-rx', clear=False, draw=draw)
         Plot3D.plot_rmse(self.ground_truth_list, pose_list, self.rmse_graph, clear=False, draw=draw)
 
     # performs visualization
