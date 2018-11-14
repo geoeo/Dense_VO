@@ -1,6 +1,7 @@
 from MotionModels.MotionDelta import MotionDelta
 from MotionModels.SteeringCommands import SteeringCommands
 from Numerics.Utils import matrix_data_type
+from Numerics import SE3
 import numpy as np
 import math
 
@@ -12,9 +13,14 @@ class Ackermann:
         self.linear_velocity_noise = 0.0
         self.steering_angle_noise = 0.0
         self.covariance_prev = np.identity(3, dtype=matrix_data_type)
+        # 6 DOF row = {x,y,z,roll,pitch,yaw}
+        self.covariance_current_large = np.identity(6, dtype=matrix_data_type)
         self.M = np.identity(2,dtype=matrix_data_type) # noise parameters
-        self.G = np.zeros((3,3), dtype=matrix_data_type)
+        self.G = np.identity(3, dtype=matrix_data_type)
         self.V = np.zeros((3,2), dtype=matrix_data_type)
+        self.x_offset = 0
+        self.z_offset = 2
+        self.pitch_offset = 4
 
 
     # TODO test
@@ -46,11 +52,11 @@ class Ackermann:
         steering_vel_cmd = steering_input.linear_velocity
         steering_angle_cmd = steering_input.steering_angle
 
-        self.G[0, 0] = 1.0
+        #self.G[0, 0] = 1.0
         self.G[0, 2] = -steering_vel_cmd * math.sin(theta) * dt
-        self.G[1, 1] = 1.0
+        #self.G[1, 1] = 1.0
         self.G[1, 2] = steering_vel_cmd * math.cos(theta) * dt
-        self.G[2, 2] = 1.0
+        #self.G[2, 2] = 1.0
 
         self.V[0, 0] = math.cos(theta) * dt
         self.V[1, 0] = math.sin(theta) * dt
@@ -63,14 +69,29 @@ class Ackermann:
         cov_est = np.matmul(self.G,np.matmul(self.covariance_prev,G_t)) + np.matmul(self.V,np.matmul(self.M,V_t))
 
         # set for next iteration
-        self.covariance_prev = cov_est
+        self.covariance_prev = np.copy(cov_est)
 
         # Clear
-        for j in range(0,3):
-            for i in range(0,3):
-                self.G[j,i] = 0
-            for i_2 in range (0,2):
-                self.V[j,i_2] = 0
+        #for j in range(0,3):
+        #    for i in range(0,3):
+        #        self.G[j,i] = 0
+        #    for i_2 in range (0,2):
+        #        self.V[j,i_2] = 0
 
-        return cov_est
+        new_cov = cov_est
+
+        # copy into 6Dof Covariance
+        self.covariance_current_large[self.x_offset,self.x_offset] = new_cov[0,0]
+        self.covariance_current_large[self.x_offset,self.z_offset] = new_cov[0,1]
+        self.covariance_current_large[self.x_offset,self.pitch_offset] = new_cov[0,2]
+
+        self.covariance_current_large[self.z_offset,self.x_offset] = new_cov[1,0]
+        self.covariance_current_large[self.z_offset,self.z_offset] = new_cov[1,1]
+        self.covariance_current_large[self.z_offset,self.pitch_offset] = new_cov[1,2]
+
+        self.covariance_current_large[self.pitch_offset,self.x_offset] = new_cov[2,0]
+        self.covariance_current_large[self.pitch_offset,self.z_offset] = new_cov[2,1]
+        self.covariance_current_large[self.pitch_offset,self.pitch_offset] = new_cov[2,2]
+
+        return self.covariance_current_large
 
