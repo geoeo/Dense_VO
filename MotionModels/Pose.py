@@ -8,6 +8,6 @@ class Pose:
         self.theta = 0
 
     def apply_motion(self, motion_delta : MotionDelta, dt):
-        self.x += motion_delta.delta_X*dt
-        self.y += motion_delta.delta_Y*dt
-        self.theta += motion_delta.delta_Theta * dt
+        self.x += motion_delta.delta_x * dt
+        self.y += motion_delta.delta_y * dt
+        self.theta += motion_delta.delta_theta * dt
