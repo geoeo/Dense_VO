@@ -23,3 +23,4 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 Plot3D.plot_array_lines(points_xyz, ax)
+pair_transformed = np.matmul(se3,pair)

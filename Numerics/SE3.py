@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from Numerics.Utils import matrix_data_type
+from MotionModels import MotionDelta
 
 
 def extract_rotation(se3 : np.ndarray):
@@ -60,17 +61,15 @@ def makeS03(roll_rad,pitch_rad,yaw_rad):
     R_y = np.identity(3)
     R_z = np.identity(3)
 
-    #R_x[1,1] = math.cos(roll_rad)
-    #R_x[1,2] = -math.sin(roll_rad)
-    #R_x[2,1] = math.sin(roll_rad)
-    #R_x[2,2] = math.cos(roll_rad)
 
     R_x = rotation_around_x(roll_rad)
 
-    R_y[0,0] = math.cos(pitch_rad)
-    R_y[0,2] = math.sin(pitch_rad)
-    R_y[2,0] = -math.sin(pitch_rad)
-    R_y[2,2] = math.cos(pitch_rad)
+    #R_y[0,0] = math.cos(pitch_rad)
+    #R_y[0,2] = math.sin(pitch_rad)
+    #R_y[2,0] = -math.sin(pitch_rad)
+    #R_y[2,2] = math.cos(pitch_rad)
+
+    R_y = rotation_around_y(pitch_rad)
 
     R_z[0,0] = math.cos(yaw_rad)
     R_z[0,1] = -math.sin(yaw_rad)
@@ -146,7 +145,7 @@ def quaternion_to_s03(qx, qy, qz, qw):
 
 
 def rotation_around_x(rad):
-    R_x = np.identity(3)
+    R_x = np.identity(3, dtype=matrix_data_type)
 
     R_x[1,1] = math.cos(rad)
     R_x[1,2] = -math.sin(rad)
@@ -154,6 +153,25 @@ def rotation_around_x(rad):
     R_x[2,2] = math.cos(rad)
 
     return R_x
+
+def rotation_around_y(rad):
+    R_y = np.identity(3, dtype=matrix_data_type)
+
+    R_y[0,0] = math.cos(rad)
+    R_y[0,2] = math.sin(rad)
+    R_y[2,0] = -math.sin(rad)
+    R_y[2,2] = math.cos(rad)
+
+    return R_y
+
+def generate_se3_from_motion_delta(motion_delta : MotionDelta.MotionDelta):
+    se3 = np.identity(4, dtype=matrix_data_type)
+    se3[0,3] = -motion_delta.delta_y
+    se3[2,3] = -motion_delta.delta_x
+
+    rot = rotation_around_y(motion_delta.delta_theta)
+    se3[0:3,0:3] = rot[0:3,0:3]
+    return se3
 
 def post_process_pose_list_for_display_in_mem(pose_list):
 

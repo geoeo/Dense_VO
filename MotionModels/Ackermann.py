@@ -1,7 +1,6 @@
 from MotionModels.MotionDelta import MotionDelta
 from MotionModels.SteeringCommands import SteeringCommands
 from Numerics.Utils import matrix_data_type
-from Numerics import SE3
 import numpy as np
 import math
 
@@ -80,17 +79,18 @@ class Ackermann:
 
         new_cov = cov_est
 
+        # TODO investigate coordiante system change
         # copy into 6Dof Covariance
-        self.covariance_current_large[self.x_offset,self.x_offset] = new_cov[0,0]
-        self.covariance_current_large[self.x_offset,self.z_offset] = new_cov[0,1]
-        self.covariance_current_large[self.x_offset,self.pitch_offset] = new_cov[0,2]
+        self.covariance_current_large[self.x_offset,self.x_offset] = new_cov[1,1]
+        self.covariance_current_large[self.x_offset,self.z_offset] = new_cov[1,0]
+        self.covariance_current_large[self.x_offset,self.pitch_offset] = new_cov[1,2]
 
-        self.covariance_current_large[self.z_offset,self.x_offset] = new_cov[1,0]
-        self.covariance_current_large[self.z_offset,self.z_offset] = new_cov[1,1]
-        self.covariance_current_large[self.z_offset,self.pitch_offset] = new_cov[1,2]
+        self.covariance_current_large[self.z_offset,self.x_offset] = new_cov[0,1]
+        self.covariance_current_large[self.z_offset,self.z_offset] = new_cov[0,0]
+        self.covariance_current_large[self.z_offset,self.pitch_offset] = new_cov[0,2]
 
-        self.covariance_current_large[self.pitch_offset,self.x_offset] = new_cov[2,0]
-        self.covariance_current_large[self.pitch_offset,self.z_offset] = new_cov[2,1]
+        self.covariance_current_large[self.pitch_offset,self.x_offset] = new_cov[2,1]
+        self.covariance_current_large[self.pitch_offset,self.z_offset] = new_cov[2,0]
         self.covariance_current_large[self.pitch_offset,self.pitch_offset] = new_cov[2,2]
 
         return self.covariance_current_large

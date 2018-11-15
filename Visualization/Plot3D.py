@@ -45,14 +45,13 @@ def plot_array_lines(points, ax, style = '-ro',clear = True, draw = True):
         ax.plot(X[i:i+2],Y[i:i+2],Z[i:i+2],style)
         ax.text(X[i], Y[i], Z[i], '%s' % (i/2))
 
+    # TODO move this out
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     #ax.set_zlabel('Z Label')
 
-    #plt.legend(loc=2)
     if draw:
-        plt.draw()
-        plt.pause(1)
+        plt.show()
 
 
 def plot_translation_component(index, se3_list, ax, style, clear = False, draw = True):
@@ -108,9 +107,9 @@ def plot_wireframe_ellipsoid(a, b, c, ax, label_axes = False,clear = False, draw
 
     if draw:
         #plt.axis('equal')
-        ax.set_xlim(-1, 1);
-        ax.set_ylim(-1, 1);
-        ax.set_zlim(-1, 1);
+        ax.set_xlim(-1, 1)
+        ax.set_ylim(-1, 1)
+        ax.set_zlim(-1, 1)
         plt.show()
 
 

@@ -81,3 +81,11 @@ def radians_to_degrees(rad):
 def to_homogeneous_positions(X,Y,Z,H):
     return np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
+def covariance_eigen_decomp_sorted(covaraince):
+    #not sorted!
+    eigen_values, eigen_vectors = np.linalg.eig(covaraince)
+    idx = eigen_values.argsort()[::-1]
+    
+    return idx, eigen_values, eigen_vectors
+
+
