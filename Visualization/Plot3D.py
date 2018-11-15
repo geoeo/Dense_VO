@@ -87,6 +87,33 @@ def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw 
         plt.pause(1)
 
 
+# http://jakevdp.github.io/mpl_tutorial/tutorial_pages/tut5.html
+# https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plotting.html
+def plot_wireframe_ellipsoid(a, b, c, ax, label_axes = False,clear = False, draw = True):
+    if clear:
+        ax.clear()
+    u = np.linspace(0, np.pi, 30)
+    v = np.linspace(0, 2 * np.pi, 30)
+
+    x = np.multiply(a, np.outer(np.sin(u), np.sin(v)))
+    y = np.multiply(b, np.outer(np.sin(u), np.cos(v)))
+    z = np.multiply(c, np.outer(np.cos(u), np.ones_like(v)))
+
+    ax.plot_wireframe(x, y, z)
+
+    if label_axes:
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+
+    if draw:
+        #plt.axis('equal')
+        ax.set_xlim(-1, 1);
+        ax.set_ylim(-1, 1);
+        ax.set_zlim(-1, 1);
+        plt.show()
+
+
 
 def draw():
     plt.draw()
