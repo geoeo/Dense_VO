@@ -1,8 +1,9 @@
 from MotionModels import Ackermann, SteeringCommands, MotionDelta, Pose
-import numpy as np
 from Numerics import Utils, SE3
 import matplotlib.pyplot as plt
 from Visualization import Plot3D
+import numpy as np
+import math
 
 X, Y, Z = [0,0], [0,0], [0,-1]
 H = np.repeat(1,2)
@@ -35,16 +36,19 @@ points = np.append(origin, origin_transformed, axis=1)
 points_xyz = points[0:3,:]
 
 w,v = Utils.covariance_eigen_decomp(motion_cov_small)
-idx, w_2,v_2 = Utils.covariance_eigen_decomp_sorted(motion_cov_small)
+z_factor, x_factor = Ackermann.get_ackermann_eigenvalue_factors_for_projection(w)
 
+#change_of_basis = np.identity(3,dtype=Utils.matrix_data_type)
+change_of_basis = SE3.rotation_around_x(-math.pi/2)
+
+# testing inverse
 cov_inv = np.linalg.inv(motion_cov_small)
-
 t = np.matmul(cov_inv,motion_cov_small)
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 #Plot3D.plot_wireframe_ellipsoid(1,1,1,ax,label_axes=True, clear=True,draw=False)
-Plot3D.plot_wireframe_ellipsoid(w[1],0.1,w[2],ax,label_axes=True, clear=False,draw=True)
+Plot3D.plot_wireframe_ellipsoid(x_factor,0.1,z_factor, change_of_basis , ax, label_axes=True, clear=False,draw=True)
 
 

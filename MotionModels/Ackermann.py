@@ -4,6 +4,12 @@ from Numerics.Utils import matrix_data_type
 import numpy as np
 import math
 
+def get_ackermann_eigenvalue_factors_for_projection(w):
+    z = w[2]
+    x = w[1]
+    return z, x
+
+
 class Ackermann:
 
     def __init__(self):
