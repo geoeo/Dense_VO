@@ -81,11 +81,21 @@ def radians_to_degrees(rad):
 def to_homogeneous_positions(X,Y,Z,H):
     return np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
-def covariance_eigen_decomp_sorted(covaraince):
+
+# axis seems to be reversed i.e. cov for (a,b,c) results in eig values in order (c,b,a)
+def covariance_eigen_decomp(covariance):
+    # not sorted!
+    eigen_values, eigen_vectors = np.linalg.eig(covariance)
+
+    return eigen_values, eigen_vectors
+
+def covariance_eigen_decomp_sorted(covariance):
     #not sorted!
-    eigen_values, eigen_vectors = np.linalg.eig(covaraince)
+    eigen_values, eigen_vectors = np.linalg.eig(covariance)
     idx = eigen_values.argsort()[::-1]
     
     return idx, eigen_values, eigen_vectors
+
+
 
 

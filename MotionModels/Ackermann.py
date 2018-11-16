@@ -44,7 +44,7 @@ class Ackermann:
 
     # TODO test
     # Every row of the covariance has 3 entries
-    # The order of values is [x,y,yaw]
+    # The order of values is [x,y,yaw] ([-z,x,yaw])
     # i.e. cov[0,1] = dx/dy , cov[2,1] = dpitch/dy
     def covariance_dead_reckoning(self, steering_input : SteeringCommands, theta, dt):
 
@@ -93,5 +93,5 @@ class Ackermann:
         self.covariance_current_large[self.pitch_offset,self.z_offset] = new_cov[2,0]
         self.covariance_current_large[self.pitch_offset,self.pitch_offset] = new_cov[2,2]
 
-        return self.covariance_current_large
+        return new_cov, self.covariance_current_large
 
