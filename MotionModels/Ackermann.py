@@ -85,21 +85,20 @@ class Ackermann:
         #    for i_2 in range (0,2):
         #        self.V[j,i_2] = 0
 
-        new_cov = cov_est
+        return cov_est
 
-        # TODO investigate coordiante system change
+
+    def generate_6DOF_cov_from_motion_model_cov(self,cov_small):
         # copy into 6Dof Covariance
-        self.covariance_current_large[self.x_offset,self.x_offset] = new_cov[1,1]
-        self.covariance_current_large[self.x_offset,self.z_offset] = new_cov[1,0]
-        self.covariance_current_large[self.x_offset,self.pitch_offset] = new_cov[1,2]
+        self.covariance_current_large[self.x_offset,self.x_offset] = cov_small[1,1]
+        self.covariance_current_large[self.x_offset,self.z_offset] = cov_small[1,0]
+        self.covariance_current_large[self.x_offset,self.pitch_offset] = cov_small[1,2]
 
-        self.covariance_current_large[self.z_offset,self.x_offset] = new_cov[0,1]
-        self.covariance_current_large[self.z_offset,self.z_offset] = new_cov[0,0]
-        self.covariance_current_large[self.z_offset,self.pitch_offset] = new_cov[0,2]
+        self.covariance_current_large[self.z_offset,self.x_offset] = cov_small[0,1]
+        self.covariance_current_large[self.z_offset,self.z_offset] = cov_small[0,0]
+        self.covariance_current_large[self.z_offset,self.pitch_offset] = cov_small[0,2]
 
-        self.covariance_current_large[self.pitch_offset,self.x_offset] = new_cov[2,1]
-        self.covariance_current_large[self.pitch_offset,self.z_offset] = new_cov[2,0]
-        self.covariance_current_large[self.pitch_offset,self.pitch_offset] = new_cov[2,2]
-
-        return new_cov, self.covariance_current_large
+        self.covariance_current_large[self.pitch_offset,self.x_offset] = cov_small[2,1]
+        self.covariance_current_large[self.pitch_offset,self.z_offset] = cov_small[2,0]
+        self.covariance_current_large[self.pitch_offset,self.pitch_offset] = cov_small[2,2]
 

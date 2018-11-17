@@ -24,7 +24,7 @@ theta = new_motion_delta.delta_theta
 # traditional uses accumulated theta
 #theta = pose.theta
 
-motion_cov_small, motion_cov_large = ackermann_motion.covariance_dead_reckoning(steering_command_straight,theta,dt)
+motion_cov_small = ackermann_motion.covariance_dead_reckoning(steering_command_straight,theta,dt)
 
 se3 = SE3.generate_se3_from_motion_delta(new_motion_delta)
 origin_transformed = np.matmul(se3, origin)

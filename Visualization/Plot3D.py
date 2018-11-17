@@ -88,28 +88,28 @@ def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw 
 
 # http://jakevdp.github.io/mpl_tutorial/tutorial_pages/tut5.html
 # https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plotting.html
-def plot_wireframe_ellipsoid(a, b, c, change_of_basis, ax, label_axes = False,clear = False, draw = True):
+def plot_wireframe_ellipsoid(plot_list, ax, label_axes = False,clear = False, draw = True):
     if clear:
         ax.clear()
     u = np.linspace(0, np.pi, 30)
     v = np.linspace(0, 2 * np.pi, 30)
 
-    x = np.multiply(a, np.outer(np.sin(u), np.sin(v)))
-    y = np.multiply(b, np.outer(np.sin(u), np.cos(v)))
-    z = np.multiply(c, np.outer(np.cos(u), np.ones_like(v)))
+    x = np.outer(np.sin(u), np.sin(v))
+    y = np.outer(np.sin(u), np.cos(v))
+    z = np.outer(np.cos(u), np.ones_like(v))
 
     r,c = x.shape
 
-    for j in range(0,r):
-        for i in range(0,c):
-            point = np.array([x[j,i], y[j,i], z[j,i]])
-            new_point = np.matmul(change_of_basis,point)
-            x[j,i] = new_point[0]
-            y[j,i] = new_point[1]
-            z[j,i] = new_point[2]
+    for (x_fac,y_fac,z_fac,change_of_basis) in plot_list:
+        for j in range(0,r):
+            for i in range(0,c):
+                point = np.array([x[j,i], y[j,i], z[j,i], 1.0])
+                new_point = np.matmul(change_of_basis,point)
+                x[j,i] = new_point[0]
+                y[j,i] = new_point[1]
+                z[j,i] = new_point[2]
 
-
-    ax.plot_wireframe(x, y, z)
+        ax.plot_wireframe(x_fac * x, y_fac * y, z_fac * z)
 
     if label_axes:
         ax.set_xlabel('X')
