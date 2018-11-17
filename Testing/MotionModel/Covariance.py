@@ -36,10 +36,10 @@ points = np.append(origin, origin_transformed, axis=1)
 points_xyz = points[0:3,:]
 
 w,v = Utils.covariance_eigen_decomp(motion_cov_small)
-z_factor, x_factor = Ackermann.get_ackermann_eigenvalue_factors_for_projection(w)
+z_factor, x_factor = Ackermann.get_standard_deviation_factors_for_projection(w)
 
-#change_of_basis = np.identity(3,dtype=Utils.matrix_data_type)
-change_of_basis = SE3.rotation_around_x(-math.pi/2)
+change_of_basis = np.identity(3,dtype=Utils.matrix_data_type)
+#change_of_basis = SE3.rotation_around_x(-math.pi/2)
 
 # testing inverse
 cov_inv = np.linalg.inv(motion_cov_small)

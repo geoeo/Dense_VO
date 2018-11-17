@@ -4,9 +4,11 @@ from Numerics.Utils import matrix_data_type
 import numpy as np
 import math
 
-def get_ackermann_eigenvalue_factors_for_projection(w):
-    z = w[2]
-    x = w[1]
+
+# input are the eigen values of the covariance's EVD
+def get_standard_deviation_factors_for_projection(w):
+    z = math.sqrt(w[2])
+    x = math.sqrt(w[1])
     return z, x
 
 

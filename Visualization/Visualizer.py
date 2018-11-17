@@ -72,6 +72,7 @@ class Visualizer():
         self.z_graph = self.figure.add_subplot(336)
         self.rmse_graph = self.figure.add_subplot(313)
 
+        #self.se3_graph.set_aspect('equal')
         self.se3_graph.set_title("relative pose estimate")
         self.x_graph.set_title("x")
         self.y_graph.set_title("y")
