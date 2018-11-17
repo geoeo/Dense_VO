@@ -89,6 +89,15 @@ def covariance_eigen_decomp(covariance):
 
     return eigen_values, eigen_vectors
 
+
+def covariance_eigen_decomp_for_list(covariance_list):
+    return list(map(lambda x: covariance_eigen_decomp(x),covariance_list))
+
+
+def eigen_values_from_evd_list(evd_list):
+    return list(map(lambda evd: evd[0], evd_list))
+
+
 def covariance_eigen_decomp_sorted(covariance):
     #not sorted!
     eigen_values, eigen_vectors = np.linalg.eig(covariance)

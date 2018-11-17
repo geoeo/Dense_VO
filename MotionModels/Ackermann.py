@@ -1,5 +1,5 @@
 from MotionModels.MotionDelta import MotionDelta
-from MotionModels.SteeringCommands import SteeringCommands
+from MotionModels.SteeringCommand import SteeringCommands
 from Numerics.Utils import matrix_data_type
 import numpy as np
 import math
@@ -9,7 +9,11 @@ import math
 def get_standard_deviation_factors_for_projection(w):
     z = math.sqrt(w[2])
     x = math.sqrt(w[1])
-    return z, x
+    return x, z
+
+
+def get_standard_deviation_factors_for_projection_for_list(w_list):
+    return list(map(lambda x: get_standard_deviation_factors_for_projection(x),w_list))
 
 
 class Ackermann:
@@ -30,7 +34,6 @@ class Ackermann:
         self.pitch_offset = 4
 
 
-    # TODO test
     def ackermann_dead_reckoning(self, steering_input : SteeringCommands):
 
         new_motion_delta = MotionDelta()
@@ -50,6 +53,10 @@ class Ackermann:
 
         return new_motion_delta
 
+    def ackermann_dead_reckoning_for_list(self, steering_input_list : [SteeringCommands]):
+        return list(map(lambda x: self.ackermann_dead_reckoning(x), steering_input_list))
+
+
     # TODO test
     # Every row of the covariance has 3 entries
     # The order of values is [x,y,yaw] ([-z,x,yaw])
@@ -59,11 +66,8 @@ class Ackermann:
         steering_vel_cmd = steering_input.linear_velocity
         steering_angle_cmd = steering_input.steering_angle
 
-        #self.G[0, 0] = 1.0
         self.G[0, 2] = -steering_vel_cmd * math.sin(theta) * dt
-        #self.G[1, 1] = 1.0
         self.G[1, 2] = steering_vel_cmd * math.cos(theta) * dt
-        #self.G[2, 2] = 1.0
 
         self.V[0, 0] = math.cos(theta) * dt
         self.V[1, 0] = math.sin(theta) * dt
@@ -78,14 +82,29 @@ class Ackermann:
         # set for next iteration
         self.covariance_prev = np.copy(cov_est)
 
-        # Clear
-        #for j in range(0,3):
-        #    for i in range(0,3):
-        #        self.G[j,i] = 0
-        #    for i_2 in range (0,2):
-        #        self.V[j,i_2] = 0
-
         return cov_est
+
+
+    def covariance_dead_reckoning_for_command_list(self, pose, steering_input_list, motion_delta_list, dt_list):
+        steering_list_len = len(steering_input_list)
+        assert steering_list_len == len(dt_list)
+        assert steering_list_len == len(motion_delta_list)
+
+        cov_list = []
+
+        commands = zip(steering_input_list,motion_delta_list,dt_list)
+
+        for (steering_command,motion_delta,dt) in commands:
+            pose.apply_motion(motion_delta, dt)
+            # TODO investigate which theta to use
+            # this might actually be better since we are interested in the uncertainty only in this timestep
+            # theta = motion_delta.delta_theta
+            # traditional uses accumulated theta
+            theta = pose.theta
+            motion_cov = self.covariance_dead_reckoning(steering_command, theta, dt)
+            cov_list.append(motion_cov)
+
+        return cov_list
 
 
     def generate_6DOF_cov_from_motion_model_cov(self,cov_small):
@@ -101,4 +120,7 @@ class Ackermann:
         self.covariance_current_large[self.pitch_offset,self.x_offset] = cov_small[2,1]
         self.covariance_current_large[self.pitch_offset,self.z_offset] = cov_small[2,0]
         self.covariance_current_large[self.pitch_offset,self.pitch_offset] = cov_small[2,2]
+
+    def generate_6DOF_cov_from_motion_model_cov_list(self,cov_small_list):
+        return list(map(lambda x: self.generate_6DOF_cov_from_motion_model_cov(x), cov_small_list))
 

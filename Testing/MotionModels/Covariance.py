@@ -1,4 +1,4 @@
-from MotionModels import Ackermann, SteeringCommands, MotionDelta, Pose
+from MotionModels import Ackermann, SteeringCommand, MotionDelta, Pose
 from Numerics import Utils, SE3
 import matplotlib.pyplot as plt
 from Visualization import Plot3D
@@ -12,7 +12,7 @@ origin = Utils.to_homogeneous_positions(X, Y, Z, H)
 
 dt = 1.0
 pose = Pose.Pose()
-steering_command_straight = SteeringCommands.SteeringCommands(1.5,0.0)
+steering_command_straight = SteeringCommand.SteeringCommands(1.5, 0.0)
 
 ackermann_motion = Ackermann.Ackermann()
 
@@ -46,6 +46,6 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 #Plot3D.plot_wireframe_ellipsoid(1,1,1,ax,label_axes=True, clear=True,draw=False)
-Plot3D.plot_wireframe_ellipsoid([(x_factor,0.1,z_factor, change_of_basis)] , ax, label_axes=True, clear=False,draw=True)
+Plot3D.plot_wireframe_ellipsoid(0.1, [(x_factor,z_factor)], [change_of_basis], ax, label_axes=True, clear=False,draw=True)
 
 

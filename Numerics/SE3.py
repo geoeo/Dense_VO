@@ -173,6 +173,11 @@ def generate_se3_from_motion_delta(motion_delta : MotionDelta.MotionDelta):
     se3[0:3,0:3] = rot[0:3,0:3]
     return se3
 
+
+def generate_se3_from_motion_delta_list(motion_delta_list : [MotionDelta.MotionDelta]):
+    return list(map(lambda x: generate_se3_from_motion_delta(x),motion_delta_list))
+
+
 def post_process_pose_list_for_display_in_mem(pose_list):
 
     for se3 in pose_list:

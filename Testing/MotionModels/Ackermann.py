@@ -1,4 +1,4 @@
-from MotionModels import Ackermann, SteeringCommands, MotionDelta, Pose
+from MotionModels import Ackermann, SteeringCommand, MotionDelta, Pose
 import numpy as np
 from Numerics import Utils, SE3
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ origin = Utils.to_homogeneous_positions(X, Y, Z, H)
 
 dt = 1.0
 pose = Pose.Pose()
-steering_command_straight = SteeringCommands.SteeringCommands(1.0,0.0)
+steering_command_straight = SteeringCommand.SteeringCommands(1.0, 0.0)
 
 ackermann_motion = Ackermann.Ackermann()
 

@@ -88,7 +88,10 @@ def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw 
 
 # http://jakevdp.github.io/mpl_tutorial/tutorial_pages/tut5.html
 # https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plotting.html
-def plot_wireframe_ellipsoid(plot_list, ax, label_axes = False,clear = False, draw = True):
+def plot_wireframe_ellipsoid(y_fac, ellipse_factor_list, se3_list, ax, label_axes = False,clear = False, draw = True):
+    list_len = len(se3_list)
+    assert len(ellipse_factor_list) == list_len
+
     if clear:
         ax.clear()
     u = np.linspace(0, np.pi, 30)
@@ -98,18 +101,27 @@ def plot_wireframe_ellipsoid(plot_list, ax, label_axes = False,clear = False, dr
     y = np.outer(np.sin(u), np.cos(v))
     z = np.outer(np.cos(u), np.ones_like(v))
 
+    x_plot = np.zeros(x.shape)
+    y_plot = np.zeros(y.shape)
+    z_plot = np.zeros(z.shape)
+
+    se3_acc = np.identity(4)
+
     r,c = x.shape
 
-    for (x_fac,y_fac,z_fac,change_of_basis) in plot_list:
+    for i in range(0,list_len):
+        (x_fac,z_fac) = ellipse_factor_list[i]
+        change_of_basis = se3_list[i]
+        se3_acc = np.matmul(se3_acc,change_of_basis)
         for j in range(0,r):
             for i in range(0,c):
-                point = np.array([x[j,i], y[j,i], z[j,i], 1.0])
-                new_point = np.matmul(change_of_basis,point)
-                x[j,i] = new_point[0]
-                y[j,i] = new_point[1]
-                z[j,i] = new_point[2]
+                point = np.array([x_fac * x[j,i], y_fac * y[j,i], z_fac * z[j,i], 1.0])
+                new_point = np.matmul(se3_acc,point)
+                x_plot[j,i] = new_point[0]
+                y_plot[j,i] = new_point[1]
+                z_plot[j,i] = new_point[2]
 
-        ax.plot_wireframe(x_fac * x, y_fac * y, z_fac * z)
+        ax.plot_wireframe(x_plot, y_plot, z_plot)
 
     if label_axes:
         ax.set_xlabel('X')
@@ -118,9 +130,6 @@ def plot_wireframe_ellipsoid(plot_list, ax, label_axes = False,clear = False, dr
 
     if draw:
         #plt.axis('equal')
-        ax.set_xlim(-1, 1)
-        ax.set_ylim(-1, 1)
-        ax.set_zlim(-1, 1)
         plt.show()
 
 
