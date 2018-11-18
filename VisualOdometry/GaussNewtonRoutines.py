@@ -19,13 +19,15 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
                 depth = depth_direction*100000
                 valid_measurements[flat_index] = False
                 #continue
+            depth_ref = depth
 
             #depending on the direction of the focal length, the depth sign has to be adjusted
             # Since our virtual image plane is on the same side as our depth values
             # we push all depth values out to guarantee that they are always infront of the image plane
             # Better depth results without pushing it out (?)
-            depth_ref = depth_direction*(1.0 + depth)
-            #depth_ref = depth_direction*(depth)
+            if valid_measurements[flat_index]:
+                depth_ref = depth_direction*(1.0 + depth)
+                #depth_ref = depth_direction*(depth)
 
             # back projection from ndc seems to give better convergence
             x_back = x

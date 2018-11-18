@@ -81,7 +81,7 @@ start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
     rgb_files,
     start=start,
-    max_count=8,
+    max_count=3,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
@@ -112,10 +112,10 @@ im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 (image_height, image_width) = im_greyscale_reference_1.shape
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
-intrinsic_identity = Intrinsic.Intrinsic(-517.3, -516.5, 318.6, 239.5) # freiburg_1
+intrinsic_identity = Intrinsic.Intrinsic(517.3, 516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)

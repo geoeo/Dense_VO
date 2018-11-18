@@ -42,7 +42,10 @@ target_image_list = []
 
 #start = ListGenerator.get_index_of_id(966816.052441710,rgb_files)
 
-start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
+# along -z
+start = ListGenerator.get_index_of_id(966824.775582211,rgb_files)
+
+#start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
@@ -60,16 +63,21 @@ for i in range(0, len(ref_id_list)):
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,ref_id, ext)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,target_id, ext)
 
-    # Optitrack capture X and Z are flipped
+    # TODO get this right
+    # Optitrack/Rviz coversion capture X and Z are flipped
     rot = SE3.extract_rotation(SE3_ref_target)
     #conv = SE3.rotation_around_x(pi/2)
     #rot_new = np.matmul(conv,rot)
     euler = SE3.rotationMatrixToEulerAngles(rot)
-    rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
+    #rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
+    rot_new = SE3.makeS03(-euler[2],euler[1],euler[0])
     SE3_ref_target[0:3,0:3] = rot_new
-    t = SE3_ref_target[0,3]
-    SE3_ref_target[0,3] = SE3_ref_target[2,3]
-    SE3_ref_target[2,3] = t
+    x = SE3_ref_target[0,3]
+    y = SE3_ref_target[1,3]
+    z = SE3_ref_target[2,3]
+    SE3_ref_target[0,3] = -z
+    SE3_ref_target[1,3] = y
+    SE3_ref_target[2,3] = -x
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 
@@ -84,10 +92,10 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
 
 #TODO use correct instrinsics
-intrinsic_identity = Intrinsic.Intrinsic(-517.3, -516.5, 318.6, 239.5) # freiburg_1
+intrinsic_identity = Intrinsic.Intrinsic(517.3, 516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
@@ -120,7 +128,7 @@ for i in range(0, len(ref_image_list)):
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
                                                  alpha_step=0.0055,  # 0.002, 0.0055 - motion pri
                                                  gradient_monitoring_window_start=1,
-                                                 image_range_offset_start=15,
+                                                 image_range_offset_start=0,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,

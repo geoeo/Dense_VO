@@ -2,16 +2,16 @@ from Benchmark import associate
 import os
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-xyz_dataset = 'rgbd_dataset_freiburg2_desk/'
-rgb_folder = 'rgb/'
-depth_folder = 'depth/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
+xyz_dataset = 'marc_5_full/'
+rgb_folder = 'color_rect/'
+depth_folder = 'depth_rect_reg/'
 
 rgb_text = bench_path+xyz_dataset+'rgb.txt'
 depth_text = bench_path+xyz_dataset+'depth.txt'
 
 matches = associate.match(rgb_text,depth_text)
-match_file = bench_path+xyz_dataset+'matches.txt'
+match_file = bench_path+xyz_dataset+'matches_rect_reg.txt'
 
 try:
     os.remove(match_file)

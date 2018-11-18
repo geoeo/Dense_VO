@@ -161,7 +161,8 @@ def solve_photometric(frame_reference,
 
     fx = frame_reference.camera.intrinsic.extract_fx()
     fy = frame_reference.camera.intrinsic.extract_fy()
-    depth_factor = np.sign(fx)
+    #depth_factor = np.sign(fx)
+    depth_factor = -np.sign(fx)
 
     Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step,
                                                                     alpha_min = -0.7,
@@ -192,7 +193,7 @@ def solve_photometric(frame_reference,
     #generator_pitch = Lie.generator_pitch_3_4_neg()
     generator_yaw = Lie.generator_yaw_3_4()
 
-    X_back_projection = np.ones((4, N), Utils.matrix_data_type)
+    X_back_projection = depth_factor*np.ones((4, N), Utils.matrix_data_type)
     #X_back_projection_last_valid = np.ones((4, N), Utils.matrix_data_type)
     valid_measurements_reference = np.full(N,False)
     #valid_measurements_last = np.full(N,False)
@@ -351,6 +352,7 @@ def solve_photometric(frame_reference,
 
         SE_3_current = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
 
+        debug_list  = [i for i, x in enumerate(valid_measurements) if x]
         # Compute residual around delta_twist = 0 i.e SE_3_current
         Y_est = np.matmul(SE_3_current, X_back_projection)
 

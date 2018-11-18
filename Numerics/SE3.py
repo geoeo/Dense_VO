@@ -178,14 +178,17 @@ def generate_se3_from_motion_delta_list(motion_delta_list : [MotionDelta.MotionD
     return list(map(lambda x: generate_se3_from_motion_delta(x),motion_delta_list))
 
 
+# TODO investigate this again. I think its due to having a point pair at (0,0,0),(0,0,-1)
 def post_process_pose_list_for_display_in_mem(pose_list):
 
     for se3 in pose_list:
         # invert roll and pitch
         rot = extract_rotation(se3)
         euler = rotationMatrixToEulerAngles(rot)
-        rot_new = makeS03(-euler[0], -euler[1], euler[2])
+        #rot_new = makeS03(-euler[0], -euler[1], euler[2])
+        rot_new = makeS03(euler[0], euler[1], euler[2])
         se3[0:3, 0:3] = rot_new
+        #se3[1,3] *= -1
 
 
 def relative_pose_error(rel_gt, rel_est):
