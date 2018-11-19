@@ -72,7 +72,8 @@ class Camera:
         return np.matmul(self.intrinsic.K,self.se3)
 
     def apply_perspective_pipeline(self,point_3D_world):
-        persp = np.matmul(self.perspective_pipeline(),point_3D_world)
+        #persp = np.matmul(self.perspective_pipeline(),point_3D_world)
+        persp = np.matmul(self.intrinsic.K,point_3D_world)
         (dim,N) = persp.shape
         for i in range(0,N):
             persp[:,i] = [persp[0,i]/persp[2,i],persp[1,i]/persp[2,i],1]

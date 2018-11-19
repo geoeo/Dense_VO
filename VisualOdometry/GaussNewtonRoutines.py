@@ -8,8 +8,8 @@ import time
 def back_project_image(width, height, image_range_offset, reference_camera, reference_depth_image, X_back_projection,
                        valid_measurements, use_ndc, depth_direction ):
     start = time.time()
-    for y in range(image_range_offset, height - image_range_offset, 1):
-        for x in range(image_range_offset, width - image_range_offset, 1):
+    for y in range(0, height, 1):
+        for x in range(0, width, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
             depth = reference_depth_image[y, x]
             valid_measurements[flat_index] = True
@@ -67,6 +67,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
             error = target_image[y_target, x_target] - reference_image[y, x]
+            #error = reference_image[y_target, x_target] - target_image[y, x]
             v[flat_index][0] = error
 
     end = time.time()

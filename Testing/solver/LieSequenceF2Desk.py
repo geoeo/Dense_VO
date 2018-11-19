@@ -97,6 +97,7 @@ for i in range(0, len(ref_id_list)):
     rot_new = SE3.makeS03(euler[0],-euler[1],euler[2])
     SE3_ref_target[0:3,0:3] = rot_new
     SE3_ref_target[1,3] = -SE3_ref_target[1,3]
+    SE3_ref_target[2,3] = -SE3_ref_target[2,3]
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 

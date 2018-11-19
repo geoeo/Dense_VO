@@ -194,6 +194,7 @@ def solve_photometric(frame_reference,
     generator_yaw = Lie.generator_yaw_3_4()
 
     X_back_projection = depth_factor*np.ones((4, N), Utils.matrix_data_type)
+    X_back_projection[3,:] = 1.0
     #X_back_projection_last_valid = np.ones((4, N), Utils.matrix_data_type)
     valid_measurements_reference = np.full(N,False)
     #valid_measurements_last = np.full(N,False)
