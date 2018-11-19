@@ -95,7 +95,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(517.3, 516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(1, 516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)

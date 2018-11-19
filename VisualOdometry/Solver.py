@@ -161,8 +161,9 @@ def solve_photometric(frame_reference,
 
     fx = frame_reference.camera.intrinsic.extract_fx()
     fy = frame_reference.camera.intrinsic.extract_fy()
-    #depth_factor = np.sign(fx)
-    depth_factor = -np.sign(fx)
+
+    depth_factor = np.sign(fx)
+    #depth_factor = -np.sign(fx)
 
     Gradient_step_manager = GradientStepManager.GradientStepManager(alpha_start = alpha_step,
                                                                     alpha_min = -0.7,

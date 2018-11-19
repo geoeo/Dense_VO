@@ -89,7 +89,7 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
 # TODO investigate image gradient directions
 def get_jacobian_image(image_g_x,image_g_y,x,y):
     jacobian_image = np.zeros((1,2),dtype=matrix_data_type)
-    jacobian_image[0,0] = -image_g_x[y,x]
-    jacobian_image[0,1] = -image_g_y[y,x]
+    jacobian_image[0,0] = image_g_x[y,x]
+    jacobian_image[0,1] = image_g_y[y,x]
     return jacobian_image
 

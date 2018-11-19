@@ -16,7 +16,10 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             # For opencl maybe do this in a simple kernel before
             # Sets invalid depth measurements to False such that they do not impact the gauss newton step
             if depth == 0:
-                depth = depth_direction*100000
+                # this value directly influences the pose estimation!
+                # TODO write about this
+                depth = depth_direction*2
+                #depth = depth_direction*1
                 valid_measurements[flat_index] = False
                 #continue
             depth_ref = depth

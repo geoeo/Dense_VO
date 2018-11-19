@@ -51,14 +51,13 @@ target_image_list = []
 #start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
 # Y Trans - down / better with motion prior
-start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # Y Trans - up
-
 #start = ListGenerator.get_index_of_id(1305031118.143256,rgb_files)
 
 # X Trans - Right
-#start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
+start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
 
 # X Trans - Left
 
@@ -100,7 +99,7 @@ for i in range(0, len(ref_id_list)):
     rot_new = SE3.makeS03(euler[0],-euler[1],euler[2])
     SE3_ref_target[0:3,0:3] = rot_new
     SE3_ref_target[1,3] = -SE3_ref_target[1,3]
-    SE3_ref_target[2,3] = -SE3_ref_target[2,3]
+    #SE3_ref_target[2,3] = -SE3_ref_target[2,3]
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 
@@ -116,7 +115,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(517.3, 516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(1, 516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
@@ -147,13 +146,13 @@ for i in range(0, len(ref_image_list)):
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
                                                  alpha_step=0.0055,  # 0.002, 0.0055 - motion pri
                                                  gradient_monitoring_window_start=1,
-                                                 image_range_offset_start=15,
+                                                 image_range_offset_start=0,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
-                                                 use_motion_prior=True,
+                                                 use_motion_prior=False,
                                                  debug=False)
 
     solver_manager.start()
