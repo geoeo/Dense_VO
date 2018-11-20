@@ -52,12 +52,13 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 # start
 #start = ListGenerator.get_index_of_id(1305031453.359684,rgb_files)
 
-start = ListGenerator.get_index_of_id(1305031911.097196,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031911.097196,rgb_files)
 
 #start = ListGenerator.get_index_of_id(1305031910.765238,rgb_files)
 
+# needs 6 or more samples
 # Y Up then X Right
-#start = ListGenerator.get_index_of_id(1305031919.933102,rgb_files) # good
+start = ListGenerator.get_index_of_id(1305031919.933102,rgb_files) # good
 
 
 
@@ -118,6 +119,8 @@ for i in range(0, len(ref_image_list)):
     im_depth_reference /= depth_factor
     im_depth_target /= depth_factor
 
+    max_depth = np.amax(im_depth_reference)
+
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
     frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
@@ -128,15 +131,16 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.002,  # 0.002, 0.004 - motion pri
+                                                 alpha_step=0.003,  # 0.002, 0.004 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
+                                                 max_depth=max_depth,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=False,
-                                                 use_motion_prior=False,
+                                                 use_motion_prior=True,
                                                  debug=False)
 
     solver_manager.start()

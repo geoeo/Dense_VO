@@ -12,7 +12,7 @@ def get_files_from_directory(dir_path, delimiter=''):
     files_float.sort()
     return files_float
 
-def generate_files_to_load_match(rgb_list, start, max_count, offset, ground_truth_dict, match_dict):
+def generate_files_to_load_match(rgb_list, start, max_count, offset, ground_truth_dict, match_dict, reverse=False):
     ref_files_to_load = []
     target_files_to_load = []
     ref_file_failed_to_load = []
@@ -56,6 +56,13 @@ def generate_files_to_load_match(rgb_list, start, max_count, offset, ground_trut
             i_target += 1
 
     assert len(ref_files_to_load) == len(target_files_to_load)
+
+    if reverse:
+        t = ref_files_to_load[::-1]
+        ref_files_to_load = target_files_to_load[::-1]
+        target_files_to_load = t
+        ref_file_failed_to_load = ref_file_failed_to_load[::-1]
+
 
     return ref_files_to_load, target_files_to_load , ref_file_failed_to_load
 

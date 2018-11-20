@@ -20,7 +20,6 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
                 # TODO write about this
                 depth = depth_direction*(1.0+max_depth)
                 #depth = depth_direction*1
-                # TODO: investigate this flag
                 valid_measurements[flat_index] = False
                 #continue
             depth_ref = depth

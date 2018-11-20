@@ -83,7 +83,10 @@ ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_f
     max_count=3,
     offset=1,
     ground_truth_dict=image_groundtruth_dict,
-    match_dict = match_dict)
+    match_dict = match_dict,
+    reverse=False)
+
+
 
 for i in range(0, len(ref_id_list)):
 
