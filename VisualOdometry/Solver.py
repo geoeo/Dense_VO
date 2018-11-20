@@ -114,6 +114,7 @@ def solve_photometric(frame_reference,
                       alpha_step,
                       gradient_monitoring_window_start,
                       image_range_offset_start,
+                      max_depth,
                       twist_prior = None,
                       motion_cov_inv_in = None,
                       use_ndc = False,
@@ -183,15 +184,15 @@ def solve_photometric(frame_reference,
     #generator_x = Lie.generator_x_3_4_neg()
     generator_y = Lie.generator_y_3_4()
     #generator_y = Lie.generator_y_3_4_neg()
-    generator_z = Lie.generator_z_3_4()
-    #generator_z = Lie.generator_z_3_4_neg()
+    #generator_z = Lie.generator_z_3_4()
+    generator_z = Lie.generator_z_3_4_neg()
 
     # Depth factor of -1.0 leads to inverted roll and pitch when displaying
-    # This will be dealt with as post process
+    # Why?: Generator defines the direction of increase (My thoughts)
     generator_roll = Lie.generator_roll_3_4()
     #generator_roll = Lie.generator_roll_3_4_neg()
-    generator_pitch = Lie.generator_pitch_3_4()
-    #generator_pitch = Lie.generator_pitch_3_4_neg()
+    #generator_pitch = Lie.generator_pitch_3_4()
+    generator_pitch = Lie.generator_pitch_3_4_neg()
     generator_yaw = Lie.generator_yaw_3_4()
 
     X_back_projection = depth_factor*np.ones((4, N), Utils.matrix_data_type)
@@ -213,7 +214,8 @@ def solve_photometric(frame_reference,
                                        X_back_projection,
                                        valid_measurements,
                                        use_ndc,
-                                       depth_factor)
+                                       depth_factor,
+                                       max_depth)
 
     count = np.sum(valid_measurements)
 

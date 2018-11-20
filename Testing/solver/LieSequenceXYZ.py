@@ -134,6 +134,9 @@ for i in range(0, len(ref_image_list)):
     im_depth_reference /= depth_factor
     im_depth_target /= depth_factor
 
+    # TODO write about this
+    max_depth = np.amax(im_depth_reference)
+
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
     frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
@@ -147,6 +150,7 @@ for i in range(0, len(ref_image_list)):
                                                  alpha_step=0.0055,  # 0.002, 0.0055 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
+                                                 max_depth=max_depth,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,

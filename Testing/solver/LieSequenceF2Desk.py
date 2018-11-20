@@ -145,6 +145,7 @@ for i in range(0, len(ref_image_list)):
                                                  alpha_step=0.008,  # 0.001, 0.008 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
+
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,

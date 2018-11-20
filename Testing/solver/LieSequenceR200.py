@@ -43,9 +43,10 @@ target_image_list = []
 #start = ListGenerator.get_index_of_id(966816.052441710,rgb_files)
 
 # along -z
-start = ListGenerator.get_index_of_id(966824.775582211,rgb_files)
+#start = ListGenerator.get_index_of_id(966824.775582211,rgb_files)
 
-#start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
+start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
+#start = ListGenerator.get_index_of_id(966834.146275472,rgb_files)
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
@@ -70,7 +71,7 @@ for i in range(0, len(ref_id_list)):
     #rot_new = np.matmul(conv,rot)
     euler = SE3.rotationMatrixToEulerAngles(rot)
     #rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
-    rot_new = SE3.makeS03(-euler[2],euler[1],euler[0])
+    rot_new = SE3.makeS03(euler[2],euler[1],euler[0])
     SE3_ref_target[0:3,0:3] = rot_new
     x = SE3_ref_target[0,3]
     y = SE3_ref_target[1,3]
@@ -114,6 +115,8 @@ for i in range(0, len(ref_image_list)):
     im_depth_reference /= depth_factor
     im_depth_target /= depth_factor
 
+    max_depth = np.amax(im_depth_reference)
+
     #count = np.count_nonzero(im_depth_reference)
 
     # We only need the gradients of the target frame
@@ -125,16 +128,17 @@ for i in range(0, len(ref_image_list)):
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=50,
-                                                 eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.0055,  # 0.002, 0.0055 - motion pri
+                                                 eps=0.0008,  #0.0008
+                                                 alpha_step=0.0055,  # 0.002, 0.0055, 0.0085 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
+                                                 max_depth=max_depth,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
-                                                 use_motion_prior=True,
+                                                 use_motion_prior=False,
                                                  debug=False)
 
     solver_manager.start()

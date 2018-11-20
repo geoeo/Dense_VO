@@ -6,7 +6,7 @@ import time
 
 
 def back_project_image(width, height, image_range_offset, reference_camera, reference_depth_image, X_back_projection,
-                       valid_measurements, use_ndc, depth_direction ):
+                       valid_measurements, use_ndc, depth_direction, max_depth ):
     start = time.time()
     for y in range(0, height, 1):
         for x in range(0, width, 1):
@@ -18,8 +18,9 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             if depth == 0:
                 # this value directly influences the pose estimation!
                 # TODO write about this
-                depth = depth_direction*2
+                depth = depth_direction*(1.0+max_depth)
                 #depth = depth_direction*1
+                # TODO: investigate this flag
                 valid_measurements[flat_index] = False
                 #continue
             depth_ref = depth
