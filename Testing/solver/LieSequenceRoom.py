@@ -56,7 +56,7 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 #start = ListGenerator.get_index_of_id(1305031910.765238,rgb_files)
 
-# needs 6 or more samples
+# needs 6 or more samples, better with offset of 2
 # Y Up then X Right
 start = ListGenerator.get_index_of_id(1305031919.933102,rgb_files) # good
 
@@ -65,8 +65,8 @@ start = ListGenerator.get_index_of_id(1305031919.933102,rgb_files) # good
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
     rgb_files,
     start=start,
-    max_count=6,
-    offset=1,
+    max_count=20,
+    offset=2,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
 

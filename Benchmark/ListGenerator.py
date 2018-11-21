@@ -48,7 +48,7 @@ def generate_files_to_load_match(rgb_list, start, max_count, offset, ground_trut
     # fill up if the last i_target happens to be invalid
     while target_len < ref_len:
         target_file = rgb_list[i_target]
-        if validate(target_file, ground_truth_dict,match_dict):
+        if validate_match(target_file, ground_truth_dict,match_dict):
             target_files_to_load.append(target_file)
             i_target+=offset
             target_len += 1
@@ -67,7 +67,7 @@ def generate_files_to_load_match(rgb_list, start, max_count, offset, ground_trut
     return ref_files_to_load, target_files_to_load , ref_file_failed_to_load
 
 
-def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict):
+def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict, reverse=False):
     ref_files_to_load = []
     target_files_to_load = []
     ref_file_failed_to_load = []
@@ -111,6 +111,12 @@ def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict
             i_target += 1
 
     assert len(ref_files_to_load) == len(target_files_to_load)
+
+    if reverse:
+        t = ref_files_to_load[::-1]
+        ref_files_to_load = target_files_to_load[::-1]
+        target_files_to_load = t
+        ref_file_failed_to_load = ref_file_failed_to_load[::-1]
 
     return ref_files_to_load, target_files_to_load , ref_file_failed_to_load
 
