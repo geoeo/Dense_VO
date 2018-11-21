@@ -33,11 +33,11 @@ rgb_id_target = 1305031108.775493
 image_groundtruth_dict = dict(associate.match(rgb_text,groundtruth_text))
 
 groundtruth_ts_ref = image_groundtruth_dict[rgb_id_ref]
-groundtruth_data_ref = associate.return_groundtruth(groundtruth_text,groundtruth_ts_ref)
+groundtruth_data_ref = associate.return_dictionary_data(groundtruth_text, groundtruth_ts_ref)
 SE3_ref = Parser.generate_se3_from_groundtruth(groundtruth_data_ref)
 
 groundtruth_ts_target = image_groundtruth_dict[rgb_id_target]
-groundtruth_data_target = associate.return_groundtruth(groundtruth_text,groundtruth_ts_target)
+groundtruth_data_target = associate.return_dictionary_data(groundtruth_text, groundtruth_ts_target)
 SE3_target = Parser.generate_se3_from_groundtruth(groundtruth_data_target)
 
 SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref,SE3_target)

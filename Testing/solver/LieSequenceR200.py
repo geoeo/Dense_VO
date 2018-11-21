@@ -16,6 +16,12 @@ ext = '.png'
 dataset_root = bench_path+xyz_dataset
 rgb_text = dataset_root +'rgb.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
+rgb_encoder_text = dataset_root+'encoder_rgb.txt'
+encoder_text = dataset_root+'encoder.txt'
+
+groundtruth_dict = associate.read_file_list(groundtruth_text)
+rgb_encoder_dict = associate.read_file_list(rgb_encoder_text)
+encoder_dict = associate.read_file_list(encoder_text)
 
 rgb_folder_full = dataset_root+rgb_folder
 depth_folder_full = dataset_root+depth_folder
@@ -39,6 +45,7 @@ ground_truth_list = []
 pose_estimate_list = []
 ref_image_list = []
 target_image_list = []
+encoder_list = []
 
 #start = ListGenerator.get_index_of_id(966816.052441710,rgb_files)
 
@@ -60,7 +67,7 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_text,image_groundtruth_dict,ref_id,target_id)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,ref_id, ext)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,target_id, ext)
 
@@ -81,10 +88,16 @@ for i in range(0, len(ref_id_list)):
     SE3_ref_target[2,3] = -x
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
-
     ground_truth_list.append(ground_truth_acc)
+
     ref_image_list.append((im_greyscale_reference, im_depth_reference))
     target_image_list.append((im_greyscale_target, im_depth_target))
+
+    encoder_ts = float(rgb_encoder_dict[ref_id][0])
+    encoder_values = encoder_dict[encoder_ts]
+
+    encoder_list.append(encoder_values)
+
 
 
 im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
@@ -96,7 +109,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(517.3, 516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -612.009/606.585, 340.509/image_width, 226.075/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
@@ -117,7 +130,7 @@ for i in range(0, len(ref_image_list)):
 
     max_depth = np.amax(im_depth_reference)
 
-    #count = np.count_nonzero(im_depth_reference)
+    #encoder_ts = rgb_encoder_text[ref_id]
 
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)

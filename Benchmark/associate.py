@@ -47,8 +47,8 @@ import numpy
 
 
 offset_default = 0.0
-#max_difference_default = 1.0
-max_difference_default = 0.02 # orig
+max_difference_default = 0.2
+#max_difference_default = 0.02 # orig
 
 def return_rgb_depth_from_rgb_selection(rgb_text_filepath, depth_text_filepath, match_text_filepath,dataset_root, rgb_image_index):
 
@@ -70,8 +70,9 @@ def return_rgb_depth_from_rgb_selection(rgb_text_filepath, depth_text_filepath, 
     return rgb_file_path , depth_file_path
 
 
-def return_groundtruth(groundtruth_text_filepath, ground_truth_index):
+def return_dictionary_data(groundtruth_text_filepath, ground_truth_index):
 
+    # TODO maybe pass this in as a reference
     groundtruth_dict = read_file_list(groundtruth_text_filepath)
 
     groundtruth_data = groundtruth_dict[ground_truth_index]
@@ -124,7 +125,7 @@ def read_file_list(filename):
     list = [(float(l[0]),l[1:]) for l in list if len(l)>1]
     return dict(list)
 
-def associate(first_list, second_list,offset,max_difference):
+def associate(first_list, second_list,offset,max_difference, with_duplicates=False):
     """
     Associate two dictionaries of (stamp,data). As the time stamps never match exactly, we aim 
     to find the closest match for every input tuple.
@@ -150,19 +151,20 @@ def associate(first_list, second_list,offset,max_difference):
     for diff, a, b in potential_matches:
         if a in first_keys and b in second_keys:
             first_keys.remove(a)
-            second_keys.remove(b)
+            if not with_duplicates:
+                second_keys.remove(b)
             matches.append((a, b))
     
     matches.sort()
     return matches
 
 
-def match(source_file, match_file, offset = offset_default, max_difference = max_difference_default):
+def match(source_file, match_file, offset = offset_default, max_difference = max_difference_default,with_duplicates=False ):
 
     rgb_list = read_file_list(source_file)
     depth_list = read_file_list(match_file)
 
-    return associate(rgb_list, depth_list, offset, max_difference)
+    return associate(rgb_list, depth_list, offset, max_difference,with_duplicates)
 
 
 if __name__ == '__main__':
