@@ -130,8 +130,8 @@ for i in range(0, len(ref_image_list)):
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=50,
-                                                 eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.003,  # 0.002, 0.004 - motion pri
+                                                 eps=0.008,  #0.008
+                                                 alpha_step=0.03, # 0.03 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  max_depth=max_depth,
