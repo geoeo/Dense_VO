@@ -130,7 +130,7 @@ for i in range(0, len(ref_image_list)):
 
     max_depth = np.amax(im_depth_reference)
 
-    #encoder_ts = rgb_encoder_text[ref_id]
+    encoder_data = encoder_list[i]
 
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
