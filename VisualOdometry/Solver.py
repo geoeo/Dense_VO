@@ -158,6 +158,7 @@ def solve_photometric(frame_reference,
     pseudo_inv = np.identity(twist_size,dtype=matrix_data_type)
     not_better = False
     valid_pixel_ratio = 1.0
+    motion_cov_inv_norm = Utils.norm_covariance_row(motion_cov_inv_in)
 
 
     fx = frame_reference.camera.intrinsic.extract_fx()
@@ -340,6 +341,14 @@ def solve_photometric(frame_reference,
         else:
             not_better = True
             w_new = w_empty
+
+        # For using ackermann motion
+        # variant 1
+        #inc = twist_prior - w
+        #w_new += np.matmul(motion_cov_inv_norm,inc)
+        # variant 2
+        #w_new = np.matmul(motion_cov_inv_norm,w_new) + twist_prior
+
 
         R_cur, t_cur = Lie.exp(w,twist_size)
         R_new, t_new = Lie.exp(w_new,twist_size)

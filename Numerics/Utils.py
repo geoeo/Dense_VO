@@ -82,6 +82,17 @@ def radians_to_degrees(rad):
 def to_homogeneous_positions(X,Y,Z,H):
     return np.transpose(np.array(list(map(lambda x: list(x),list(zip(X,Y,Z,H))))))
 
+def norm_covariance_row(cov):
+    (r,c) = cov.shape
+    #all_row_max = np.amax(cov, axis=1)
+    all_row_norm = np.linalg.norm(cov,axis=1)
+
+    for j in range(0,r):
+        for i in range(0,c):
+            cov[j,i] /= all_row_norm[j]
+
+    return cov
+
 
 # axis seems to be reversed i.e. cov for (a,b,c) results in eig values in order (c,b,a)
 def covariance_eigen_decomp(covariance):

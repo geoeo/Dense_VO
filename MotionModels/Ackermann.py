@@ -60,6 +60,7 @@ class Ackermann:
     def __init__(self, steering_command_list, dt_list):
 
         self.wheel_base = 0.255 # meters
+        self.wheel_diameter = 0.0269 # meters
         self.linear_velocity_noise = 0.0
         self.steering_angle_noise = 0.0
         self.covariance_prev = np.identity(3, dtype=matrix_data_type)
@@ -91,6 +92,8 @@ class Ackermann:
 
         new_motion_delta.delta_theta = linear_velocity * math.tan(steering_angle) / self.wheel_base
         new_motion_delta.delta_x = linear_velocity
+        # wheel diameter TODO write about this
+        new_motion_delta.delta_x *=  0.0269
 
         return new_motion_delta
 
@@ -141,9 +144,9 @@ class Ackermann:
             self.pose.apply_motion(motion_delta, dt)
             # TODO investigate which theta to use
             # this might actually be better since we are interested in the uncertainty only in this timestep
-            # theta = motion_delta.delta_theta
+            theta = motion_delta.delta_theta
             # traditional uses accumulated theta
-            theta = self.pose.theta
+            #theta = self.pose.theta
             motion_cov = self.covariance_dead_reckoning(steering_command, theta, dt)
             cov_list.append(motion_cov)
 

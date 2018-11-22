@@ -162,7 +162,7 @@ for i in range(0, len(ref_image_list)):
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
-                                                 use_motion_prior=False,
+                                                 use_motion_prior=True,
                                                  debug=False)
 
     solver_manager.start()
