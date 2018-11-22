@@ -111,8 +111,8 @@ for i in range(0, len(ref_id_list)):
 im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 (image_height, image_width) = im_greyscale_reference_1.shape
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
-# image gradient induces a coordiante system where y is flipped i.e have to flip it here
-intrinsic_identity = Intrinsic.Intrinsic(520.9, 521.0, 321.5, 249.7) # freiburg_1
+
+intrinsic_identity = Intrinsic.Intrinsic(-520.9, -521.0, 321.5, 249.7) # freiburg_2
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
     intrinsic_identity = Intrinsic.Intrinsic(-1, -521.0/520.9, 321.5/image_width, 249.7/image_height) # for ndc

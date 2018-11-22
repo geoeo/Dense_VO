@@ -8,7 +8,7 @@ from math import pi
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-xyz_dataset = 'marc_1_full/'
+xyz_dataset = 'marc_4_full/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
@@ -52,13 +52,16 @@ encoder_list = []
 # along -z
 #start = ListGenerator.get_index_of_id(966824.775582211,rgb_files)
 
-start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
+# -z, dataset 4
+start = ListGenerator.get_index_of_id(967058.393566343,rgb_files)
+
+#start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
 #start = ListGenerator.get_index_of_id(966834.146275472,rgb_files)
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=4,
+    max_count=16,
     offset=1,
     ground_truth_dict=image_groundtruth_dict)
 
@@ -142,7 +145,7 @@ for i in range(0, len(ref_image_list)):
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.0008,  #0.0008
-                                                 alpha_step=0.0055,  # 0.002, 0.0055, 0.0085 - motion pri
+                                                 alpha_step=0.0085,  # 0.002, 0.0055, 0.0085 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  max_depth=max_depth,

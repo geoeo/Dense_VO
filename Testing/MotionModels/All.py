@@ -11,24 +11,19 @@ H = np.repeat(1,2)
 origin = Utils.to_homogeneous_positions(X, Y, Z, H)
 
 dt = 1.0
-pose = Pose.Pose()
-pose_ackermann = Pose.Pose()
 steering_command_straight = SteeringCommand.SteeringCommands(1.5, 0.0)
 steering_commands = [steering_command_straight, steering_command_straight]
 dt_list = list(map(lambda _: dt,steering_commands))
-ackermann_motion = Ackermann.Ackermann()
+ackermann_motion = Ackermann.Ackermann(steering_commands, dt_list)
 
 
-motion_delta_list = ackermann_motion.ackermann_dead_reckoning_for_list(steering_commands)
-cov_list = ackermann_motion.covariance_dead_reckoning_for_command_list(pose_ackermann,steering_commands,motion_delta_list,dt_list)
-evd_list = Utils.covariance_eigen_decomp_for_list(cov_list)
-eigen_value_list = Utils.eigen_values_from_evd_list(evd_list)
-ellipse_factor_list = Ackermann.get_standard_deviation_factors_for_projection_for_list(eigen_value_list)
-se3_list = SE3.generate_se3_from_motion_delta_list(motion_delta_list)
+cov_list = ackermann_motion.covariance_dead_reckoning_for_command_list(steering_commands,dt_list)
+ellipse_factor_list = Ackermann.get_standard_deviation_factors_from_covaraince_list(cov_list)
 
 
 # TODO put this in visualizer
-motion_delta = motion_delta_list[0]
+se3_list = SE3.generate_se3_from_motion_delta_list(ackermann_motion.motion_delta_list)
+motion_delta = ackermann_motion.motion_delta_list[0]
 se3 = SE3.generate_se3_from_motion_delta(motion_delta)
 origin_transformed = np.matmul(se3, origin)
 origin_transformed_2 = np.matmul(se3, origin_transformed)

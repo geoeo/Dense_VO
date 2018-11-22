@@ -6,7 +6,7 @@ import numpy as np
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_1_full/'
+dataset = 'marc_4_full/'
 img_source_dir = 'depth/'
 img_target_dir = 'depth_large_norm/'
 
