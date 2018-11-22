@@ -78,6 +78,8 @@ def compute_residual(width, height, target_index_projections, valid_measurements
     # return v_sum
     return v
 
+#TODO make own gauss_newton step
+
 def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
                       g, normal_matrix_return, motion_cov_inv, twist_prior, twist_prev, image_range_offset):
     convergence = False

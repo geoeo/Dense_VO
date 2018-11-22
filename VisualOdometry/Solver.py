@@ -409,6 +409,6 @@ def solve_photometric(frame_reference,
     #w[4] = 0
     #w[5] = 0
 
-    w /= np.linalg.norm(w)
+    #w /= np.linalg.norm(w)
 
     return SE_3_est, w, motion_cov_inv

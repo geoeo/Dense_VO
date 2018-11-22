@@ -8,6 +8,7 @@ image_data_type = np.float64
 image_data_type_open_cv = cv2.CV_64F
 depth_data_type_int = np.uint16
 depth_data_type_float = np.float16
+covariance_zero = 0.00001
 
 
 def points_into_components(points):

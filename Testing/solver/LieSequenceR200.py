@@ -132,8 +132,11 @@ ackermann_cov_list = ackermann_motion.covariance_dead_reckoning_for_command_list
 
 motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
 #motion_cov_inv = np.zeros((6,6),dtype=Utils.matrix_data_type)
+#for i in range(0,6):
+#    motion_cov_inv[i,i] = Utils.covariance_zero
 twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
 
+#TODO plot ackerman pose against prediction to test dt
 for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
     im_greyscale_target, im_depth_target = target_image_list[i]
@@ -150,6 +153,8 @@ for i in range(0, len(ref_image_list)):
     ackermann_cov = ackermann_cov_list[i]
     ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
     ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
+    ackermann_twist = ackermann_motion.motion_delta_list[i].get_6dof_twist(normalize=False)
+
     #motion_cov_inv = ackermann_cov_large_inv
 
     solver_manager = SolverThreadManager.Manager(1,
@@ -176,9 +181,12 @@ for i in range(0, len(ref_image_list)):
 
 
     motion_cov_inv = solver_manager.motion_cov_inv_final
-    #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
-    #TODO look into twist prior, if its computer correctly
     twist_prior = np.multiply(1.0,solver_manager.twist_final)
+    #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
+
+    motion_cov_inv = ackermann_cov_large_inv
+    #twist_prior = ackermann_twist
+
     #twist_prior = np.add(twist_prior,solver_manager.twist_final)
     #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
     se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)

@@ -26,11 +26,15 @@ def get_standard_deviation_factors_from_covaraince_list(cov_list):
     eigen_value_list = Utils.eigen_values_from_evd_list(evd_list)
     return get_standard_deviation_factors_for_projection_for_list(eigen_value_list)
 
+
 # copy into 6Dof Covariance
 # 6 DOF row = {x,y,z,roll,pitch,yaw}
 def generate_6DOF_cov_from_motion_model_cov(cov_small):
 
     covariance_current_large = np.identity(6, dtype=matrix_data_type)
+
+    #for i in range(0,6):
+    #    covariance_current_large[i,i] = Utils.covariance_zero
 
     covariance_current_large[x_offset,x_offset] = cov_small[1,1]
     covariance_current_large[x_offset,z_offset] = cov_small[1,0]
