@@ -65,6 +65,12 @@ ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_f
     offset=1,
     ground_truth_dict=image_groundtruth_dict)
 
+dt_list = ListGenerator.generate_time_step_list(
+    rgb_files,
+    start=start,
+    max_count=16,
+    offset=1)
+
 for i in range(0, len(ref_id_list)):
 
     ref_id = ref_id_list[i]

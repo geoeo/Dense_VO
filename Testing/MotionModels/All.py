@@ -13,7 +13,7 @@ origin = Utils.to_homogeneous_positions(X, Y, Z, H)
 dt = 1.0
 steering_command_straight = SteeringCommand.SteeringCommands(1.5, 0.0)
 steering_commands = [steering_command_straight, steering_command_straight]
-dt_list = list(map(lambda _: dt,steering_commands))
+dt_list = list(map(lambda _: dt, steering_commands))
 ackermann_motion = Ackermann.Ackermann(steering_commands, dt_list)
 
 

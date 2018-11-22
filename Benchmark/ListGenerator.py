@@ -66,6 +66,23 @@ def generate_files_to_load_match(rgb_list, start, max_count, offset, ground_trut
 
     return ref_files_to_load, target_files_to_load , ref_file_failed_to_load
 
+def generate_time_step_list(rgb_list, start, max_count, offset):
+    dt_list = []
+
+    i_ref = start
+    i_target = i_ref+offset
+    max = start + max_count
+
+    while i_ref < max:
+        ref_ts = rgb_list[i_ref]
+        target_ts = rgb_list[i_target]
+
+        dt_list.append(target_ts -ref_ts)
+
+        i_ref += offset
+        i_target += offset
+
+    return dt_list
 
 def generate_files_to_load(rgb_list, start, max_count, offset, ground_truth_dict, reverse=False):
     ref_files_to_load = []
