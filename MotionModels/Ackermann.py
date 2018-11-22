@@ -6,6 +6,10 @@ from Numerics import Utils
 import numpy as np
 import math
 
+x_offset = 0
+z_offset = 2
+pitch_offset = 4
+
 
 # input are the eigen values of the covariance's EVD
 def get_standard_deviation_factors_for_projection(w):
@@ -22,6 +26,30 @@ def get_standard_deviation_factors_from_covaraince_list(cov_list):
     eigen_value_list = Utils.eigen_values_from_evd_list(evd_list)
     return get_standard_deviation_factors_for_projection_for_list(eigen_value_list)
 
+# copy into 6Dof Covariance
+# 6 DOF row = {x,y,z,roll,pitch,yaw}
+def generate_6DOF_cov_from_motion_model_cov(cov_small):
+
+    covariance_current_large = np.identity(6, dtype=matrix_data_type)
+
+    covariance_current_large[x_offset,x_offset] = cov_small[1,1]
+    covariance_current_large[x_offset,z_offset] = cov_small[1,0]
+    covariance_current_large[x_offset,pitch_offset] = cov_small[1,2]
+
+    covariance_current_large[z_offset,x_offset] = cov_small[0,1]
+    covariance_current_large[z_offset,z_offset] = cov_small[0,0]
+    covariance_current_large[z_offset,pitch_offset] = cov_small[0,2]
+
+    covariance_current_large[pitch_offset,x_offset] = cov_small[2,1]
+    covariance_current_large[pitch_offset,z_offset] = cov_small[2,0]
+    covariance_current_large[pitch_offset,pitch_offset] = cov_small[2,2]
+
+    return covariance_current_large
+
+def generate_6DOF_cov_from_motion_model_cov_list(cov_small_list):
+    return list(map(lambda x: generate_6DOF_cov_from_motion_model_cov(x), cov_small_list))
+
+
 
 class Ackermann:
 
@@ -31,14 +59,9 @@ class Ackermann:
         self.linear_velocity_noise = 0.0
         self.steering_angle_noise = 0.0
         self.covariance_prev = np.identity(3, dtype=matrix_data_type)
-        # 6 DOF row = {x,y,z,roll,pitch,yaw}
-        self.covariance_current_large = np.identity(6, dtype=matrix_data_type)
         self.M = np.identity(2,dtype=matrix_data_type) # noise parameters
         self.G = np.identity(3, dtype=matrix_data_type)
         self.V = np.zeros((3,2), dtype=matrix_data_type)
-        self.x_offset = 0
-        self.z_offset = 2
-        self.pitch_offset = 4
         self.pose = Pose()
         self.steering_command_list = steering_command_list
         self.dt_list = dt_list
@@ -121,22 +144,4 @@ class Ackermann:
             cov_list.append(motion_cov)
 
         return cov_list
-
-
-    def generate_6DOF_cov_from_motion_model_cov(self,cov_small):
-        # copy into 6Dof Covariance
-        self.covariance_current_large[self.x_offset,self.x_offset] = cov_small[1,1]
-        self.covariance_current_large[self.x_offset,self.z_offset] = cov_small[1,0]
-        self.covariance_current_large[self.x_offset,self.pitch_offset] = cov_small[1,2]
-
-        self.covariance_current_large[self.z_offset,self.x_offset] = cov_small[0,1]
-        self.covariance_current_large[self.z_offset,self.z_offset] = cov_small[0,0]
-        self.covariance_current_large[self.z_offset,self.pitch_offset] = cov_small[0,2]
-
-        self.covariance_current_large[self.pitch_offset,self.x_offset] = cov_small[2,1]
-        self.covariance_current_large[self.pitch_offset,self.z_offset] = cov_small[2,0]
-        self.covariance_current_large[self.pitch_offset,self.pitch_offset] = cov_small[2,2]
-
-    def generate_6DOF_cov_from_motion_model_cov_list(self,cov_small_list):
-        return list(map(lambda x: self.generate_6DOF_cov_from_motion_model_cov(x), cov_small_list))
 

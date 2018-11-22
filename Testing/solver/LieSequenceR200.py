@@ -4,6 +4,7 @@ from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate, ListGenerator
 from Visualization import Visualizer
+from MotionModels import Ackermann,SteeringCommand
 from math import pi
 
 
@@ -61,14 +62,14 @@ start = ListGenerator.get_index_of_id(967058.393566343,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=16,
+    max_count=5,
     offset=1,
     ground_truth_dict=image_groundtruth_dict)
 
 dt_list = ListGenerator.generate_time_step_list(
     rgb_files,
     start=start,
-    max_count=16,
+    max_count=5,
     offset=1)
 
 for i in range(0, len(ref_id_list)):
@@ -104,8 +105,9 @@ for i in range(0, len(ref_id_list)):
 
     encoder_ts = float(rgb_encoder_dict[ref_id][0])
     encoder_values = encoder_dict[encoder_ts]
+    encoder_values_float = [float(encoder_values[0]),float(encoder_values[1])]
 
-    encoder_list.append(encoder_values)
+    encoder_list.append(encoder_values_float)
 
 
 
@@ -124,7 +126,9 @@ if use_ndc:
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
 camera_target = Camera.Camera(intrinsic_identity, se3_identity)
 
-visualizer = Visualizer.Visualizer(ground_truth_list)
+steering_commands = list(map(lambda cmd: SteeringCommand.SteeringCommands(cmd[0],cmd[1]), encoder_list))
+ackermann_motion = Ackermann.Ackermann(steering_commands, dt_list)
+ackermann_cov_list = ackermann_motion.covariance_dead_reckoning_for_command_list(steering_commands,dt_list)
 
 motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
 #motion_cov_inv = np.zeros((6,6),dtype=Utils.matrix_data_type)
@@ -139,18 +143,21 @@ for i in range(0, len(ref_image_list)):
 
     max_depth = np.amax(im_depth_reference)
 
-    encoder_data = encoder_list[i]
-
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
     frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
+
+    ackermann_cov = ackermann_cov_list[i]
+    ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
+    ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
+    #motion_cov_inv = ackermann_cov_large_inv
 
     solver_manager = SolverThreadManager.Manager(1,
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=50,
-                                                 eps=0.0008,  #0.0008
+                                                 eps=0.0001,  #0.0008
                                                  alpha_step=0.0085,  # 0.002, 0.0055, 0.0085 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
@@ -160,14 +167,17 @@ for i in range(0, len(ref_image_list)):
                                                  use_ndc=use_ndc,
                                                  use_robust=True,
                                                  track_pose_estimates=True,
-                                                 use_motion_prior=False,
+                                                 use_motion_prior=True,
                                                  debug=False)
 
     solver_manager.start()
     solver_manager.join()  # wait to complete
 
+
+
     motion_cov_inv = solver_manager.motion_cov_inv_final
     #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
+    #TODO look into twist prior, if its computer correctly
     twist_prior = np.multiply(1.0,solver_manager.twist_final)
     #twist_prior = np.add(twist_prior,solver_manager.twist_final)
     #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
@@ -175,6 +185,8 @@ for i in range(0, len(ref_image_list)):
     pose_estimate_list.append(se3_estimate_acc)
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
+
+visualizer = Visualizer.Visualizer(ground_truth_list)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()
