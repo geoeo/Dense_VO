@@ -121,6 +121,8 @@ def solve_photometric(frame_reference,
                       use_robust = False,
                       track_pose_estimates = False,
                       use_motion_prior = False,
+                      ackermann_pose_prior = None,
+                      use_ackermann = False,
                       debug = False):
 
     if track_pose_estimates and (threadLock == None or pose_estimate_list == None):
@@ -343,9 +345,9 @@ def solve_photometric(frame_reference,
             w_new = w_empty
 
         # For using ackermann motion
-        #if use_motion_prior:
-        inc = twist_prior - w
-        w_new += np.matmul(motion_cov_inv_norm,inc)
+        if use_ackermann:
+            inc = ackermann_pose_prior - w
+            w_new += np.matmul(motion_cov_inv_norm,inc)
             #w_new += inc
 
 

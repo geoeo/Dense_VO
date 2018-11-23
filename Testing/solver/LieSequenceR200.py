@@ -156,17 +156,18 @@ for i in range(0, len(ref_image_list)):
     ackermann_twist = ackermann_motion.motion_delta_list[i].get_6dof_twist(normalize=False)
 
     # OWN with motion prior = False
-    motion_cov_inv = ackermann_cov_large_inv
+    #motion_cov_inv = ackermann_cov_large_inv
     #motion_cov_inv = Utils.norm_covariance_row(motion_cov_inv)
     #twist_prior = ackermann_twist
 
+    # TODO make ackermann twist prior separate
     solver_manager = SolverThreadManager.Manager(1,
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
                                                  max_its=50,
                                                  eps=0.0001,  #0.0008
-                                                 alpha_step=0.0085,  # 0.002, 0.0055, 0.0085 - motion pri
+                                                 alpha_step=0.0055,  # 0.002, 0.0055, 0.0085 - motion pri
                                                  gradient_monitoring_window_start=1,
                                                  image_range_offset_start=0,
                                                  max_depth=max_depth,
@@ -176,6 +177,8 @@ for i in range(0, len(ref_image_list)):
                                                  use_robust=True,
                                                  track_pose_estimates=True,
                                                  use_motion_prior=True,
+                                                 ackermann_pose_prior=ackermann_twist,
+                                                 use_ackermann=False,
                                                  debug=False)
 
     solver_manager.start()
@@ -184,13 +187,13 @@ for i in range(0, len(ref_image_list)):
 
 
     # PAPER
-    #motion_cov_inv = solver_manager.motion_cov_inv_final
-    #twist_prior = np.multiply(1.0,solver_manager.twist_final)
+    motion_cov_inv = solver_manager.motion_cov_inv_final
+    twist_prior = np.multiply(1.0,solver_manager.twist_final)
     #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
 
     # ACKERMANN
     #motion_cov_inv = ackermann_cov_large_inv
-    twist_prior = ackermann_twist
+    #twist_prior = ackermann_twist
     #inc = ackermann_twist - twist_prior
     #twist_prior += np.matmul(motion_cov_inv,inc)
 
