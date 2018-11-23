@@ -53,13 +53,13 @@ target_image_list = []
 #start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
 
 # Y Trans - down / better with motion prior
-#start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
+start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
 
 # Y Trans - up
 #start = ListGenerator.get_index_of_id(1305031118.143256,rgb_files)
 
 # X Trans - Right
-start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
+#start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
 
 # X Trans - Left
 

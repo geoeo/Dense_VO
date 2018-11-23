@@ -156,7 +156,8 @@ for i in range(0, len(ref_image_list)):
     ackermann_twist = ackermann_motion.motion_delta_list[i].get_6dof_twist(normalize=False)
 
     # OWN with motion prior = False
-    #motion_cov_inv = ackermann_cov_large_inv
+    motion_cov_inv = ackermann_cov_large_inv
+    #motion_cov_inv = Utils.norm_covariance_row(motion_cov_inv)
     #twist_prior = ackermann_twist
 
     solver_manager = SolverThreadManager.Manager(1,
@@ -188,8 +189,10 @@ for i in range(0, len(ref_image_list)):
     #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
 
     # ACKERMANN
-    motion_cov_inv = ackermann_cov_large_inv
+    #motion_cov_inv = ackermann_cov_large_inv
     twist_prior = ackermann_twist
+    #inc = ackermann_twist - twist_prior
+    #twist_prior += np.matmul(motion_cov_inv,inc)
 
     #twist_prior = np.add(twist_prior,solver_manager.twist_final)
     #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)

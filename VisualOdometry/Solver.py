@@ -343,11 +343,10 @@ def solve_photometric(frame_reference,
             w_new = w_empty
 
         # For using ackermann motion
-        # variant 1
-        #inc = twist_prior - w
-        #w_new += np.matmul(motion_cov_inv_norm,inc)
-        # variant 2
-        #w_new = np.matmul(motion_cov_inv_norm,w_new) + twist_prior
+        #if use_motion_prior:
+        inc = twist_prior - w
+        w_new += np.matmul(motion_cov_inv_norm,inc)
+            #w_new += inc
 
 
         R_cur, t_cur = Lie.exp(w,twist_size)
@@ -409,10 +408,8 @@ def solve_photometric(frame_reference,
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
-    if use_motion_prior:
-        motion_cov_inv = normal_matrix_ret
-    else:
-        motion_cov_inv = zero_cov
+    motion_cov_inv = normal_matrix_ret
+
 
     #w[3] = 0
     #w[4] = 0
