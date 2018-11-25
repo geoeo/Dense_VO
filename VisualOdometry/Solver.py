@@ -348,7 +348,7 @@ def solve_photometric(frame_reference,
         if use_ackermann:
             # V1
             #inc = ackermann_pose_prior - w
-            #w_new += np.matmul(motion_cov_inv_norm,inc)
+            #w_new += np.matmul(motion_cov_inv,inc)
             #w_new += inc
 
             # V2
@@ -362,7 +362,7 @@ def solve_photometric(frame_reference,
 
             w_inc = Lie.ln(SE3.extract_rotation(SE3_w_ack), SE3.extract_translation(SE3_w_ack), twist_size)
 
-            w_new += np.matmul(motion_cov_inv_norm,w_inc)
+            w_new += np.matmul(motion_cov_inv,w_inc)
 
 
 
