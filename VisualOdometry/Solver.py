@@ -346,9 +346,25 @@ def solve_photometric(frame_reference,
 
         # For using ackermann motion
         if use_ackermann:
-            inc = ackermann_pose_prior - w
-            w_new += np.matmul(motion_cov_inv_norm,inc)
+            # V1
+            #inc = ackermann_pose_prior - w
+            #w_new += np.matmul(motion_cov_inv_norm,inc)
             #w_new += inc
+
+            # V2
+            R_w, t_w = Lie.exp(w, twist_size)
+            R_ack, t_ack = Lie.exp(ackermann_pose_prior, twist_size)
+
+            SE_3_w = np.append(np.append(R_w, t_w, axis=1), homogeneous_se3_padding, axis=0)
+            SE_3_ack = np.append(np.append(R_ack, t_ack, axis=1), homogeneous_se3_padding, axis=0)
+
+            SE3_w_ack = SE3.pose_pose_composition_inverse(SE_3_w,SE_3_ack)
+
+            w_inc = Lie.ln(SE3.extract_rotation(SE3_w_ack), SE3.extract_translation(SE3_w_ack), twist_size)
+
+            w_new += np.matmul(motion_cov_inv_norm,w_inc)
+
+
 
 
         R_cur, t_cur = Lie.exp(w,twist_size)

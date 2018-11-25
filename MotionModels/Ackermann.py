@@ -93,7 +93,7 @@ class Ackermann:
         new_motion_delta.delta_theta = linear_velocity * math.tan(steering_angle) / self.wheel_base
         new_motion_delta.delta_x = linear_velocity
         # wheel diameter TODO write about this
-        new_motion_delta.delta_x *=  0.0269
+        new_motion_delta.delta_x *=  0.0269#*math.pi
 
         return new_motion_delta
 

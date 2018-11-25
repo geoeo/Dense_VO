@@ -178,7 +178,7 @@ for i in range(0, len(ref_image_list)):
                                                  track_pose_estimates=True,
                                                  use_motion_prior=True,
                                                  ackermann_pose_prior=ackermann_twist,
-                                                 use_ackermann=False,
+                                                 use_ackermann=True,
                                                  debug=False)
 
     solver_manager.start()
@@ -187,12 +187,12 @@ for i in range(0, len(ref_image_list)):
 
 
     # PAPER
-    motion_cov_inv = solver_manager.motion_cov_inv_final
+    #motion_cov_inv = solver_manager.motion_cov_inv_final
     twist_prior = np.multiply(1.0,solver_manager.twist_final)
     #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
 
     # ACKERMANN
-    #motion_cov_inv = ackermann_cov_large_inv
+    motion_cov_inv = ackermann_cov_large_inv
     #twist_prior = ackermann_twist
     #inc = ackermann_twist - twist_prior
     #twist_prior += np.matmul(motion_cov_inv,inc)
