@@ -2,8 +2,8 @@ from Benchmark import ListGenerator
 import os
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_5_full/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
+dataset = 'marc_6_full/'
 
 #rgb_folder = 'depth/'
 #rgb_text = 'depth.txt'

@@ -9,7 +9,7 @@ from math import pi
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-xyz_dataset = 'marc_4_full/'
+xyz_dataset = 'marc_6_full/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
@@ -38,6 +38,7 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
+calc_vo = False
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
 #ground_truth_acc[0:3,0:3] = so3_prior
@@ -54,7 +55,13 @@ encoder_list = []
 #start = ListGenerator.get_index_of_id(966824.775582211,rgb_files)
 
 # -z, dataset 4
-start = ListGenerator.get_index_of_id(967058.393566343,rgb_files)
+#start = ListGenerator.get_index_of_id(967058.393566343,rgb_files)
+
+# dataset 3
+#start = ListGenerator.get_index_of_id(966894.954271683,rgb_files)
+
+#dataset 6
+start = ListGenerator.get_index_of_id(967171.027841398,rgb_files)
 
 #start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
 #start = ListGenerator.get_index_of_id(966834.146275472,rgb_files)
@@ -62,14 +69,14 @@ start = ListGenerator.get_index_of_id(967058.393566343,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=5,
+    max_count=20,
     offset=1,
     ground_truth_dict=image_groundtruth_dict)
 
 dt_list = ListGenerator.generate_time_step_list(
     rgb_files,
     start=start,
-    max_count=5,
+    max_count=20,
     offset=1)
 
 for i in range(0, len(ref_id_list)):
@@ -88,13 +95,13 @@ for i in range(0, len(ref_id_list)):
     #rot_new = np.matmul(conv,rot)
     euler = SE3.rotationMatrixToEulerAngles(rot)
     #rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
-    rot_new = SE3.makeS03(euler[2],euler[1],euler[0])
+    rot_new = SE3.makeS03(euler[1],euler[2],euler[0])
     SE3_ref_target[0:3,0:3] = rot_new
     x = SE3_ref_target[0,3]
     y = SE3_ref_target[1,3]
     z = SE3_ref_target[2,3]
-    SE3_ref_target[0,3] = -z
-    SE3_ref_target[1,3] = y
+    SE3_ref_target[0,3] = y
+    SE3_ref_target[1,3] = -z
     SE3_ref_target[2,3] = -x
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
@@ -160,51 +167,49 @@ for i in range(0, len(ref_image_list)):
     #motion_cov_inv = Utils.norm_covariance_row(motion_cov_inv)
     #twist_prior = ackermann_twist
 
-    # TODO make ackermann twist prior separate
-    solver_manager = SolverThreadManager.Manager(1,
-                                                 "Solver Manager",
-                                                 frame_reference,
-                                                 frame_target,
-                                                 max_its=50,
-                                                 eps=0.0001,  #0.0008
-                                                 alpha_step=0.0055,  # 0.002, 0.0055, 0.0085 - motion pri
-                                                 gradient_monitoring_window_start=1,
-                                                 image_range_offset_start=0,
-                                                 max_depth=max_depth,
-                                                 twist_prior=twist_prior,
-                                                 motion_cov_inv = motion_cov_inv,
-                                                 use_ndc=use_ndc,
-                                                 use_robust=True,
-                                                 track_pose_estimates=True,
-                                                 use_motion_prior=True,
-                                                 ackermann_pose_prior=ackermann_twist,
-                                                 use_ackermann=True,
-                                                 debug=False)
+    if calc_vo:
+        solver_manager = SolverThreadManager.Manager(1,
+                                                     "Solver Manager",
+                                                     frame_reference,
+                                                     frame_target,
+                                                     max_its=50,
+                                                     eps=0.0001,  #0.0008
+                                                     alpha_step=0.0002,  # 0.002 ds3, 0.0055, 0.0085 - motion pri
+                                                     gradient_monitoring_window_start=1,
+                                                     image_range_offset_start=0,
+                                                     max_depth=max_depth,
+                                                     twist_prior=twist_prior,
+                                                     motion_cov_inv = motion_cov_inv,
+                                                     use_ndc=use_ndc,
+                                                     use_robust=True,
+                                                     track_pose_estimates=True,
+                                                     use_motion_prior=True,
+                                                     ackermann_pose_prior=ackermann_twist,
+                                                     use_ackermann=True,
+                                                     debug=False)
 
-    solver_manager.start()
-    solver_manager.join()  # wait to complete
+        solver_manager.start()
+        solver_manager.join()  # wait to complete
 
+        # PAPER
+        #motion_cov_inv = solver_manager.motion_cov_inv_final
+        twist_prior = np.multiply(1.0,solver_manager.twist_final)
 
+        # ACKERMANN
+        motion_cov_inv = ackermann_cov_large_inv
+        #twist_prior = ackermann_twist
 
-    # PAPER
-    #motion_cov_inv = solver_manager.motion_cov_inv_final
-    twist_prior = np.multiply(1.0,solver_manager.twist_final)
-    #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
+        #twist_prior = np.add(twist_prior,solver_manager.twist_final)
+        #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
 
-    # ACKERMANN
-    motion_cov_inv = ackermann_cov_large_inv
-    #twist_prior = ackermann_twist
-    #inc = ackermann_twist - twist_prior
-    #twist_prior += np.matmul(motion_cov_inv,inc)
-
-    #twist_prior = np.add(twist_prior,solver_manager.twist_final)
-    #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
-    se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
-    pose_estimate_list.append(se3_estimate_acc)
+     #  SE3_est = SE3.twist_to_SE3(ackermann_twist)
+        SE3_est = solver_manager.SE3_est_final
+        se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
+        pose_estimate_list.append(se3_estimate_acc)
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
 visualizer = Visualizer.Visualizer(ground_truth_list)
 visualizer.visualize_ground_truth(clear=True,draw=False)
-visualizer.visualize_poses(pose_estimate_list, draw= False)
+# visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()

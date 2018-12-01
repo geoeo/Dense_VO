@@ -2,6 +2,7 @@ import numpy as np
 import math
 from Numerics.Utils import matrix_data_type
 from MotionModels import MotionDelta
+from Numerics import Lie, Utils
 
 
 def extract_rotation(se3 : np.ndarray):
@@ -176,6 +177,11 @@ def generate_se3_from_motion_delta(motion_delta : MotionDelta.MotionDelta):
 
 def generate_se3_from_motion_delta_list(motion_delta_list : [MotionDelta.MotionDelta]):
     return list(map(lambda x: generate_se3_from_motion_delta(x),motion_delta_list))
+
+def twist_to_SE3(twist):
+    R, t = Lie.exp(twist,6)
+    SE3 = np.append(np.append(R, t, axis=1), Utils.homogenous_for_SE3(), axis=0)
+    return SE3
 
 
 # TODO investigate this again. I think its due to having a point pair at (0,0,0),(0,0,-1)
