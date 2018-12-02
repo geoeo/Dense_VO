@@ -1,7 +1,8 @@
 import numpy as np
 import math
-import Numerics.Utils as Utils
 from Numerics.Utils import matrix_data_type
+from Numerics import Utils, SE3
+
 
 I_3 = np.identity(3, dtype=matrix_data_type)
 zero_trans = np.zeros((3,1),dtype=matrix_data_type)
@@ -187,5 +188,22 @@ def ln(R, t,twist_size):
     w[2] = u[2]
 
     return w
+
+def lie_ackermann_correction(gradient_step, motion_cov_inv, ackermann_twist, vo_twist, twist_size):
+    # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
+    ack_prior = ackermann_twist
+    R_w, t_w = exp(vo_twist, twist_size)
+    R_ack, t_ack = exp(ack_prior, twist_size)
+
+    SE_3_w = np.append(np.append(R_w, t_w, axis=1), Utils.homogenous_for_SE3(), axis=0)
+    SE_3_ack = np.append(np.append(R_ack, t_ack, axis=1), Utils.homogenous_for_SE3(), axis=0)
+
+    SE3_w_ack = SE3.pose_pose_composition_inverse(SE_3_w, SE_3_ack)
+
+    w_inc = ln(SE3.extract_rotation(SE3_w_ack), SE3.extract_translation(SE3_w_ack), twist_size)
+
+    w_inc = np.multiply(gradient_step, np.matmul(motion_cov_inv, w_inc))
+
+    return w_inc
 
 

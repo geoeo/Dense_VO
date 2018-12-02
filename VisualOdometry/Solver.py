@@ -352,17 +352,12 @@ def solve_photometric(frame_reference,
             #w_new += inc
 
             # V2
-            R_w, t_w = Lie.exp(w, twist_size)
-            R_ack, t_ack = Lie.exp(ackermann_pose_prior, twist_size)
+            #factor = Gradient_step_manager.current_alpha/10
+            factor = 1.0
+            ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
+            ack_prior = ackermann_pose_prior
 
-            SE_3_w = np.append(np.append(R_w, t_w, axis=1), homogeneous_se3_padding, axis=0)
-            SE_3_ack = np.append(np.append(R_ack, t_ack, axis=1), homogeneous_se3_padding, axis=0)
-
-            SE3_w_ack = SE3.pose_pose_composition_inverse(SE_3_w,SE_3_ack)
-
-            w_inc = Lie.ln(SE3.extract_rotation(SE3_w_ack), SE3.extract_translation(SE3_w_ack), twist_size)
-
-            w_new += np.matmul(motion_cov_inv,w_inc)
+            w_new += Lie.lie_ackermann_correction(factor,motion_cov_inv,ack_prior,w,twist_size)
 
 
 
@@ -423,6 +418,16 @@ def solve_photometric(frame_reference,
             v_mean = v_sum / number_of_valid_measurements
         else:
             v_mean = 10000
+
+    if use_ackermann:
+        #factor = Gradient_step_manager.current_alpha / 10
+        factor = 1.0
+        # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
+        ack_prior = ackermann_pose_prior
+
+        #w += Lie.lie_ackermann_correction(factor, motion_cov_inv, ack_prior, w, twist_size)
+
+        #R_est, t_est = Lie.exp(w, twist_size)
 
     SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 

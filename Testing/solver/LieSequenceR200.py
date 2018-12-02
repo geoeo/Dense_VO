@@ -9,7 +9,7 @@ from math import pi
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-xyz_dataset = 'marc_6_full/'
+xyz_dataset = 'marc_4_full/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
@@ -38,7 +38,10 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = False
+calc_vo = True
+
+max_count = 3
+offset = 1
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
 #ground_truth_acc[0:3,0:3] = so3_prior
@@ -51,17 +54,20 @@ encoder_list = []
 
 #start = ListGenerator.get_index_of_id(966816.052441710,rgb_files)
 
-# along -z
+# along -z dataset 1
 #start = ListGenerator.get_index_of_id(966824.775582211,rgb_files)
 
 # -z, dataset 4
-#start = ListGenerator.get_index_of_id(967058.393566343,rgb_files)
+start = ListGenerator.get_index_of_id(967058.393566343,rgb_files)
 
 # dataset 3
 #start = ListGenerator.get_index_of_id(966894.954271683,rgb_files)
 
+#dataset 5 # good
+#start = ListGenerator.get_index_of_id(967107.373734589,rgb_files)
+
 #dataset 6
-start = ListGenerator.get_index_of_id(967171.027841398,rgb_files)
+#start = ListGenerator.get_index_of_id(967171.027841398,rgb_files)
 
 #start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
 #start = ListGenerator.get_index_of_id(966834.146275472,rgb_files)
@@ -69,15 +75,16 @@ start = ListGenerator.get_index_of_id(967171.027841398,rgb_files)
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
     rgb_files,
     start=start,
-    max_count=20,
-    offset=1,
-    ground_truth_dict=image_groundtruth_dict)
+    max_count=max_count,
+    offset=offset,
+    ground_truth_dict=image_groundtruth_dict,
+    reverse=False)
 
 dt_list = ListGenerator.generate_time_step_list(
     rgb_files,
     start=start,
-    max_count=20,
-    offset=1)
+    max_count=max_count,
+    offset=offset)
 
 for i in range(0, len(ref_id_list)):
 
@@ -103,6 +110,7 @@ for i in range(0, len(ref_id_list)):
     SE3_ref_target[0,3] = y
     SE3_ref_target[1,3] = -z
     SE3_ref_target[2,3] = -x
+    #SE3_ref_target[0:3,3] *= 10 # mm -> meters ?
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
     ground_truth_list.append(ground_truth_acc)
@@ -161,6 +169,7 @@ for i in range(0, len(ref_image_list)):
     ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
     ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
     ackermann_twist = ackermann_motion.motion_delta_list[i].get_6dof_twist(normalize=False)
+    ackermann_twist[4] *= -1
 
     # OWN with motion prior = False
     #motion_cov_inv = ackermann_cov_large_inv
@@ -173,8 +182,8 @@ for i in range(0, len(ref_image_list)):
                                                      frame_reference,
                                                      frame_target,
                                                      max_its=50,
-                                                     eps=0.0001,  #0.0008
-                                                     alpha_step=0.0002,  # 0.002 ds3, 0.0055, 0.0085 - motion pri
+                                                     eps=0.0005,  #0.0008, 0.0001, 0.0057
+                                                     alpha_step=0.0085,  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
                                                      gradient_monitoring_window_start=1,
                                                      image_range_offset_start=0,
                                                      max_depth=max_depth,
@@ -209,7 +218,9 @@ for i in range(0, len(ref_image_list)):
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
+#TODO plot steering commands!
 visualizer = Visualizer.Visualizer(ground_truth_list)
 visualizer.visualize_ground_truth(clear=True,draw=False)
-# visualizer.visualize_poses(pose_estimate_list, draw= False)
+if calc_vo:
+    visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()
