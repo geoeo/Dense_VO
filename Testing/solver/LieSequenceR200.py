@@ -61,10 +61,11 @@ depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
 calc_vo = True
+plot_steering = True
 
 name = f"{start_idx:.9f}"
 
-max_count = 2
+max_count = 15
 offset = 1
 
 max_its = 50
@@ -78,6 +79,7 @@ track_pose_estimates = True
 use_motion_prior = True
 use_ackermann = True
 debug = False
+
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -250,9 +252,10 @@ SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
 FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
-#TODO plot steering commands!
-visualizer = Visualizer.Visualizer(ground_truth_list)
+visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
 visualizer.visualize_ground_truth(clear=True,draw=False)
+if plot_steering:
+    visualizer.visualize_steering(encoder_list,clear=False,draw=False)
 if calc_vo:
     visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()

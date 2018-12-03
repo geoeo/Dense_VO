@@ -61,16 +61,30 @@ class VisualizerThread(threading.Thread):
 
 class Visualizer():
 
-    def __init__(self, ground_truth_list = None):
+    def __init__(self, ground_truth_list = None, plot_steering = False):
         self.ground_truth_list = []
         if ground_truth_list is not None:
             self.ground_truth_list = ground_truth_list
         self.figure = plt.figure()
-        self.se3_graph = self.figure.add_subplot(311, projection='3d')
-        self.x_graph = self.figure.add_subplot(334)
-        self.y_graph = self.figure.add_subplot(335)
-        self.z_graph = self.figure.add_subplot(336)
-        self.rmse_graph = self.figure.add_subplot(313)
+        self.plot_steering = plot_steering
+        if not plot_steering:
+            self.se3_graph = self.figure.add_subplot(311, projection='3d')
+            self.x_graph = self.figure.add_subplot(334)
+            self.y_graph = self.figure.add_subplot(335)
+            self.z_graph = self.figure.add_subplot(336)
+            self.rmse_graph = self.figure.add_subplot(313)
+        else:
+            self.se3_graph = self.figure.add_subplot(411, projection='3d')
+            self.x_graph = self.figure.add_subplot(434)
+            self.y_graph = self.figure.add_subplot(435)
+            self.z_graph = self.figure.add_subplot(436)
+            self.rmse_graph = self.figure.add_subplot(413)
+            self.rev = self.figure.add_subplot(427)
+            self.steer = self.figure.add_subplot(428)
+
+            self.rev.set_title("rev cmd")
+            self.steer.set_title("str cmd")
+
 
         #self.se3_graph.set_aspect('equal')
         self.se3_graph.set_title("relative pose estimate")
@@ -88,6 +102,10 @@ class Visualizer():
 
     def show(self):
         Plot3D.show()
+
+    def visualize_steering(self, encoder_list, clear = False, draw = False):
+        assert self.plot_steering
+        Plot3D.plot_steering_commands(encoder_list, self.rev, self.steer, style='-rx', clear=clear, draw=draw)
 
     def visualize_ground_truth(self, clear= True, draw=False):
         if len(self.ground_truth_list) > 0:

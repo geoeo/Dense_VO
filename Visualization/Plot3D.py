@@ -69,6 +69,21 @@ def plot_translation_component(index, se3_list, ax, style, clear = False, draw =
         plt.draw()
         plt.pause(1)
 
+def plot_steering_commands(encoder_list, rev_ax,steer_ax, style, clear = False, draw = True):
+    if clear:
+        rev_ax.clear()
+        steer_ax.clear()
+
+    for i in range(0,len(encoder_list), 1):
+        cmd = encoder_list[i]
+
+        rev_ax.plot(i,cmd[0], style)
+        steer_ax.plot(i,cmd[1], style)
+
+    if draw:
+        plt.draw()
+        plt.pause(1)
+
 
 def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw = True):
     if clear:
