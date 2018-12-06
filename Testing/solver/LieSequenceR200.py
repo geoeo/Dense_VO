@@ -63,10 +63,10 @@ use_ndc = True
 calc_vo = True
 plot_steering = True
 
-name = f"{start_idx:.9f}"
-
-max_count = 15
+max_count = 5
 offset = 1
+
+name = f"{start_idx:.9f}"
 
 max_its = 50
 eps = 0.0005  # 0.0008, 0.0001, 0.0057
@@ -88,7 +88,9 @@ info = '_' + f"{max_its}" \
        + '_' + f"{use_ndc}" \
        + '_' + f"{use_robust}" \
        + '_' + f"{use_motion_prior}" \
-       + '_' + f"{use_ackermann}"
+       + '_' + f"{use_ackermann}" \
+       + '_' + f"{max_count}" \
+       + '_' + f"{offset}"
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
 #ground_truth_acc[0:3,0:3] = so3_prior
