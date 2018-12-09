@@ -80,6 +80,8 @@ use_motion_prior = True
 use_ackermann = True
 debug = False
 
+additional_info = None
+
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -91,6 +93,9 @@ info = '_' + f"{max_its}" \
        + '_' + f"{use_ackermann}" \
        + '_' + f"{max_count}" \
        + '_' + f"{offset}"
+
+if additional_info:
+    info += '_' + additional_info
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
 #ground_truth_acc[0:3,0:3] = so3_prior
