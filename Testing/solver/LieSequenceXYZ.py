@@ -2,18 +2,49 @@ import numpy as np
 from Numerics import Utils, SE3
 from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
-from Benchmark import Parser, associate, ListGenerator
+from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer
-from math import pi
 
+
+# start
+#start_idx = 1305031102.175304
+
+# Y Trans - down / better with motion prior
+#start_idx = 1305031119.079223
+
+# Y Trans - up
+#start_idx = 1305031118.143256
+
+# X Trans - Right
+#start_idx = 1305031108.211475
+
+# X Trans - Left
+
+# first couple of images are skipped due to no depth gt correspondence
+# may be the cause of the bad vo results
+#start_idx = 1305031108.876515,rgb_files
+
+#start_idx = 1305031109.275308
+
+# first moition is bad i.e. motion prior indices wrong estimate
+# better with larger offset 2 or 3
+start_idx = 1305031109.375397
+#start_idx = 1305031109.543294
+
+# Good estiamte w.o motion prior
+#start_idx = 1305031109.675263
+#start_idx = 1305031109.743274
+#start_idx = 1305031110.011256
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
 xyz_dataset = 'rgbd_dataset_freiburg1_xyz/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
+output_dir = 'output/'
 
 dataset_root = bench_path+xyz_dataset
+output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
 match_text = dataset_root+'matches.txt'
@@ -33,6 +64,42 @@ depth_file_total = len(depth_files)
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
+calc_vo = True
+plot_steering = True
+
+max_count = 10
+offset = 2
+
+name = f"{start_idx:.9f}"
+
+max_its = 50
+eps = 0.0008  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 0.0055  # 0.002, 0.0055 - motion pri
+gradient_monitoring_window_start = 1
+image_range_offset_start = 0
+use_ndc = use_ndc
+use_robust = True
+track_pose_estimates = True
+use_motion_prior = True
+use_ackermann = False
+debug = False
+
+additional_info = None
+
+
+info = '_' + f"{max_its}" \
+       + '_' + f"{eps}" \
+       + '_' + f"{alpha_step}" \
+       + '_' + f"{image_range_offset_start}" \
+       + '_' + f"{use_ndc}" \
+       + '_' + f"{use_robust}" \
+       + '_' + f"{use_motion_prior}" \
+       + '_' + f"{use_ackermann}" \
+       + '_' + f"{max_count}" \
+       + '_' + f"{offset}"
+
+if additional_info:
+    info += '_' + additional_info
 
 euler_prior = SE3.Quaternion_toEulerianRadians(0.6132, 0.5962, -0.3311, -0.3986)
 so3_prior = SE3.makeS03(0,0,-euler_prior[0])
@@ -48,43 +115,16 @@ ground_truth_list = []
 pose_estimate_list = []
 ref_image_list = []
 target_image_list = []
+vo_twist_list = []
 
-# start
-#start = ListGenerator.get_index_of_id(1305031102.175304,rgb_files)
-
-# Y Trans - down / better with motion prior
-#start = ListGenerator.get_index_of_id(1305031119.079223,rgb_files)
-
-# Y Trans - up
-#start = ListGenerator.get_index_of_id(1305031118.143256,rgb_files)
-
-# X Trans - Right
-#start = ListGenerator.get_index_of_id(1305031108.211475,rgb_files)
-
-# X Trans - Left
-
-# first couple of images are skipped due to no depth gt correspondence
-# may be the cause of the bad vo results
-#start = ListGenerator.get_index_of_id(1305031108.876515,rgb_files)
-
-#start = ListGenerator.get_index_of_id(1305031109.275308,rgb_files)
-
-# first moition is bad i.e. motion prior indices wrong estimate
-# better with larger offset 2 or 3
-start = ListGenerator.get_index_of_id(1305031109.375397,rgb_files)
-#start = ListGenerator.get_index_of_id(1305031109.543294,rgb_files)
-
-# Good estiamte w.o motion prior
-#start = ListGenerator.get_index_of_id(1305031109.675263,rgb_files)
-#start = ListGenerator.get_index_of_id(1305031109.743274,rgb_files)
-#start = ListGenerator.get_index_of_id(1305031110.011256,rgb_files)
+start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
     rgb_files,
     start=start,
-    max_count=10,
-    offset=2,
+    max_count=max_count,
+    offset=offset,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict,
     reverse=False)
@@ -151,19 +191,19 @@ for i in range(0, len(ref_image_list)):
                                                  "Solver Manager",
                                                  frame_reference,
                                                  frame_target,
-                                                 max_its=50,
-                                                 eps=0.0008,  #0.001, 0.00001, 0.00005, 0.00000001
-                                                 alpha_step=0.0055,  # 0.002, 0.0055 - motion pri
-                                                 gradient_monitoring_window_start=1,
-                                                 image_range_offset_start=0,
+                                                 max_its=max_its,
+                                                 eps=eps,  #0.001, 0.00001, 0.00005, 0.00000001
+                                                 alpha_step=alpha_step,  # 0.002, 0.0055 - motion pri
+                                                 gradient_monitoring_window_start=gradient_monitoring_window_start,
+                                                 image_range_offset_start=image_range_offset_start,
                                                  max_depth=max_depth,
                                                  twist_prior=twist_prior,
                                                  motion_cov_inv = motion_cov_inv,
                                                  use_ndc=use_ndc,
-                                                 use_robust=True,
-                                                 track_pose_estimates=True,
-                                                 use_motion_prior=True,
-                                                 debug=False)
+                                                 use_robust=use_robust,
+                                                 track_pose_estimates=track_pose_estimates,
+                                                 use_motion_prior=use_motion_prior,
+                                                 debug=debug)
 
     solver_manager.start()
     solver_manager.join()  # wait to complete
@@ -175,10 +215,14 @@ for i in range(0, len(ref_image_list)):
     #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
     se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
     pose_estimate_list.append(se3_estimate_acc)
+    vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
+FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
+
 visualizer.visualize_ground_truth(clear=True,draw=False)
-visualizer.visualize_poses(pose_estimate_list, draw= False)
+if calc_vo:
+    visualizer.visualize_poses(pose_estimate_list, draw= False)
 visualizer.show()
 
 

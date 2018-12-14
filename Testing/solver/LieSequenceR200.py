@@ -6,7 +6,7 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer
 from MotionModels import Ackermann,SteeringCommand
 
-#start_icx = 966816.052441710
+#start_idx = 966816.052441710
 
 # along -z dataset 1
 #start_idx = 966824.775582211
