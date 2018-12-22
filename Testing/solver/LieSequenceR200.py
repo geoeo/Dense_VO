@@ -38,10 +38,13 @@ ext = '.png'
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
+depth_text = dataset_root +'depth_large.txt'
+match_text = dataset_root+'matches_rgb.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 rgb_encoder_text = dataset_root+'encoder_rgb.txt'
 encoder_text = dataset_root+'encoder.txt'
 
+match_dict = associate.read_file_list(match_text)
 groundtruth_dict = associate.read_file_list(groundtruth_text)
 rgb_encoder_dict = associate.read_file_list(rgb_encoder_text)
 encoder_dict = associate.read_file_list(encoder_text)
@@ -113,12 +116,13 @@ vo_twist_list = []
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
-ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
+ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
     rgb_files,
     start=start,
     max_count=max_count,
     offset=offset,
     ground_truth_dict=image_groundtruth_dict,
+    match_dict = match_dict,
     reverse=False)
 
 dt_list = ListGenerator.generate_time_step_list(
@@ -133,8 +137,11 @@ for i in range(0, len(ref_id_list)):
     target_id = target_id_list[i]
 
     SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id)
-    im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,ref_id, ext)
-    im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,target_id, ext)
+    im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
+    im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
+
+    #im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,ref_id, ext)
+    #im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder, ref_id, ext)
 
     # TODO get this right
     # Optitrack/Rviz coversion capture X and Z are flipped
