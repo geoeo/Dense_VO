@@ -172,8 +172,7 @@ im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
 
-#TODO use correct instrinsics
-intrinsic_identity = Intrinsic.Intrinsic(606.585, -612.009, 340.509, 226.075) #
+intrinsic_identity = Intrinsic.Intrinsic(606.585, -612.009, 340.509, 226.075)
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
     intrinsic_identity = Intrinsic.Intrinsic(-1, -612.009/606.585, 340.509/image_width, 226.075/image_height) # for ndc
