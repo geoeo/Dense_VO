@@ -11,14 +11,15 @@ from MotionModels import Ackermann,SteeringCommand
 # along -z dataset 1
 #start_idx = 966824.775582211
 
-# -z, dataset 4
-start_idx = 967058.393566343
+# -z, dataset 4 #140 # 169
+#start_idx = 967058.393566343
 
 # dataset 3
 #start_idx = 966894.954271683
 
-#dataset 5 # good
-#start_idx = 967107.373734589
+#dataset 5 # good 254
+#start_idx = 967096.107000596
+start_idx = 967107.373734589
 
 #dataset 6
 #start_idx = 967171.027841398
@@ -29,7 +30,7 @@ start_idx = 967058.393566343
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_4_full/'
+dataset = 'marc_5_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
@@ -66,7 +67,7 @@ use_ndc = True
 calc_vo = True
 plot_steering = True
 
-max_count = 5 #140 # 169
+max_count = 20
 offset = 1
 
 name = f"{start_idx:.9f}"
@@ -143,8 +144,7 @@ for i in range(0, len(ref_id_list)):
     #im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,ref_id, ext)
     #im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder, ref_id, ext)
 
-    # TODO get this right
-    # Optitrack/Rviz coversion capture X and Z are flipped
+    # Rviz coversion
     rot = SE3.extract_rotation(SE3_ref_target)
     #conv = SE3.rotation_around_x(pi/2)
     #rot_new = np.matmul(conv,rot)
@@ -156,7 +156,7 @@ for i in range(0, len(ref_id_list)):
     y = SE3_ref_target[1,3]
     z = SE3_ref_target[2,3]
     SE3_ref_target[0,3] = -y
-    SE3_ref_target[1,3] = -z
+    SE3_ref_target[1,3] = z
     SE3_ref_target[2,3] = -x
     #SE3_ref_target[0:3,3] *= 10 # mm -> meters ?
 
