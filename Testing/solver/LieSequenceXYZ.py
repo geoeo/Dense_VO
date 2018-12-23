@@ -16,7 +16,7 @@ from Visualization import Visualizer
 #start_idx = 1305031118.143256
 
 # X Trans - Right
-#start_idx = 1305031108.211475
+start_idx = 1305031108.211475
 
 # X Trans - Left
 
@@ -28,7 +28,7 @@ from Visualization import Visualizer
 
 # first moition is bad i.e. motion prior indices wrong estimate
 # better with larger offset 2 or 3
-start_idx = 1305031109.375397
+#start_idx = 1305031109.375397
 #start_idx = 1305031109.543294
 
 # Good estiamte w.o motion prior
@@ -64,7 +64,7 @@ depth_file_total = len(depth_files)
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = True
+calc_vo = False
 plot_steering = True
 
 max_count = 10
@@ -130,7 +130,7 @@ ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_f
     reverse=False)
 
 
-
+# TODO double check coordiante system with large max count
 for i in range(0, len(ref_id_list)):
 
     ref_id = ref_id_list[i]
@@ -205,17 +205,18 @@ for i in range(0, len(ref_image_list)):
                                                  use_motion_prior=use_motion_prior,
                                                  debug=debug)
 
-    solver_manager.start()
-    solver_manager.join()  # wait to complete
+    if calc_vo:
+        solver_manager.start()
+        solver_manager.join()  # wait to complete
 
-    motion_cov_inv = solver_manager.motion_cov_inv_final
-    #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
-    twist_prior = np.multiply(1.0,solver_manager.twist_final)
-    #twist_prior = np.add(twist_prior,solver_manager.twist_final)
-    #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
-    se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
-    pose_estimate_list.append(se3_estimate_acc)
-    vo_twist_list.append(solver_manager.twist_final)
+        motion_cov_inv = solver_manager.motion_cov_inv_final
+        #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)
+        twist_prior = np.multiply(1.0,solver_manager.twist_final)
+        #twist_prior = np.add(twist_prior,solver_manager.twist_final)
+        #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
+        se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
+        pose_estimate_list.append(se3_estimate_acc)
+        vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)

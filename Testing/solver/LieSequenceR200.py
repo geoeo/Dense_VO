@@ -18,8 +18,8 @@ from MotionModels import Ackermann,SteeringCommand
 #start_idx = 966894.954271683
 
 #dataset 5 # good 254
-#start_idx = 967096.107000596
-start_idx = 967107.373734589
+start_idx = 967096.107000596
+#start_idx = 967107.373734589
 
 #dataset 6
 #start_idx = 967171.027841398
@@ -64,10 +64,10 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = True
+calc_vo = False
 plot_steering = True
 
-max_count = 20
+max_count = 220
 offset = 1
 
 name = f"{start_idx:.9f}"
@@ -150,14 +150,15 @@ for i in range(0, len(ref_id_list)):
     #rot_new = np.matmul(conv,rot)
     euler = SE3.rotationMatrixToEulerAngles(rot)
     #rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
-    rot_new = SE3.makeS03(euler[1],-euler[2],euler[0])
+    rot_new = SE3.makeS03(euler[1],euler[2],euler[0])
     SE3_ref_target[0:3,0:3] = rot_new
     x = SE3_ref_target[0,3]
     y = SE3_ref_target[1,3]
     z = SE3_ref_target[2,3]
-    SE3_ref_target[0,3] = -y
+    SE3_ref_target[0,3] = y
     SE3_ref_target[1,3] = z
     SE3_ref_target[2,3] = -x
+
     #SE3_ref_target[0:3,3] *= 10 # mm -> meters ?
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
@@ -247,17 +248,17 @@ for i in range(0, len(ref_image_list)):
         solver_manager.start()
         solver_manager.join()  # wait to complete
 
-    # PAPER
-    if use_paper_cov:
-        motion_cov_inv = solver_manager.motion_cov_inv_final
-    # ACKERMANN
-    elif use_ackermann_cov:
-        motion_cov_inv = ackermann_cov_large_inv
-    else:
-        motion_cov_inv = solver_manager.motion_cov_inv_final
-        motion_cov_inv[2,:] = ackermann_cov_large_inv[2,:]
+        # PAPER
+        if use_paper_cov:
+            motion_cov_inv = solver_manager.motion_cov_inv_final
+        # ACKERMANN
+        elif use_ackermann_cov:
+            motion_cov_inv = ackermann_cov_large_inv
+        else:
+            motion_cov_inv = solver_manager.motion_cov_inv_final
+            motion_cov_inv[2,:] = ackermann_cov_large_inv[2,:]
 
-    twist_prior = np.multiply(1.0,solver_manager.twist_final)
+        twist_prior = np.multiply(1.0,solver_manager.twist_final)
 
 
 
@@ -267,10 +268,10 @@ for i in range(0, len(ref_image_list)):
     #se3_estimate_acc = np.matmul(solver_manager.SE3_est_final,se3_estimate_acc)
 
  #  SE3_est = SE3.twist_to_SE3(ackermann_twist)
-    SE3_est = solver_manager.SE3_est_final
-    se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
-    pose_estimate_list.append(se3_estimate_acc)
-    vo_twist_list.append(solver_manager.twist_final)
+        SE3_est = solver_manager.SE3_est_final
+        se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
+        pose_estimate_list.append(se3_estimate_acc)
+        vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
