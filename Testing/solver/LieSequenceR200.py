@@ -18,8 +18,8 @@ from MotionModels import Ackermann,SteeringCommand
 #start_idx = 966894.954271683
 
 #dataset 5 # good 254
-start_idx = 967096.107000596
-#start_idx = 967107.373734589
+#start_idx = 967096.107000596
+start_idx = 967107.373734589
 
 #dataset 6
 #start_idx = 967171.027841398
@@ -64,23 +64,23 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = False
+calc_vo = True
 plot_steering = True
 
-max_count = 220
-offset = 1
+max_count = 20
+offset = 2
 
 name = f"{start_idx:.9f}"
 
 max_its = 50
 eps = 0.0005  # 0.0008, 0.0001, 0.0057
-alpha_step = 0.0055  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+alpha_step = 0.002  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = True
-use_motion_prior = True
+use_motion_prior = False
 use_ackermann = False
 debug = False
 
@@ -89,6 +89,7 @@ use_ackermann_cov = False
 use_paper_ackermann_cov = False
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
+#additional_info += '_' + 'new_gt_trans'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -247,6 +248,7 @@ for i in range(0, len(ref_image_list)):
     if calc_vo:
         solver_manager.start()
         solver_manager.join()  # wait to complete
+        print('iteration ', i+1, ' complete')
 
         # PAPER
         if use_paper_cov:
@@ -275,7 +277,8 @@ for i in range(0, len(ref_image_list)):
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
-FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
+if calc_vo:
+    FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
 visualizer.visualize_ground_truth(clear=True,draw=False)

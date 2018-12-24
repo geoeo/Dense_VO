@@ -219,7 +219,9 @@ for i in range(0, len(ref_image_list)):
         vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
 SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
-FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
+
+if calc_vo:
+    FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if calc_vo:
