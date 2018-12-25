@@ -8,22 +8,25 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_4_full/'
+dataset = 'marc_5_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '967058.393566343_50_0.0005_0.0085_0_True_True_True_True_5_1'
+data_file = '967096.107000596_50_0.001_0.01_0_True_True_False_False_100_2_False_False_False_all_norm_2'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
+depth_text = dataset_root +'depth_large.txt'
+match_text = dataset_root+'matches_rgb.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 rgb_encoder_text = dataset_root+'encoder_rgb.txt'
 encoder_text = dataset_root+'encoder.txt'
 data_file_path = output_dir_path+data_file+data_ext
 
+match_dict = associate.read_file_list(match_text)
 groundtruth_dict = associate.read_file_list(groundtruth_text)
 rgb_encoder_dict = associate.read_file_list(rgb_encoder_text)
 encoder_dict = associate.read_file_list(encoder_text)
@@ -60,6 +63,7 @@ use_ackermann = bool(parameters[8])
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
 #ground_truth_acc[0:3,0:3] = so3_prior
 se3_estimate_acc = np.identity(4,Utils.matrix_data_type)
+pose_estimate_list = []
 ground_truth_list = []
 ref_image_list = []
 target_image_list = []
@@ -70,12 +74,13 @@ pose_estimate_list_loaded, encoder_list_loaded = FileIO.load_vo_from_file(data_f
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
-ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load(
+ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
     rgb_files,
     start=start,
     max_count=max_count,
     offset=offset,
     ground_truth_dict=image_groundtruth_dict,
+    match_dict=match_dict,
     reverse=False)
 
 dt_list = ListGenerator.generate_time_step_list(
@@ -90,8 +95,8 @@ for i in range(0, len(ref_id_list)):
     target_id = target_id_list[i]
 
     SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id)
-    im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,ref_id, ext)
-    im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder,target_id, ext)
+    im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
+    im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
     # TODO get this right
     # Optitrack/Rviz coversion capture X and Z are flipped
@@ -100,13 +105,13 @@ for i in range(0, len(ref_id_list)):
     #rot_new = np.matmul(conv,rot)
     euler = SE3.rotationMatrixToEulerAngles(rot)
     #rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
-    rot_new = SE3.makeS03(euler[1],-euler[2],euler[0])
+    rot_new = SE3.makeS03(euler[1],euler[2],euler[0])
     SE3_ref_target[0:3,0:3] = rot_new
     x = SE3_ref_target[0,3]
     y = SE3_ref_target[1,3]
     z = SE3_ref_target[2,3]
-    SE3_ref_target[0,3] = -y
-    SE3_ref_target[1,3] = -z
+    SE3_ref_target[0,3] = y
+    SE3_ref_target[1,3] = z
     SE3_ref_target[2,3] = -x
     #SE3_ref_target[0:3,3] *= 10 # mm -> meters ?
 
@@ -122,11 +127,17 @@ for i in range(0, len(ref_id_list)):
 
     encoder_list.append(encoder_values_float)
 
+    SE3_est = pose_estimate_list_loaded[i]
+
+    se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
+    pose_estimate_list.append(se3_estimate_acc)
+
 
 
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:
     visualizer.visualize_steering(encoder_list,clear=False,draw=False)
-visualizer.visualize_poses(pose_estimate_list_loaded, draw= False)
+visualizer.visualize_poses(pose_estimate_list, draw= False)
+print('visualizing..')
 visualizer.show()

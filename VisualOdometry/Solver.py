@@ -187,15 +187,15 @@ def solve_photometric(frame_reference,
     #generator_x = Lie.generator_x_3_4_neg()
     generator_y = Lie.generator_y_3_4()
     #generator_y = Lie.generator_y_3_4_neg()
-    #generator_z = Lie.generator_z_3_4()
-    generator_z = Lie.generator_z_3_4_neg()
+    generator_z = Lie.generator_z_3_4()
+    #generator_z = Lie.generator_z_3_4_neg()
 
     # Depth factor of -1.0 leads to inverted roll and pitch when displaying
     # Why?: Generator defines the direction of increase (My thoughts)
     generator_roll = Lie.generator_roll_3_4()
     #generator_roll = Lie.generator_roll_3_4_neg()
-    #generator_pitch = Lie.generator_pitch_3_4()
-    generator_pitch = Lie.generator_pitch_3_4_neg()
+    generator_pitch = Lie.generator_pitch_3_4()
+    #generator_pitch = Lie.generator_pitch_3_4_neg()
     generator_yaw = Lie.generator_yaw_3_4()
 
     X_back_projection = depth_factor*np.ones((4, N), Utils.matrix_data_type)
@@ -335,10 +335,10 @@ def solve_photometric(frame_reference,
             w_new = np.matmul(pseudo_inv, g)
 
             # initial step with empty motion prior seems to be quite large
-            if use_motion_prior and prior_empty:
-                w_new = np.multiply(Gradient_step_manager.current_alpha/2.0, w_new)
-            else:
-                w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
+            #if use_motion_prior and prior_empty:
+            #    w_new = np.multiply(Gradient_step_manager.current_alpha/2.0, w_new)
+            #else:
+            w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
 
         else:
             not_better = True
@@ -397,6 +397,11 @@ def solve_photometric(frame_reference,
 
         number_of_valid_measurements = np.sum(valid_measurements)
         valid_pixel_ratio = number_of_valid_measurements / N
+
+        #if valid_pixel_ratio < 0.80 and Gradient_step_manager.check_iteration(it):
+        #    print('pixel ratio break')
+        #    print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
+        #    break
 
         if use_robust:
             variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)

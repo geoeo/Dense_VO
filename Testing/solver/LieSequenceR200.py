@@ -18,8 +18,8 @@ from MotionModels import Ackermann,SteeringCommand
 #start_idx = 966894.954271683
 
 #dataset 5 # good 254
-#start_idx = 967096.107000596
-start_idx = 967107.373734589
+start_idx = 967096.107000596
+#start_idx = 967107.373734589
 
 #dataset 6
 #start_idx = 967171.027841398
@@ -67,14 +67,14 @@ use_ndc = True
 calc_vo = True
 plot_steering = True
 
-max_count = 20
+max_count = 100
 offset = 2
 
 name = f"{start_idx:.9f}"
 
-max_its = 50
-eps = 0.0005  # 0.0008, 0.0001, 0.0057
-alpha_step = 0.002  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+max_its = 100
+eps = 0.001  # 0.0005, 0.0001, 0.0057
+alpha_step = 0.01  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -84,12 +84,12 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-use_paper_cov = True
+use_paper_cov = False
 use_ackermann_cov = False
 use_paper_ackermann_cov = False
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-#additional_info += '_' + 'new_gt_trans'
+additional_info += '_' + 'all_norm_2_80_cutoff'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -181,10 +181,10 @@ im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
 
-intrinsic_identity = Intrinsic.Intrinsic(606.585, -612.009, 340.509, 226.075)
+intrinsic_identity = Intrinsic.Intrinsic(606.585, 612.009, 340.509, 226.075)
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -612.009/606.585, 340.509/image_width, 226.075/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 612.009/606.585, 340.509/image_width, 226.075/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
