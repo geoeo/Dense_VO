@@ -36,7 +36,7 @@ def generate_se3_from_groundtruth(groundtruth_list):
 
     return se3
 
-def generate_ground_truth_se3(ground_truth_dict,image_groundtruth_dict, reference_id, target_id):
+def generate_ground_truth_se3(ground_truth_dict,image_groundtruth_dict, reference_id, target_id, post_process_object = None):
     groundtruth_ts_ref = image_groundtruth_dict[reference_id]
     #groundtruth_data_ref = associate.return_dictionary_data(ground_truth_file_path, groundtruth_ts_ref)
     groundtruth_data_ref = ground_truth_dict[groundtruth_ts_ref]
@@ -46,6 +46,11 @@ def generate_ground_truth_se3(ground_truth_dict,image_groundtruth_dict, referenc
     #groundtruth_data_target = associate.return_dictionary_data(ground_truth_file_path, groundtruth_ts_target)
     groundtruth_data_target = ground_truth_dict[groundtruth_ts_target]
     SE3_target = generate_se3_from_groundtruth(groundtruth_data_target)
+
+    if post_process_object:
+        post_process_object.post_process_in_mem(SE3_ref)
+        post_process_object.post_process_in_mem(SE3_target)
+
 
     SE3_ref_target = SE3.pose_pose_composition_inverse(SE3_ref,SE3_target)
 

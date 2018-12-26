@@ -3,7 +3,7 @@ from Numerics import Utils, SE3
 from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate, ListGenerator, FileIO
-from Visualization import Visualizer
+from Visualization import Visualizer, PostProcessGroundTruth
 
 # start
 #start_idx = 1305031453.359684
@@ -95,8 +95,7 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 
 
-#se3_ground_truth_prior = SE3.invert(se3_ground_truth_prior)
-#se3_ground_truth_prior[0:3,3] = 0
+post_process_gt = PostProcessGroundTruth.PostProcessTUM()
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
@@ -117,12 +116,7 @@ for i in range(0, len(ref_id_list)):
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    rot = SE3.extract_rotation(SE3_ref_target)
-    euler = SE3.rotationMatrixToEulerAngles(rot)
-    rot_new = SE3.makeS03(euler[0],-euler[1],euler[2])
-    SE3_ref_target[0:3,0:3] = rot_new
-    SE3_ref_target[1,3] = -SE3_ref_target[1,3]
-    #SE3_ref_target[2,3] = -SE3_ref_target[2,3]
+    post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 

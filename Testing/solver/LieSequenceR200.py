@@ -5,6 +5,7 @@ from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer
 from MotionModels import Ackermann,SteeringCommand
+from Visualization import PostProcessGroundTruth
 
 #start_idx = 966816.052441710
 
@@ -64,7 +65,7 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = True
+calc_vo = False
 plot_steering = True
 
 max_count = 100
@@ -72,9 +73,9 @@ offset = 2
 
 name = f"{start_idx:.9f}"
 
-max_its = 100
-eps = 0.001  # 0.0005, 0.0001, 0.0057
-alpha_step = 0.01  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+max_its = 200
+eps = 0.0005  # 0.0005, 0.0001, 0.0057
+alpha_step = 0.005  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -89,7 +90,7 @@ use_ackermann_cov = False
 use_paper_ackermann_cov = False
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + 'all_norm_2_80_cutoff'
+additional_info += '_' + 'all_norm'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -115,6 +116,7 @@ target_image_list = []
 encoder_list = []
 vo_twist_list = []
 
+post_process_gt = PostProcessGroundTruth.PostProcessTUW()
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
@@ -133,12 +135,13 @@ dt_list = ListGenerator.generate_time_step_list(
     max_count=max_count,
     offset=offset)
 
+
 for i in range(0, len(ref_id_list)):
 
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=post_process_gt)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
@@ -146,19 +149,16 @@ for i in range(0, len(ref_id_list)):
     #im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair(dataset_root,rgb_folder,depth_folder, ref_id, ext)
 
     # Rviz coversion
-    rot = SE3.extract_rotation(SE3_ref_target)
-    #conv = SE3.rotation_around_x(pi/2)
-    #rot_new = np.matmul(conv,rot)
-    euler = SE3.rotationMatrixToEulerAngles(rot)
-    #rot_new = SE3.makeS03(euler[2],-euler[1],euler[0])
-    rot_new = SE3.makeS03(euler[1],euler[2],euler[0])
-    SE3_ref_target[0:3,0:3] = rot_new
-    x = SE3_ref_target[0,3]
-    y = SE3_ref_target[1,3]
-    z = SE3_ref_target[2,3]
-    SE3_ref_target[0,3] = y
-    SE3_ref_target[1,3] = z
-    SE3_ref_target[2,3] = -x
+    #rot = SE3.extract_rotation(SE3_ref_target)
+    #euler = SE3.rotationMatrixToEulerAngles(rot)
+    #rot_new = SE3.makeS03(euler[1],euler[2],euler[0])
+    #SE3_ref_target[0:3,0:3] = rot_new
+    #x = SE3_ref_target[0,3]
+    #y = SE3_ref_target[1,3]
+    #z = SE3_ref_target[2,3]
+    #SE3_ref_target[0,3] = y
+    #SE3_ref_target[1,3] = z
+    #SE3_ref_target[2,3] = -x
 
     #SE3_ref_target[0:3,3] *= 10 # mm -> meters ?
 
@@ -218,7 +218,7 @@ for i in range(0, len(ref_image_list)):
     ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
     ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
     ackermann_twist = ackermann_motion.motion_delta_list[i].get_6dof_twist(normalize=False)
-    ackermann_twist[4] *= -1
+    #ackermann_twist[4] *= -1
 
     # OWN with motion prior = False
     #motion_cov_inv = ackermann_cov_large_inv
