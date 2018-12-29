@@ -13,7 +13,7 @@ output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '966899.524074905_200_1e-05_0.002_0_True_True_False_False_20_1_True_False_False_rgb_depth_large_solver'
+data_file = '966899.524074905_200_0.0001_0.0055_0_True_True_False_False_30_1_True_False_False_all_norm_rgb_depth_large'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset
@@ -119,7 +119,7 @@ for i in range(0, len(ref_id_list)):
     pose_estimate_list.append(se3_estimate_acc)
 
 
-
+SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:

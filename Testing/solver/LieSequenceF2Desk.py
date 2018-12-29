@@ -90,7 +90,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_neg_focal_neg_pitch'
+additional_info += 'solver_2'
 
 
 info = '_' + f"{max_its}" \
@@ -147,7 +147,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(520.9, 521.0, 321.5, 249.7) # freiburg_2
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -521.0/520.9, 321.5/image_width, 249.7/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 521.0/520.9, 321.5/image_width, 249.7/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)

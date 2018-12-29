@@ -8,13 +8,13 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'rgbd_dataset_freiburg1_xyz/'
-#dataset = 'rgbd_dataset_freiburg2_desk/'
+#dataset = 'rgbd_dataset_freiburg1_xyz/'
+dataset = 'rgbd_dataset_freiburg2_desk/'
 output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1305031108.211474895_200_0.0001_0.001_0_True_True_False_False_20_1_solver_focal_neg'
+data_file = '1311868164.899132013_200_0.0001_0.002_0_True_True_False_False_10_1_solver'
 data_ext = '.txt'
 
 plot_vo = True
