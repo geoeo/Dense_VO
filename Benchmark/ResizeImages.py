@@ -5,10 +5,11 @@ import cv2
 import numpy as np
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_4_full/'
-img_source_dir = 'depth/'
-img_target_dir = 'depth_large_norm/'
+#bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
+dataset = 'marc_5_full/'
+img_source_dir = 'depth_rect/'
+img_target_dir = 'depth_large_rect/'
 
 #img_source_dir = 'depth_rect/'
 #img_target_dir = 'depth_rect_large/'
@@ -33,6 +34,6 @@ for source_path,target_path in zipped_files:
     count = np.count_nonzero(image)
     resized_image = cv2.resize(image,(640,480),interpolation=cv2.INTER_CUBIC)
     # Used for visualization only
-    resized_norm_image = cv2.normalize(resized_image, None, alpha=0, beta=65535, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_16UC1)
-    cv2.imwrite(target_path,resized_norm_image,compression_params)
-    #cv2.imwrite(target_path,resized_image,compression_params)
+    #resized_norm_image = cv2.normalize(resized_image, None, alpha=0, beta=65535, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_16UC1)
+    #cv2.imwrite(target_path,resized_norm_image,compression_params)
+    cv2.imwrite(target_path,resized_image,compression_params)

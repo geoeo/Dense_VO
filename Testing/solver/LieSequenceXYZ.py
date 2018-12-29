@@ -13,10 +13,10 @@ from Visualization import Visualizer, PostProcessGroundTruth
 #start_idx = 1305031119.079223
 
 # Y Trans - up
-start_idx = 1305031118.143256
+#start_idx = 1305031118.143256
 
 # X Trans - Right
-#start_idx = 1305031108.211475
+start_idx = 1305031108.211475
 
 #X Trans - Left
 
@@ -64,7 +64,7 @@ depth_file_total = len(depth_files)
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = False
+calc_vo = True
 plot_steering = True
 
 max_count = 20
@@ -72,9 +72,9 @@ offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 50
+max_its = 200
 eps = 0.0001  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 0.004  # 0.002, 0.0055 - motion pri
+alpha_step = 0.005# 0.002, 0.0055 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -84,7 +84,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = None
+additional_info = 'solver_focal_neg'
 
 
 info = '_' + f"{max_its}" \
@@ -158,7 +158,7 @@ se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 intrinsic_identity = Intrinsic.Intrinsic(517.3, 516.5, 318.6, 239.5) # freiburg_1
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(1, 516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(-1, -516.5/517.3, 318.6/image_width, 239.5/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
@@ -205,6 +205,7 @@ for i in range(0, len(ref_image_list)):
     if calc_vo:
         solver_manager.start()
         solver_manager.join()  # wait to complete
+        print('iteration ', i + 1, ' complete')
 
         motion_cov_inv = solver_manager.motion_cov_inv_final
         #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)

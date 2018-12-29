@@ -85,14 +85,14 @@ def plot_steering_commands(encoder_list, rev_ax,steer_ax, style, clear = False, 
         plt.pause(1)
 
 
-def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw = True):
+def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw = True, offset = 1):
     if clear:
         ax.clear()
 
     #rmse_list = SE3.root_mean_square_error_for_entire_list(se3_gt_list,se3_est_list)
-    rmse_list = SE3.root_mean_square_error_for_consecutive_frames(se3_gt_list,se3_est_list)
+    rmse_list = SE3.root_mean_square_error_for_consecutive_frames(se3_gt_list,se3_est_list,offset=offset)
 
-    for i in range(0,len(se3_gt_list), 1):
+    for i in range(0,len(rmse_list), 1):
         rmse = rmse_list[i]
         ax.plot([i],[rmse],style)
 

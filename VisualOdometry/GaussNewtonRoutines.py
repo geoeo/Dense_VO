@@ -20,7 +20,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
                 # TODO write about this
                 depth = depth_direction*(1.0+max_depth)
                 #depth = depth_direction*1
-                valid_measurements[flat_index] = False
+                #valid_measurements[flat_index] = False
                 #continue
             depth_ref = depth
 
@@ -55,8 +55,8 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             # At the moment invalid depth measurements are still being considered
-            #if not valid_measurements[flat_index]:
-            #    continue
+            if not valid_measurements[flat_index]:
+                continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
 
@@ -152,7 +152,7 @@ def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_
 def compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min, eps):
     variance = variance_min
     variance_prev = variance
-    max_it = 20
+    max_it = 50
     for i in range(0,max_it):
         variance = compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements,variance_prev)
         if math.fabs(variance_prev - variance) < eps or variance == 0.0:

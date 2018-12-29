@@ -7,22 +7,24 @@ from Visualization import Visualizer, PostProcessGroundTruth
 from MotionModels import Ackermann,SteeringCommand
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
 dataset = 'marc_3_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '966899.524074905_200_1e-05_0.002_0_True_True_False_False_20_1_True_False_False_rgb_depth_large_solver'
+data_file = '966899.524074905_200_0.0001_0.0055_0_True_True_False_False_30_1_True_False_False_all_norm_rgb_depth_large'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
+
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root +'depth_large.txt'
-match_text = dataset_root+'matches_rgb.txt'
-groundtruth_text = dataset_root+'groundtruth.txt'
+match_text = dataset_root+'matches.txt'
 rgb_encoder_text = dataset_root+'encoder_rgb.txt'
+
+groundtruth_text = dataset_root+'groundtruth.txt'
 encoder_text = dataset_root+'encoder.txt'
 data_file_path = output_dir_path+data_file+data_ext
 

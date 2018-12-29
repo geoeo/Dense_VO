@@ -260,6 +260,16 @@ def solve_photometric(frame_reference,
 
     v = v_id
 
+    #for y in range(0, height, 1):
+    #    for x in range(0, width, 1):
+    #        depth_ref = frame_reference.pixel_depth[y,x]
+    #        depth_target = frame_target.pixel_depth[y,x]
+    #
+    #        if depth_ref == 0:
+    #            frame_reference.pixel_image[y,x] = 0
+    #        if depth_target == 0:
+    #            frame_target.pixel_image[y,x] = 0
+
     for it in range(0, max_its, 1):
         start = time.time()
         # accumulators
@@ -280,7 +290,7 @@ def solve_photometric(frame_reference,
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         # TODO investigate absolute error threshold aswel?
-        if (0 <= v_diff <= eps) and Gradient_step_manager.check_iteration(it) :
+        if ((v_diff <= eps)) and Gradient_step_manager.check_iteration(it) :
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
             break
 
@@ -376,10 +386,11 @@ def solve_photometric(frame_reference,
         w = Lie.ln(R_est, t_est, twist_size)
 
         SE_3_current = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
+        SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
         debug_list  = [i for i, x in enumerate(valid_measurements) if x]
         # Compute residual around delta_twist = 0 i.e SE_3_current
-        Y_est = np.matmul(SE_3_current, X_back_projection)
+        Y_est = np.matmul(SE_3_est, X_back_projection)
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
         #target_index_projections[2,:] -= depth_factor*1
@@ -395,21 +406,22 @@ def solve_photometric(frame_reference,
                                                  v,
                                                  image_range_offset)
 
+
+
         number_of_valid_measurements = np.sum(valid_measurements)
         valid_pixel_ratio = number_of_valid_measurements / N
 
-        #if valid_pixel_ratio < 0.80 and Gradient_step_manager.check_iteration(it):
-        #    print('pixel ratio break')
-        #    print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
-        #    break
+        if valid_pixel_ratio < 0.1 and Gradient_step_manager.check_iteration(it):
+            print('pixel ratio break')
+            print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
+            break
 
         if use_robust:
-            variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.0001)
+            variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.00001)
             if variance > 0.0:
                 GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
 
 
-        Gradient_step_manager.save_previous_mean_error(v_mean)
 
         GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
 
@@ -417,12 +429,15 @@ def solve_photometric(frame_reference,
 
         end = time.time()
 
+        Gradient_step_manager.save_previous_mean_error(v_mean)
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
         if number_of_valid_measurements > 0:
             v_mean = v_sum / number_of_valid_measurements
         else:
             v_mean = 10000
+
+
 
     if use_ackermann:
         #factor = Gradient_step_manager.current_alpha / 10
@@ -434,7 +449,6 @@ def solve_photometric(frame_reference,
 
         #R_est, t_est = Lie.exp(w, twist_size)
 
-    SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
     motion_cov_inv = normal_matrix_ret
 

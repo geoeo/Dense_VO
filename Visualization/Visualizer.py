@@ -145,7 +145,7 @@ class Visualizer():
         Plot3D.plot_translation_component(0, pose_list, self.x_graph, style='-rx', clear=False, draw=draw)
         Plot3D.plot_translation_component(1, pose_list, self.y_graph, style='-rx', clear=False, draw=draw)
         Plot3D.plot_translation_component(2, pose_list, self.z_graph, style='-rx', clear=False, draw=draw)
-        Plot3D.plot_rmse(self.ground_truth_list, pose_list, self.rmse_graph, clear=False, draw=draw)
+        Plot3D.plot_rmse(self.ground_truth_list, pose_list, self.rmse_graph, clear=False, draw=draw, offset=1)
 
     # performs visualization
     def visualize(self,solver_thread_manager):

@@ -176,6 +176,7 @@ for i in range(0, len(ref_image_list)):
 
         solver_manager.start()
         solver_manager.join()  # wait to complete
+        print('iteration ', i + 1, ' complete')
 
         motion_cov_inv = solver_manager.motion_cov_inv_final
         #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)

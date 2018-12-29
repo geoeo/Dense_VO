@@ -7,29 +7,29 @@ from Visualization import Visualizer, PostProcessGroundTruth
 from MotionModels import Ackermann,SteeringCommand
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_3_full/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
+dataset = 'rgbd_dataset_freiburg1_xyz/'
+#dataset = 'rgbd_dataset_freiburg2_desk/'
 output_dir = 'output/'
-rgb_folder = 'color/'
-depth_folder = 'depth_large/'
+rgb_folder = 'rgb/'
+depth_folder = 'depth/'
 ext = '.png'
-data_file = '966899.524074905_200_1e-05_0.002_0_True_True_False_False_20_1_True_False_False_rgb_depth_large_solver'
+data_file = '1305031108.211474895_200_0.0001_0.001_0_True_True_False_False_20_1_solver_focal_neg'
 data_ext = '.txt'
+
+plot_vo = True
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
-depth_text = dataset_root +'depth_large.txt'
-match_text = dataset_root+'matches_rgb.txt'
+depth_text = dataset_root +'depth.txt'
+match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
-rgb_encoder_text = dataset_root+'encoder_rgb.txt'
-encoder_text = dataset_root+'encoder.txt'
+
 data_file_path = output_dir_path+data_file+data_ext
 
 match_dict = associate.read_file_list(match_text)
 groundtruth_dict = associate.read_file_list(groundtruth_text)
-rgb_encoder_dict = associate.read_file_list(rgb_encoder_text)
-encoder_dict = associate.read_file_list(encoder_text)
 
 rgb_folder_full = dataset_root+rgb_folder
 depth_folder_full = dataset_root+depth_folder
@@ -42,7 +42,6 @@ depth_file_total = len(depth_files)
 
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
-plot_steering = True
 
 parameters = data_file.split('_')
 
@@ -71,7 +70,7 @@ encoder_list = []
 vo_twist_list = []
 pose_estimate_list_loaded, encoder_list_loaded = FileIO.load_vo_from_file(data_file_path)
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUW()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM()
 
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
@@ -96,10 +95,11 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=post_process_gt)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
+    post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
     ground_truth_list.append(ground_truth_acc)
@@ -107,11 +107,6 @@ for i in range(0, len(ref_id_list)):
     ref_image_list.append((im_greyscale_reference, im_depth_reference))
     target_image_list.append((im_greyscale_target, im_depth_target))
 
-    encoder_ts = float(rgb_encoder_dict[ref_id][0])
-    encoder_values = encoder_dict[encoder_ts]
-    encoder_values_float = [float(encoder_values[0]),float(encoder_values[1])]
-
-    encoder_list.append(encoder_values_float)
 
     SE3_est = pose_estimate_list_loaded[i]
 
@@ -120,10 +115,9 @@ for i in range(0, len(ref_id_list)):
 
 
 
-visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
+visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=False)
 visualizer.visualize_ground_truth(clear=True,draw=False)
-if plot_steering:
-    visualizer.visualize_steering(encoder_list,clear=False,draw=False)
-visualizer.visualize_poses(pose_estimate_list, draw= False)
+if plot_vo:
+    visualizer.visualize_poses(pose_estimate_list, draw= False)
 print('visualizing..')
 visualizer.show()

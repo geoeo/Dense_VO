@@ -7,53 +7,52 @@ from Visualization import Visualizer
 from MotionModels import Ackermann,SteeringCommand
 from Visualization import PostProcessGroundTruth
 
-#start_idx = 966816.052441710
+#dataset 1
+#start_idx = 298516.028956271
 
-# along -z dataset 1
-#start_idx = 966824.775582211
+#data 2
+#start_idx = 298679.112609803
+#start_idx = 298698.117996584
+#start_idx = 298698.350589178 # rect
+start_idx = 298703.302012647 # rect
 
-# -z, dataset 4 #140 # 169
-#start_idx = 967058.393566343
+# dataset 3 # prior no gt
+#start_idx = 299206.609285928
+#start_idx = 299208.004564834
 
-# dataset 3
-#start_idx = 966894.954271683
-start_idx = 966899.524074905
-
-#dataset 5 # good 254
-#start_idx = 967096.107000596
-#start_idx = 967107.373734589
-#start_idx = 967110.420997406
-
-#dataset 6
-#start_idx = 967171.027841398
-
-#start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
-#start = ListGenerator.get_index_of_id(966834.146275472,rgb_files)
+#dataset4
+#start_idx = 299336.878361490
+#start_idx = 299338.172738053
+#start_idx = 299341.094225178
 
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_3_full/'
+
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
+dataset = 'marc_2_full/'
 output_dir = 'output/'
 
-rgb_folder = 'color/'
-depth_folder = 'depth_large/'
-rgb_match = 'rgb'
-depth_match = 'depth_large'
-match_match = 'matches_rgb'
-encoder_match = 'encoder_rgb'
+rgb_folder = 'color_rect/'
+depth_folder = 'depth_large_rect/'
+rgb_match = 'rgb_rect'
+depth_match = 'depth_large_rect'
+match_match = 'matches_rect'
+encoder_match = 'encoder_rgb_rect'
 
 ext = '.png'
+data_ext = '.txt'
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
-rgb_text = dataset_root + rgb_match +'.txt'
-depth_text = dataset_root + depth_match + '.txt'
-match_text = dataset_root+match_match +'.txt'
-rgb_encoder_text = dataset_root+encoder_match+'.txt'
 
-groundtruth_text = dataset_root+'groundtruth.txt'
-encoder_text = dataset_root+'encoder.txt'
+rgb_text = dataset_root +rgb_match + data_ext
+depth_text = dataset_root +depth_match + data_ext
+match_text = dataset_root+match_match + data_ext
+rgb_encoder_text = dataset_root+encoder_match + data_ext
+
+groundtruth_text = dataset_root+'groundtruth' + data_ext
+encoder_text = dataset_root+'encoder' + data_ext
+
 
 match_dict = associate.read_file_list(match_text)
 groundtruth_dict = associate.read_file_list(groundtruth_text)
@@ -84,7 +83,7 @@ name = f"{start_idx:.9f}"
 
 max_its = 200
 eps = 0.0001  # 0.0005, 0.0001, 0.0057
-alpha_step = 0.002  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+alpha_step = 0.005  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -94,7 +93,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-use_paper_cov = True
+use_paper_cov = False
 use_ackermann_cov = False
 use_paper_ackermann_cov = False
 
@@ -102,7 +101,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver' + '_neg_foc'
+additional_info += '_' + 'all_norm' + '_' + rgb_match + '_' + depth_match
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -158,8 +157,6 @@ for i in range(0, len(ref_id_list)):
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
 
-    #SE3_ref_target[0:3,3] *= 10 # mm -> meters ?
-
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
     ground_truth_list.append(ground_truth_acc)
 
@@ -179,10 +176,10 @@ im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 se3_identity = np.identity(4, dtype=Utils.matrix_data_type)
 # image gradient induces a coordiante system where y is flipped i.e have to flip it here
 
-intrinsic_identity = Intrinsic.Intrinsic(606.585, 612.009, 340.509, 226.075)
+intrinsic_identity = Intrinsic.Intrinsic(619.225, 618.836, 317.603, 244.876)
 if use_ndc:
     #intrinsic_identity = Intrinsic.Intrinsic(1, 1, 1/2, 1/2) # for ndc
-    intrinsic_identity = Intrinsic.Intrinsic(-1, -612.009/606.585, 340.509/image_width, 226.075/image_height) # for ndc
+    intrinsic_identity = Intrinsic.Intrinsic(1, 619.225/618.836, 317.603/image_width, 244.876/image_height) # for ndc
 
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)

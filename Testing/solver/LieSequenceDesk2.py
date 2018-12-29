@@ -48,20 +48,20 @@ use_ndc = True
 calc_vo = True
 plot_steering = True
 
-max_count = 6
+max_count = 40
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 50
-eps = 0.0008
+max_its = 200
+eps = 0.0001
 alpha_step = 0.005
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = True
-use_motion_prior = True
+use_motion_prior = False
 use_ackermann = False
 debug = False
 
@@ -90,7 +90,7 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 post_process_gt = PostProcessGroundTruth.PostProcessTUM()
 
 # start
-start = ListGenerator.get_index_of_id(1305031526.671473,rgb_files)
+start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
@@ -171,6 +171,7 @@ for i in range(0, len(ref_image_list)):
     if calc_vo:
         solver_manager.start()
         solver_manager.join()  # wait to complete
+        print('iteration ', i + 1, ' complete')
 
         motion_cov_inv = solver_manager.motion_cov_inv_final
         #motion_cov_inv = np.add(motion_cov_inv,solver_manager.motion_cov_inv_final)

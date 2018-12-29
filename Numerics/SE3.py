@@ -233,12 +233,15 @@ def root_mean_square_error_for_entire_list(gt_list, pose_list):
 
     return rmse_list
 
-def root_mean_square_error_for_consecutive_frames(gt_list, pose_list):
-    length = len(gt_list)
+def root_mean_square_error_for_consecutive_frames(gt_list, pose_list, offset = 1):
+    gt_list_length = len(gt_list)
+    assert offset <= gt_list_length
 
+    length = int(gt_list_length/offset)
     rmse_list = np.zeros(length)
 
     for i in range(0,length):
-        rmse_list[i] = root_mean_square_error(gt_list[i:i+1],pose_list[i:i+1])
+
+        rmse_list[i] = root_mean_square_error(gt_list[i:i+offset],pose_list[i:i+offset])
 
     return rmse_list
