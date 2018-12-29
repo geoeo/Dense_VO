@@ -13,11 +13,11 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 966824.775582211
 
 # -z, dataset 4 #140 # 169
-#start_idx = 967058.393566343
+start_idx = 967058.393566343
 
 # dataset 3
 #start_idx = 966894.954271683
-start_idx = 966899.524074905
+#start_idx = 966899.524074905
 
 
 #dataset 5 # good 254
@@ -34,7 +34,7 @@ start_idx = 966899.524074905
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_3_full/'
+dataset = 'marc_4_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
@@ -78,14 +78,14 @@ use_ndc = True
 calc_vo = True
 plot_steering = True
 
-max_count = 10
+max_count = 20
 offset = 1
 
 name = f"{start_idx:.9f}"
 
 max_its = 200
-eps = 0.0001  # 0.0005, 0.0001, 0.0057
-alpha_step = 0.005  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+eps = 0.0003  # 0.0005, 0.0001, 0.0057
+alpha_step = 0.0055  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc

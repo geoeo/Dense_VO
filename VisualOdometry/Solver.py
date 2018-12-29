@@ -389,7 +389,7 @@ def solve_photometric(frame_reference,
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
         debug_list  = [i for i, x in enumerate(valid_measurements) if x]
-        # Compute residual around delta_twist = 0 i.e SE_3_current
+
         Y_est = np.matmul(SE_3_est, X_back_projection)
 
         target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)

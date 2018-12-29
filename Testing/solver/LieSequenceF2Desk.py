@@ -75,6 +75,7 @@ plot_steering = True
 max_count = 10
 offset = 1
 
+#TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 200
