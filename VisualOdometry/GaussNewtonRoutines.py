@@ -20,7 +20,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
                 # TODO write about this
                 depth = depth_direction*(1.0+max_depth)
                 #depth = depth_direction*1
-                #valid_measurements[flat_index] = False
+                valid_measurements[flat_index] = False
                 #continue
             depth_ref = depth
 
@@ -55,8 +55,8 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             # At the moment invalid depth measurements are still being considered
-            #if not valid_measurements[flat_index]:
-            #    continue
+            if not valid_measurements[flat_index]:
+                continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
 

@@ -8,13 +8,17 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-#dataset = 'rgbd_dataset_freiburg1_xyz/'
-dataset = 'rgbd_dataset_freiburg2_desk/'
+#dataset = 'rgbd_dataset_freiburg2_desk/'
+dataset = 'rgbd_dataset_freiburg1_xyz/'
+
+#post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_XYZ()
+
 output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868164.899132013_200_0.0001_0.002_0_True_True_False_False_10_1_solver'
+data_file = '1305031108.211474895_200_0.0001_0.001_0_True_True_False_False_40_1_solver_2'
 data_ext = '.txt'
 
 plot_vo = True
@@ -70,7 +74,6 @@ encoder_list = []
 vo_twist_list = []
 pose_estimate_list_loaded, encoder_list_loaded = FileIO.load_vo_from_file(data_file_path)
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM()
 
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)

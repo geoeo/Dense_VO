@@ -13,10 +13,10 @@ from Visualization import Visualizer, PostProcessGroundTruth
 #start_idx = 1305031119.079223
 
 # Y Trans - up
-start_idx = 1305031118.143256
+#start_idx = 1305031118.143256
 
 # X Trans - Right
-#start_idx = 1305031108.211475
+start_idx = 1305031108.211475
 
 #X Trans - Left
 
@@ -67,15 +67,15 @@ use_ndc = True
 calc_vo = True
 plot_steering = True
 
-max_count = 20
+max_count = 40
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 200
-eps = 0.0001  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 0.00015# 0.002, 0.0055 - motion pri
+eps = 0.00005  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 0.0035# 0.002, 0.0055 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -85,7 +85,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = 'solver_2'
+additional_info = 'solver_2_not_using_invalid'
 
 
 info = '_' + f"{max_its}" \
@@ -118,7 +118,7 @@ ref_image_list = []
 target_image_list = []
 vo_twist_list = []
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_XYZ()
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 

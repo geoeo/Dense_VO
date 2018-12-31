@@ -69,7 +69,7 @@ vo_twist_list = []
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = True
+calc_vo = False
 plot_steering = True
 
 max_count = 10

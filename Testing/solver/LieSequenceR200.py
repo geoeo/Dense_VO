@@ -84,8 +84,8 @@ offset = 1
 name = f"{start_idx:.9f}"
 
 max_its = 200
-eps = 0.0003  # 0.0005, 0.0001, 0.0057
-alpha_step = 0.0055  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+eps = 0.0001  # 0.0005, 0.0001, 0.0057
+alpha_step = 0.002  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -103,7 +103,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver_2'
+additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver_2_not_using_invalid'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
