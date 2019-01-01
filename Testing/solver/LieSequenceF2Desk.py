@@ -16,10 +16,10 @@ from math import pi
 # Y Down - motion prior
 #start_idx = 1311868219.010718
 #start_idx = 1311868219.210391
-start_idx = 1311868219.342858 # good
+#start_idx = 1311868219.342858 # good
 
 #X Right
-#start_idx = 1311868164.899132
+start_idx = 1311868164.899132
 #start_idx = 1311868166.631287
 # rotation fools into thinking its x translation
 #start_idx = 1311868169.199452
@@ -69,18 +69,18 @@ vo_twist_list = []
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = False
+calc_vo = True
 plot_steering = True
 
-max_count = 10
+max_count = 30
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 200
-eps = 0.0001  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 0.002  # 0.001, 0.008 - motion pri
+eps = 0.00001  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 0.0002  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -91,7 +91,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2'
+additional_info += 'solver_2_not_using_invaid_y_neg'
 
 
 info = '_' + f"{max_its}" \

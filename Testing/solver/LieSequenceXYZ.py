@@ -10,13 +10,13 @@ from Visualization import Visualizer, PostProcessGroundTruth
 #start_idx = 1305031102.175304
 
 # Y Trans - down / better with motion prior
-#start_idx = 1305031119.079223
+start_idx = 1305031119.079223
 
 # Y Trans - up
 #start_idx = 1305031118.143256
 
 # X Trans - Right
-start_idx = 1305031108.211475
+#start_idx = 1305031108.211475
 
 #X Trans - Left
 
@@ -74,8 +74,8 @@ offset = 1
 name = f"{start_idx:.9f}"
 
 max_its = 200
-eps = 0.00005  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 0.0035# 0.002, 0.0055 - motion pri
+eps = 0.00001  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 0.003# 0.002, 0.0055 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -85,7 +85,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = 'solver_2_not_using_invalid'
+additional_info = 'solver_2_not_using_invalid_y_neg'
 
 
 info = '_' + f"{max_its}" \

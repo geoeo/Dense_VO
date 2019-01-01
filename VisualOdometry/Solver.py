@@ -185,8 +185,8 @@ def solve_photometric(frame_reference,
 
     generator_x = Lie.generator_x_3_4()
     #generator_x = Lie.generator_x_3_4_neg()
-    generator_y = Lie.generator_y_3_4()
-    #generator_y = Lie.generator_y_3_4_neg()
+    #generator_y = Lie.generator_y_3_4()
+    generator_y = Lie.generator_y_3_4_neg()
     generator_z = Lie.generator_z_3_4()
     #generator_z = Lie.generator_z_3_4_neg()
 
@@ -411,7 +411,7 @@ def solve_photometric(frame_reference,
         number_of_valid_measurements = np.sum(valid_measurements)
         valid_pixel_ratio = number_of_valid_measurements / N
 
-        if valid_pixel_ratio < 0.1 and Gradient_step_manager.check_iteration(it):
+        if valid_pixel_ratio < 0.05 and Gradient_step_manager.check_iteration(it):
             print('pixel ratio break')
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
             break
