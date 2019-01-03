@@ -74,18 +74,18 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 depth_factor = 5000.0
 #depth_factor = 1.0
-use_ndc = True
+use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 20
+max_count = 100
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 200
-eps = 0.0001  # 0.0005, 0.0001, 0.0057
-alpha_step = 0.0055  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+max_its = 500
+eps = 0.000003  # 0.0005, 0.0001, 0.0057
+alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -103,7 +103,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver_2_not_using_invalid_y_neg'
+additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver_2_not_using_invalid_save_best_y_neg'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -130,6 +130,8 @@ encoder_list = []
 vo_twist_list = []
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUW()
+
+print(name+'_'+info+'\n')
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
@@ -198,6 +200,8 @@ motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
 #for i in range(0,6):
 #    motion_cov_inv[i,i] = Utils.covariance_zero
 twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
+
+print('starting...\n')
 
 #TODO plot ackerman pose against prediction to test dt
 for i in range(0, len(ref_image_list)):

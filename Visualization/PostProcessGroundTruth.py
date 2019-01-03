@@ -24,7 +24,7 @@ class PostProcessTUM:
         se3[0:3, 0:3] = rot_new
         se3[0, 3] = -se3[0, 3]
         se3[1, 3] = -se3[1, 3]
-        #se3[2, 3] = -se3[2, 3]
+        se3[2, 3] = -se3[2, 3]
 
 class PostProcessTUM_XYZ:
 

@@ -2,16 +2,17 @@ from Benchmark import associate
 import os
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-xyz_dataset = 'marc_2_full/'
+#bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
+dataset = 'rgbd_dataset_freiburg2_desk/'
 
 
-rgb_text = bench_path+xyz_dataset+'rgb_rect.txt'
-depth_text = bench_path+xyz_dataset+'depth_large_rect.txt'
+rgb_text = bench_path + dataset + 'rgb.txt'
+depth_text = bench_path + dataset + 'depth.txt'
 with_duplicates_for_steering = True
 
 matches = associate.match(rgb_text,depth_text,with_duplicates=with_duplicates_for_steering)
-match_file = bench_path+xyz_dataset+'matches_rect.txt'
+match_file = bench_path + dataset + 'matches_with_duplicate.txt'
 
 try:
     os.remove(match_file)

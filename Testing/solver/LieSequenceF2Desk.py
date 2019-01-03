@@ -7,7 +7,7 @@ from Visualization import Visualizer, PostProcessGroundTruth
 from math import pi
 
 # start
-#start_idx = 1311868164.363181
+start_idx = 1311868164.363181 # 2965
 
 # Y Up
 #
@@ -19,7 +19,7 @@ from math import pi
 #start_idx = 1311868219.342858 # good
 
 #X Right
-start_idx = 1311868164.899132
+#start_idx = 1311868164.899132
 #start_idx = 1311868166.631287
 # rotation fools into thinking its x translation
 #start_idx = 1311868169.199452
@@ -40,7 +40,7 @@ dataset_root = bench_path+xyz_dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
-match_text = dataset_root+'matches.txt'
+match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 groundtruth_dict = associate.read_file_list(groundtruth_text)
@@ -54,8 +54,6 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder, delimiter='.'
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-euler = SE3.Quaternion_toEulerianRadians(0.6453, -0.5498, 0.3363, -0.4101)
-
 
 
 ground_truth_acc = np.identity(4,Utils.matrix_data_type)
@@ -68,19 +66,19 @@ vo_twist_list = []
 
 depth_factor = 5000.0
 #depth_factor = 1.0
-use_ndc = True
+use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 30
+max_count = 100
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
-max_its = 200
-eps = 0.00001  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 0.0002  # 0.001, 0.008 - motion pri
+max_its = 500
+eps = 0.000003  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 1.0  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -91,7 +89,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_not_using_invaid_y_neg'
+additional_info += 'solver_2_not_using_invaid_save_best_y_neg_with_duplicates'
 
 
 info = '_' + f"{max_its}" \
@@ -113,6 +111,8 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM()
 
+print(name+'_'+info+'\n')
+
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
 ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_files_to_load_match(
@@ -122,6 +122,10 @@ ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_f
     offset=offset,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
+
+if len(ref_files_failed_to_load) > 0:
+    print(ref_files_failed_to_load)
+    print('\n')
 
 for i in range(0, len(ref_id_list)):
 
@@ -159,6 +163,8 @@ visualizer = Visualizer.Visualizer(ground_truth_list)
 motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
 #motion_cov_inv = np.zeros((6,6),dtype=Utils.matrix_data_type)
 twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
+
+print('starting...\n')
 
 for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
