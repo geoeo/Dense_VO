@@ -7,7 +7,11 @@ from Visualization import Visualizer, PostProcessGroundTruth
 from math import pi
 
 # start
-start_idx = 1311868164.363181 # 2965
+#start_idx = 1311868164.363181 # 2965
+
+start_idx = 1311868164.499130 # 5th
+
+#start_idx = 1311868165.999133
 
 # Y Up
 #
@@ -70,7 +74,7 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 100
+max_count = 300
 offset = 1
 
 #TODO investigate index after rounding
@@ -89,7 +93,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_not_using_invaid_save_best_y_neg_z_neg_with_duplicates'
+additional_info += 'solver_2_not_using_invaid_y_neg_z_neg_with_duplicates'
 
 
 info = '_' + f"{max_its}" \

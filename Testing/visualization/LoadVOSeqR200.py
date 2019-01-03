@@ -8,12 +8,12 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_3_full/'
+dataset = 'marc_4_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '966899.524074905_200_3e-06_2.0_0_False_True_False_False_50_1_True_False_False_rgb_depth_large_solver_2_not_using_invalid_y_neg_z_neg'
+data_file = '967058.393566343_200_3e-06_1.0_0_False_True_False_False_20_1_True_False_False_rgb_depth_large_solver_2_not_using_invalid_y_neg'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset

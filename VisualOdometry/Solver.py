@@ -139,7 +139,7 @@ def solve_photometric(frame_reference,
     I_4 = np.identity(4,dtype=matrix_data_type)
     I_6 = np.identity(6,dtype=matrix_data_type)
     zero_cov = np.zeros((6,6),dtype=matrix_data_type)
-    SE3_best = np.identity(4,dtype=matrix_data_type)
+    #SE3_best = np.identity(4,dtype=matrix_data_type)
     (height,width) = frame_target.pixel_image.shape
     N = height*width
     position_vector_size = 3
@@ -283,7 +283,6 @@ def solve_photometric(frame_reference,
         # TODO investigate absolute error threshold aswel?
         if ((v_diff <= eps)) and Gradient_step_manager.check_iteration(it) :
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
-            SE_3_est = SE3_best
             break
 
         if v_mean <= Gradient_step_manager.last_error_mean_abs:
@@ -406,7 +405,7 @@ def solve_photometric(frame_reference,
         if number_of_valid_measurements <= 0 and Gradient_step_manager.check_iteration(it):
             print('pixel ratio break')
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
-            SE_3_est = SE3_best
+            #SE_3_est = SE3_best
             break
 
         if use_robust:
@@ -422,8 +421,8 @@ def solve_photometric(frame_reference,
 
         end = time.time()
 
-        if v_mean < Gradient_step_manager.last_error_mean_abs:
-            SE3_best = np.copy(SE_3_est)
+        #if v_mean < Gradient_step_manager.last_error_mean_abs:
+        #    SE3_best = np.copy(SE_3_est)
         Gradient_step_manager.save_previous_mean_error(v_mean)
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 

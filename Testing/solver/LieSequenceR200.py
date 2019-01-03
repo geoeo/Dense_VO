@@ -78,14 +78,14 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 20
+max_count = 40
 offset = 1
 
 name = f"{start_idx:.9f}"
 
 max_its = 500
 eps = 0.000003  # 0.0005, 0.0001, 0.0057
-alpha_step = 1.5  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
