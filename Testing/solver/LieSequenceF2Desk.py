@@ -89,7 +89,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_not_using_invaid_save_best_y_neg_with_duplicates'
+additional_info += 'solver_2_not_using_invaid_save_best_y_neg_z_neg_with_duplicates'
 
 
 info = '_' + f"{max_its}" \

@@ -18,7 +18,7 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868164.363181114_500_3e-06_1.0_0_False_True_False_False_100_1_solver_2_not_using_invaid_y_neg_neg_roll_with_duplicates'
+data_file = '1311868164.363181114_500_3e-06_1.0_0_False_True_False_False_100_1_solver_2_not_using_invaid_y_neg_with_duplicates'
 data_ext = '.txt'
 
 plot_vo = True

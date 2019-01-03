@@ -188,8 +188,8 @@ def solve_photometric(frame_reference,
     #generator_x = Lie.generator_x_3_4_neg()
     #generator_y = Lie.generator_y_3_4()
     generator_y = Lie.generator_y_3_4_neg()
-    generator_z = Lie.generator_z_3_4()
-    #generator_z = Lie.generator_z_3_4_neg()
+    #generator_z = Lie.generator_z_3_4()
+    generator_z = Lie.generator_z_3_4_neg()
 
     # Depth factor of -1.0 leads to inverted roll and pitch when displaying
     # Why?: Generator defines the direction of increase (My thoughts)
