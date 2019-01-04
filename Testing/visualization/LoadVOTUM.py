@@ -9,7 +9,7 @@ from MotionModels import Ackermann,SteeringCommand
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
 dataset = 'rgbd_dataset_freiburg2_desk/'
-dataset = 'rgbd_dataset_freiburg1_desk/'
+#dataset = 'rgbd_dataset_freiburg1_desk/'
 #dataset = 'rgbd_dataset_freiburg1_xyz/'
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM()
@@ -19,7 +19,7 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1305031453.191725969_500_3e-07_1.0_0_False_True_False_True_40_1_not_using_invalid_z_neg_y_neg'
+data_file = '1311868164.363181114_500_5e-07_1.0_0_False_True_False_False_300_1_solver_2_other_res_2_using_invaid_z_neg_y_neg_with_duplicates_test'
 data_ext = '.txt'
 
 plot_vo = True
@@ -28,8 +28,8 @@ dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root +'depth.txt'
-match_text = dataset_root+'matches.txt'
-#match_text = dataset_root+'matches_with_duplicates.txt'
+#match_text = dataset_root+'matches.txt'
+match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 data_file_path = output_dir_path+data_file+data_ext
@@ -100,11 +100,11 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=None)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=post_process_gt)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
-    post_process_gt.post_process_in_mem(SE3_ref_target)
+    #post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
     ground_truth_list.append(ground_truth_acc)

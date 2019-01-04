@@ -23,8 +23,8 @@ class PostProcessTUM:
         rot_new = SE3.makeS03(euler[0], -euler[1], euler[2])
         se3[0:3, 0:3] = rot_new
         #se3[0, 3] = -se3[0, 3]
-        se3[1, 3] = -se3[1, 3]
-        #se3[2, 3] = -se3[2, 3]
+        #se3[1, 3] = -se3[1, 3]
+        se3[2, 3] = -se3[2, 3]
 
 class PostProcessTUM_XYZ:
 

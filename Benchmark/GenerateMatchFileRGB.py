@@ -4,7 +4,7 @@ import os
 
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'rgbd_dataset_freiburg1_desk/'
+dataset = 'rgbd_dataset_freiburg1_xyz/'
 
 
 rgb_text = bench_path + dataset + 'rgb.txt'

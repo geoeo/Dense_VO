@@ -6,7 +6,9 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
 
 # start
-start_idx = 1305031453.191726
+#start_idx = 1305031453.191726
+
+start_idx = 1305031453.391690016
 
 #start_idx = 1305031456.727693
 #start_idx = 1305031913.965134
@@ -54,13 +56,13 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 10
+max_count = 300
 offset = 1
 
 name = f"{start_idx:.9f}"
 
 max_its = 500
-eps = 0.0000003
+eps = 0.000003
 alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
