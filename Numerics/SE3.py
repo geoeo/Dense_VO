@@ -192,9 +192,19 @@ def post_process_pose_list_for_display_in_mem(pose_list):
         rot = extract_rotation(se3)
         euler = rotationMatrixToEulerAngles(rot)
         #rot_new = makeS03(-euler[0], -euler[1], euler[2])
-        rot_new = makeS03(euler[0], euler[1], euler[2])
+        rot_new = makeS03(-euler[0], -euler[1], euler[2])
         se3[0:3, 0:3] = rot_new
         #se3[0,3] *= -1
+
+def post_process_pose_for_display_in_mem(se3):
+
+    # invert roll and pitch
+    rot = extract_rotation(se3)
+    euler = rotationMatrixToEulerAngles(rot)
+    #rot_new = makeS03(-euler[0], -euler[1], euler[2])
+    rot_new = makeS03(-euler[0], -euler[1], euler[2])
+    se3[0:3, 0:3] = rot_new
+    #se3[0,3] *= -1
 
 
 def relative_pose_error(rel_gt, rel_est):

@@ -9,7 +9,7 @@ from math import pi
 # start
 #start_idx = 1311868164.363181 # 2965
 
-start_idx = 1311868164.499130 # 5th
+start_idx = 1311868164.531025 # 6th
 
 #start_idx = 1311868165.999133
 
@@ -74,15 +74,15 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 300
+max_count = 10
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 500
-eps = 0.000003  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 1.0  # 0.001, 0.008 - motion pri
+eps = 0.0000003  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 0.8  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -93,7 +93,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_not_using_invaid_y_neg_z_neg_with_duplicates'
+additional_info += 'solver_2_other_res_2_using_invaid_y_neg_z_neg_with_duplicates_test'
 
 
 info = '_' + f"{max_its}" \
@@ -111,7 +111,7 @@ if additional_info:
     info += '_' + additional_info
 
 match_dict = associate.read_file_list(match_text)
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text, max_difference=0.2,with_duplicates=True))
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM()
 

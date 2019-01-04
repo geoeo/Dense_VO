@@ -9,6 +9,7 @@ from MotionModels import Ackermann,SteeringCommand
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
 dataset = 'rgbd_dataset_freiburg2_desk/'
+dataset = 'rgbd_dataset_freiburg1_desk/'
 #dataset = 'rgbd_dataset_freiburg1_xyz/'
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM()
@@ -18,7 +19,7 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868164.363181114_500_3e-06_1.0_0_False_True_False_False_100_1_solver_2_not_using_invaid_save_best_y_neg_z_neg_with_duplicates'
+data_file = '1305031453.191725969_500_3e-07_1.0_0_False_True_False_True_40_1_not_using_invalid_z_neg_y_neg'
 data_ext = '.txt'
 
 plot_vo = True
@@ -28,6 +29,7 @@ output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root +'depth.txt'
 match_text = dataset_root+'matches.txt'
+#match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 data_file_path = output_dir_path+data_file+data_ext
@@ -44,7 +46,7 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,max_difference=0.2,with_duplicates=True))
 
 
 parameters = data_file.split('_')
@@ -113,8 +115,12 @@ for i in range(0, len(ref_id_list)):
 
     SE3_est = pose_estimate_list_loaded[i]
 
+
+
     se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
     pose_estimate_list.append(se3_estimate_acc)
+
+
 
 
 

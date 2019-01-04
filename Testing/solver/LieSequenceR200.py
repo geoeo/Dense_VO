@@ -13,11 +13,11 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 966824.775582211
 
 # -z, dataset 4 #140 # 169
-start_idx = 967058.393566343
+#start_idx = 967058.393566343
 
 # dataset 3
 #start_idx = 966894.954271683
-#start_idx = 966899.524074905
+start_idx = 966899.524074905
 
 
 #dataset 5 # good 254
@@ -34,7 +34,7 @@ start_idx = 967058.393566343
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_4_full/'
+dataset = 'marc_3_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
@@ -78,13 +78,13 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 40
+max_count = 10
 offset = 1
 
 name = f"{start_idx:.9f}"
 
 max_its = 500
-eps = 0.000003  # 0.0005, 0.0001, 0.0057
+eps = 0.000000000003  # 0.0005, 0.0001, 0.0057
 alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
@@ -103,7 +103,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver_2_not_using_invalid_save_best_y_neg_z_neg'
+additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver_2_other_res_2_using_invalid_y_neg_z_neg'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \

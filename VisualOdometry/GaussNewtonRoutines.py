@@ -55,8 +55,8 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             #if true then invalid depth measurements are being considered
-            if not valid_measurements[flat_index]:
-                continue
+            #if not valid_measurements[flat_index]:
+            #    continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
 
@@ -69,8 +69,9 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
-            error = target_image[y_target, x_target] - reference_image[y, x]
-            #error = reference_image[y_target, x_target] - target_image[y, x]
+            #error = target_image[y_target, x_target] - reference_image[y, x]
+            #error = reference_image[y_target, x_target] - target_image[y, x] #1
+            error = reference_image[y, x] - target_image[y_target, x_target] #2
             v[flat_index][0] = error
 
     end = time.time()

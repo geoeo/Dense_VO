@@ -6,13 +6,13 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
 
 # start
-#start_idx = 1305031453.359684
+start_idx = 1305031453.191726
 
 #start_idx = 1305031456.727693
 #start_idx = 1305031913.965134
 #start_idx = 1305031460.727675
 # TODO investigate this
-start_idx = 1305031468.095867
+#start_idx = 1305031468.095867
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
@@ -25,7 +25,8 @@ dataset_root = bench_path+xyz_dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
-match_text = dataset_root+'matches.txt'
+#match_text = dataset_root+'matches.txt'
+match_text = dataset_root+'matches_with_duplicate.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 groundtruth_dict = associate.read_file_list(groundtruth_text)
@@ -49,28 +50,28 @@ vo_twist_list = []
 
 depth_factor = 5000.0
 #depth_factor = 1.0
-use_ndc = True
+use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 5
+max_count = 10
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 6
-eps = 0.0008
-alpha_step = 0.0025  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+max_its = 500
+eps = 0.0000003
+alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = True
-use_motion_prior = True
+use_motion_prior = False
 use_ackermann = True
 debug = False
 
-additional_info = None
+additional_info = 'other_res_2_using_invalid_z_neg_y_neg'
 
 
 info = '_' + f"{max_its}" \
@@ -90,9 +91,9 @@ if additional_info:
 match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
-euler = SE3.Quaternion_toEulerianRadians(0.7907, 0.4393, -0.1770, -0.3879)
-
 post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+
+print(name+'_'+info+'\n')
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
@@ -103,6 +104,10 @@ ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_f
     offset=offset,
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict)
+
+if len(ref_files_failed_to_load) > 0:
+    print(ref_files_failed_to_load)
+    print('\n')
 
 for i in range(0, len(ref_id_list)):
 
@@ -140,6 +145,8 @@ visualizer = Visualizer.Visualizer(ground_truth_list)
 motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
 #motion_cov_inv = np.zeros((6,6),dtype=Utils.matrix_data_type)
 twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
+
+print('starting...\n')
 
 for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]

@@ -44,11 +44,11 @@ vo_twist_list = []
 
 depth_factor = 5000.0
 #depth_factor = 1.0
-use_ndc = True
+use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 40
+max_count = 10
 offset = 1
 
 name = f"{start_idx:.9f}"

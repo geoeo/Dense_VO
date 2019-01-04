@@ -10,13 +10,13 @@ from Visualization import Visualizer, PostProcessGroundTruth
 #start_idx = 1305031102.175304
 
 # Y Trans - down / better with motion prior
-start_idx = 1305031119.079223
+#start_idx = 1305031119.079223
 
 # Y Trans - up
 #start_idx = 1305031118.143256
 
 # X Trans - Right
-#start_idx = 1305031108.211475
+start_idx = 1305031108.211475
 
 #X Trans - Left
 
@@ -63,11 +63,11 @@ depth_file_total = len(depth_files)
 
 depth_factor = 5000.0
 #depth_factor = 1.0
-use_ndc = True
+use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 40
+max_count = 5
 offset = 1
 
 #TODO investigate index after rounding
@@ -75,7 +75,7 @@ name = f"{start_idx:.9f}"
 
 max_its = 200
 eps = 0.00001  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 0.003# 0.002, 0.0055 - motion pri
+alpha_step = 1.0# 0.002, 0.0055 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -85,7 +85,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = 'solver_2_not_using_invalid_y_neg'
+additional_info = 'solver_2_other_res_2_using_invalid_y_neg_z_neg'
 
 
 info = '_' + f"{max_its}" \
@@ -101,10 +101,6 @@ info = '_' + f"{max_its}" \
 
 if additional_info:
     info += '_' + additional_info
-
-euler_prior = SE3.Quaternion_toEulerianRadians(0.6132, 0.5962, -0.3311, -0.3986)
-so3_prior = SE3.makeS03(0,0,-euler_prior[0])
-#so3_prior = SE3.makeS03(0,0,pi)
 
 match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
