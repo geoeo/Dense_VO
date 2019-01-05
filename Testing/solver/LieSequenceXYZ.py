@@ -13,10 +13,10 @@ from Visualization import Visualizer, PostProcessGroundTruth
 #start_idx = 1305031119.079223
 
 # Y Trans - up
-start_idx = 1305031118.143256
+#start_idx = 1305031118.143256
 
 # X Trans - Right
-#start_idx = 1305031108.211475
+start_idx = 1305031108.211475
 
 #X Trans - Left
 
