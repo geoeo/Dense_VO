@@ -67,7 +67,7 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 5
+max_count = 15
 offset = 1
 
 #TODO investigate index after rounding
@@ -135,11 +135,11 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_gt)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    post_process_gt.post_process_in_mem(SE3_ref_target)
+    #post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 

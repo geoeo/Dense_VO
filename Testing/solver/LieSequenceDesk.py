@@ -62,7 +62,7 @@ offset = 1
 name = f"{start_idx:.9f}"
 
 max_its = 500
-eps = 0.000003
+eps = 0.00003
 alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
@@ -91,7 +91,7 @@ if additional_info:
     info += '_' + additional_info
 
 match_dict = associate.read_file_list(match_text)
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text, max_difference=0.2,with_duplicates=True))
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM()
 
@@ -116,11 +116,11 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_gt)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    post_process_gt.post_process_in_mem(SE3_ref_target)
+    #post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 

@@ -8,18 +8,18 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'rgbd_dataset_freiburg2_desk/'
+#dataset = 'rgbd_dataset_freiburg2_desk/'
 #dataset = 'rgbd_dataset_freiburg1_desk/'
-#dataset = 'rgbd_dataset_freiburg1_xyz/'
+dataset = 'rgbd_dataset_freiburg1_xyz/'
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUM_XYZ()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_XYZ()
 
 output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868164.363181114_500_5e-07_1.0_0_False_True_False_False_300_1_solver_2_other_res_2_using_invaid_z_neg_y_neg_with_duplicates_test'
+data_file = '1305031118.143255949_200_1e-05_1.0_0_False_True_False_False_15_1_solver_2_other_res_2_using_invalid_y_neg_z_neg'
 data_ext = '.txt'
 
 plot_vo = True
@@ -28,8 +28,8 @@ dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root +'depth.txt'
-#match_text = dataset_root+'matches.txt'
-match_text = dataset_root+'matches_with_duplicates.txt'
+match_text = dataset_root+'matches.txt'
+#match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 data_file_path = output_dir_path+data_file+data_ext

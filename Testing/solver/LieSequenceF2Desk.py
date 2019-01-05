@@ -70,10 +70,10 @@ vo_twist_list = []
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = False
-calc_vo = False
+calc_vo = True
 plot_steering = True
 
-max_count = 10
+max_count = 300
 offset = 1
 
 #TODO investigate index after rounding
