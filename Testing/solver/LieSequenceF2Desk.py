@@ -7,7 +7,7 @@ from Visualization import Visualizer, PostProcessGroundTruth
 from math import pi
 
 # start
-#start_idx = 1311868164.363181 # 2965
+start_idx = 1311868164.363181 # 2965
 
 #start_idx = 1311868164.531025 # 6th
 
@@ -19,7 +19,7 @@ from math import pi
 # Y Down - motion prior
 #start_idx = 1311868219.010718
 #start_idx = 1311868219.210391
-start_idx = 1311868219.342858 # good
+#start_idx = 1311868219.342858 # good
 
 #X Right
 #start_idx = 1311868164.899132
@@ -73,14 +73,14 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 300
+max_count = 50
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 500
-eps = 0.00005  #0.001, 0.00001, 0.00005, 0.00000001
+eps = 0.0000003  #0.001, 0.00001, 0.00005, 0.00000001
 alpha_step = 1.0  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
@@ -92,7 +92,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_other_res_2_using_invaid_z_neg_y_neg_with_duplicates_test'
+additional_info += 'solver_2_other_res_2_using_invaid_z_neg_y_neg_with_duplicates'
 
 
 info = '_' + f"{max_its}" \
@@ -112,7 +112,7 @@ if additional_info:
 match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text, max_difference=0.2,with_duplicates=True))
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2()
 
 print(name+'_'+info+'\n')
 

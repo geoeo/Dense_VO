@@ -95,7 +95,7 @@ image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2()
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 

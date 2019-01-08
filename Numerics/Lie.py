@@ -107,6 +107,11 @@ def generator_yaw_3_4():
                      [1,0,0,0],
                      [0,0,0,0]], dtype=matrix_data_type)
 
+def generator_yaw_3_4_neg():
+    return np.array([[0,1,0,0],
+                     [-1,0,0,0],
+                     [0,0,0,0]], dtype=matrix_data_type)
+
 def adjoint_se3(R,t):
     t_x = Utils.skew_symmetric(t[0], t[1], t[2])
     top = np.append(R,np.matmul(t_x,R),axis=1)

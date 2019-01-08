@@ -64,7 +64,7 @@ depth_file_total = len(depth_files)
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = False
-calc_vo = True
+calc_vo = False
 plot_steering = True
 
 max_count = 15
@@ -114,7 +114,7 @@ ref_image_list = []
 target_image_list = []
 vo_twist_list = []
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM_XYZ()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_F1()
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 

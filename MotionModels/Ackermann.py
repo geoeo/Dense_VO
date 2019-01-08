@@ -133,6 +133,10 @@ class Ackermann:
         self.set_ackermann_dead_reckoning_for_list(steering_input_list)
 
         steering_list_len = len(steering_input_list)
+        dt_list_len = len(dt_list)
+        dt_steering_list_diff = dt_list_len - steering_list_len
+        if dt_steering_list_diff > 0:
+            dt_list = dt_list[:-dt_steering_list_diff]
         assert steering_list_len == len(dt_list)
         assert steering_list_len == len(self.motion_delta_list)
 

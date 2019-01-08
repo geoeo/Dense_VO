@@ -28,7 +28,7 @@ output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
 #match_text = dataset_root+'matches.txt'
-match_text = dataset_root+'matches_with_duplicate.txt'
+match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 groundtruth_dict = associate.read_file_list(groundtruth_text)
@@ -62,8 +62,8 @@ offset = 1
 name = f"{start_idx:.9f}"
 
 max_its = 500
-eps = 0.00003
-alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+eps = 0.0007
+alpha_step = 2.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -93,7 +93,7 @@ if additional_info:
 match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text, max_difference=0.2,with_duplicates=True))
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_F1()
 
 print(name+'_'+info+'\n')
 

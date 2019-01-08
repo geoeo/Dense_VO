@@ -3,16 +3,17 @@ import os
 
 
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'rgbd_dataset_freiburg1_xyz/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
+#bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
+dataset = 'marc_3_full/'
 
 
 rgb_text = bench_path + dataset + 'rgb.txt'
-depth_text = bench_path + dataset + 'depth.txt'
+depth_text = bench_path + dataset + 'encoder.txt'
 with_duplicates_for_steering = True
 
 matches = associate.match(rgb_text,depth_text,with_duplicates=with_duplicates_for_steering)
-match_file = bench_path + dataset + 'matches_with_duplicate.txt'
+match_file = bench_path + dataset + 'encoder_rgb_duplicates.txt'
 
 try:
     os.remove(match_file)

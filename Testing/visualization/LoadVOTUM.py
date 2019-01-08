@@ -10,16 +10,17 @@ from MotionModels import Ackermann,SteeringCommand
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
 #dataset = 'rgbd_dataset_freiburg2_desk/'
 #dataset = 'rgbd_dataset_freiburg1_desk/'
-dataset = 'rgbd_dataset_freiburg1_xyz/'
+dataset = 'rgbd_dataset_freiburg1_desk2/'
+#dataset = 'rgbd_dataset_freiburg1_xyz/'
 
-#post_process_gt = PostProcessGroundTruth.PostProcessTUM()
-post_process_gt = PostProcessGroundTruth.PostProcessTUM_XYZ()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2() # f1_d2
+#post_process_gt = PostProcessGroundTruth.PostProcessTUM_F1()
 
 output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1305031108.211474895_200_1e-05_1.0_0_False_True_False_False_15_1_solver_2_other_res_2_using_invalid_y_neg_z_neg'
+data_file = '1305031526.671473026_500_0.0003_1.0_0_False_True_False_False_300_1_other_res_2_using_invalid_z_neg_y_neg'
 data_ext = '.txt'
 
 plot_vo = True
@@ -28,8 +29,8 @@ dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root +'depth.txt'
-match_text = dataset_root+'matches.txt'
-#match_text = dataset_root+'matches_with_duplicates.txt'
+#match_text = dataset_root+'matches.txt'
+match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 data_file_path = output_dir_path+data_file+data_ext
@@ -46,7 +47,8 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,max_difference=0.2,with_duplicates=True))
+#image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,max_difference=0.2,with_duplicates=True))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text)) #f1_d2
 
 
 parameters = data_file.split('_')
@@ -95,7 +97,10 @@ dt_list = ListGenerator.generate_time_step_list(
     max_count=max_count,
     offset=offset)
 
-for i in range(0, len(ref_id_list)):
+ref_list_len = len(ref_id_list)
+pose_estimate_list_loaded_len = len(pose_estimate_list_loaded)
+
+for i in range(0, ref_list_len):
 
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]

@@ -15,7 +15,7 @@ class PostProcessTUW:
         se3[1, 3] = z
         se3[2, 3] = -x
 
-class PostProcessTUM:
+class PostProcessTUM_F2:
 
     def post_process_in_mem(self, se3):
         rot = SE3.extract_rotation(se3)
@@ -26,7 +26,7 @@ class PostProcessTUM:
         #se3[1, 3] = -se3[1, 3]
         se3[2, 3] = -se3[2, 3]
 
-class PostProcessTUM_XYZ:
+class PostProcessTUM_F1:
 
     def post_process_in_mem(self, se3):
         rot = SE3.extract_rotation(se3)

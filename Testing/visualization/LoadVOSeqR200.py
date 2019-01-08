@@ -13,7 +13,7 @@ output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '966899.524074905_500_3e-12_1.0_0_False_True_False_False_10_1_True_False_False_rgb_depth_large_solver_2_other_res_2_using_invalid_y_neg_z_neg'
+data_file = '966899.524074905_500_5e-10_10.0_0_False_True_False_False_10_1_True_False_False_rgb_depth_large_solver_2_other_res_2_using_invalid_y_neg_z_neg_roll_neg_pitch_neg'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset

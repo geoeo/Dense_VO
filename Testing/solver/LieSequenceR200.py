@@ -22,8 +22,11 @@ start_idx = 966899.524074905
 
 #dataset 5 # good 254
 #start_idx = 967096.107000596
+#start_idx = 967099.841566016 # 60
 #start_idx = 967107.373734589
 #start_idx = 967110.420997406
+#start_idx = 967104.254622601
+#start_idx = 967106.035286206 # z is bad
 
 #dataset 6
 #start_idx = 967171.027841398
@@ -43,6 +46,7 @@ rgb_match = 'rgb'
 depth_match = 'depth_large'
 match_match = 'matches_rgb'
 encoder_match = 'encoder_rgb'
+#encoder_match = 'encoder_rgb_duplicates'
 
 ext = '.png'
 
@@ -78,14 +82,14 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 10
+max_count = 300
 offset = 1
 
 name = f"{start_idx:.9f}"
 
 max_its = 500
-eps = 0.000000000003  # 0.0005, 0.0001, 0.0057
-alpha_step = 1.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+eps = 0.0000000005  # 0.0005, 0.0001, 0.0057
+alpha_step = 10.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc

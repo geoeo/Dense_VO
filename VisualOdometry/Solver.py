@@ -198,6 +198,7 @@ def solve_photometric(frame_reference,
     generator_pitch = Lie.generator_pitch_3_4()
     #generator_pitch = Lie.generator_pitch_3_4_neg()
     generator_yaw = Lie.generator_yaw_3_4()
+    #generator_yaw = Lie.generator_yaw_3_4_neg()
 
     X_back_projection = depth_factor*np.ones((4, N), Utils.matrix_data_type)
     X_back_projection[3,:] = 1.0

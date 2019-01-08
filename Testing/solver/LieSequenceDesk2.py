@@ -8,7 +8,13 @@ from math import pi
 
 
 # start
-start_idx = 1305031526.671473
+#start_idx = 1305031526.671473
+
+# y up is hard to track
+#start_idx = 1305031528.439469
+#start_idx = 1305031530.175410
+#start_idx = 1305031530.339724
+st
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
 xyz_dataset = 'rgbd_dataset_freiburg1_desk2/'
@@ -20,7 +26,7 @@ dataset_root = bench_path+xyz_dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
-match_text = dataset_root+'matches.txt'
+match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 groundtruth_dict = associate.read_file_list(groundtruth_text)
@@ -48,14 +54,14 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 10
+max_count = 20
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 200
-eps = 0.0001
-alpha_step = 0.005
+max_its = 500
+eps = 0.0003
+alpha_step = 1.0
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -65,7 +71,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = None
+additional_info = 'other_res_2_using_invalid_z_neg_y_neg'
 
 
 info = '_' + f"{max_its}" \
@@ -87,7 +93,9 @@ match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
 
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUM()
+post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2()
+
+print(name+'_'+info+'\n')
 
 # start
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
@@ -106,11 +114,11 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_gt)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    post_process_gt.post_process_in_mem(SE3_ref_target)
+    #post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 
@@ -137,6 +145,8 @@ visualizer = Visualizer.Visualizer(ground_truth_list)
 motion_cov_inv = np.identity(6,dtype=Utils.matrix_data_type)
 #motion_cov_inv = np.zeros((6,6),dtype=Utils.matrix_data_type)
 twist_prior = np.zeros((6,1),dtype=Utils.matrix_data_type)
+
+print('starting...\n')
 
 for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
