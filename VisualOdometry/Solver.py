@@ -186,8 +186,8 @@ def solve_photometric(frame_reference,
 
     generator_x = Lie.generator_x_3_4()
     #generator_x = Lie.generator_x_3_4_neg()
-    #generator_y = Lie.generator_y_3_4()
-    generator_y = Lie.generator_y_3_4_neg()
+    generator_y = Lie.generator_y_3_4()
+    #generator_y = Lie.generator_y_3_4_neg()
     #generator_z = Lie.generator_z_3_4()
     generator_z = Lie.generator_z_3_4_neg()
 
@@ -424,6 +424,7 @@ def solve_photometric(frame_reference,
 
         #if v_mean < Gradient_step_manager.last_error_mean_abs:
         #    SE3_best = np.copy(SE_3_est)
+        #if not not_better: # solver 6
         Gradient_step_manager.save_previous_mean_error(v_mean)
         print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
