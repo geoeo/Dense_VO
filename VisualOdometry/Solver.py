@@ -195,8 +195,8 @@ def solve_photometric(frame_reference,
     # Why?: Generator defines the direction of increase (My thoughts)
     generator_roll = Lie.generator_roll_3_4()
     #generator_roll = Lie.generator_roll_3_4_neg()
-    generator_pitch = Lie.generator_pitch_3_4()
-    #generator_pitch = Lie.generator_pitch_3_4_neg()
+    #generator_pitch = Lie.generator_pitch_3_4()
+    generator_pitch = Lie.generator_pitch_3_4_neg()
     generator_yaw = Lie.generator_yaw_3_4()
     #generator_yaw = Lie.generator_yaw_3_4_neg()
 
