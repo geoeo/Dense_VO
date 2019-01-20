@@ -22,7 +22,7 @@ start_idx = 1305031108.211475
 
 # first couple of images are skipped due to no depth gt correspondence
 # may be the cause of the bad vo results
-#start_idx = 1305031108.876515,rgb_files
+#start_idx = 1305031108.876515#,rgb_files
 
 #start_idx = 1305031109.275308
 
@@ -64,17 +64,17 @@ depth_file_total = len(depth_files)
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = False
-calc_vo = False
+calc_vo = True
 plot_steering = True
 
-max_count = 15
+max_count = 10
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
-max_its = 200
-eps = 0.00001  #0.001, 0.00001, 0.00005, 0.00000001
+max_its = 10
+eps = 0.000000005  #0.001, 0.00001, 0.00005, 0.00000001
 alpha_step = 1.0# 0.002, 0.0055 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
@@ -85,7 +85,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = 'solver_2_other_res_2_using_invalid_y_neg_z_neg'
+additional_info = 'solver_2_other_res_2_not_using_invalidz_neg'
 
 
 info = '_' + f"{max_its}" \
@@ -115,6 +115,8 @@ target_image_list = []
 vo_twist_list = []
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM_F1()
+
+print(name+'_'+info+'\n')
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
@@ -213,7 +215,6 @@ for i in range(0, len(ref_image_list)):
         pose_estimate_list.append(se3_estimate_acc)
         vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
-SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
 if calc_vo:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)

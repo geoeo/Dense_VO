@@ -4,7 +4,6 @@ from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
-from math import pi
 
 # start
 start_idx = 1311868164.363181 # 2965
@@ -73,14 +72,14 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 50
+max_count = 10
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
-max_its = 500
-eps = 0.0000003  #0.001, 0.00001, 0.00005, 0.00000001
+max_its = 250
+eps = 0.00000005  #0.001, 0.00001, 0.00005, 0.00000001
 alpha_step = 1.0  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
@@ -92,7 +91,7 @@ use_ackermann = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_other_res_2_using_invaid_z_neg_y_neg_with_duplicates'
+additional_info += 'solver_1_other_res_2_using_invaid_with_duplicates'
 
 
 info = '_' + f"{max_its}" \
@@ -124,7 +123,8 @@ ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_f
     max_count=max_count,
     offset=offset,
     ground_truth_dict=image_groundtruth_dict,
-    match_dict = match_dict)
+    match_dict = match_dict,
+    reverse=False)
 
 if len(ref_files_failed_to_load) > 0:
     print(ref_files_failed_to_load)
@@ -214,7 +214,6 @@ for i in range(0, len(ref_image_list)):
         pose_estimate_list.append(se3_estimate_acc)
         vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
-SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
 if calc_vo:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)

@@ -8,9 +8,9 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-#dataset = 'rgbd_dataset_freiburg2_desk/'
+dataset = 'rgbd_dataset_freiburg2_desk/'
 #dataset = 'rgbd_dataset_freiburg1_desk/'
-dataset = 'rgbd_dataset_freiburg1_desk2/'
+#dataset = 'rgbd_dataset_freiburg1_desk2/'
 #dataset = 'rgbd_dataset_freiburg1_xyz/'
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2() # f1_d2
@@ -20,8 +20,10 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1305031526.671473026_500_0.0003_1.0_0_False_True_False_False_300_1_other_res_2_using_invalid_z_neg_y_neg'
+data_file = '1311868164.363181114_250_5e-08_1.0_0_False_True_False_False_300_1_solver_1_other_res_2_using_invaid_z_neg_with_duplicates'
 data_ext = '.txt'
+
+print(data_file)
 
 plot_vo = True
 
@@ -98,9 +100,12 @@ dt_list = ListGenerator.generate_time_step_list(
     offset=offset)
 
 ref_list_len = len(ref_id_list)
-pose_estimate_list_loaded_len = len(pose_estimate_list_loaded)
 
-for i in range(0, ref_list_len):
+#count = 10
+count = ref_list_len
+#pose_estimate_list_loaded_len = len(pose_estimate_list_loaded)
+
+for i in range(0, count):
 
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
@@ -122,11 +127,9 @@ for i in range(0, ref_list_len):
 
 
 
+    #SE3.post_process_pose_for_display_in_mem(se3_estimate_acc)
     se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
     pose_estimate_list.append(se3_estimate_acc)
-
-
-
 
 
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=False)

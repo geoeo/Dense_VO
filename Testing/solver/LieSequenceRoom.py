@@ -189,7 +189,6 @@ for i in range(0, len(ref_image_list)):
         pose_estimate_list.append(se3_estimate_acc)
         vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
-SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
 if calc_vo:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)

@@ -8,20 +8,20 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_3_full/'
+dataset = 'marc_4_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '966899.524074905_200_0.0001_0.0055_0_True_True_False_False_30_1_True_False_False_all_norm_rgb_depth_large'
+data_file = '299339.666637928_50_5e-09_1.0_0_False_True_False_False_50_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_pitch_neg_using_invalid'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 
 rgb_text = dataset_root +'rgb.txt'
-depth_text = dataset_root +'depth_large.txt'
-match_text = dataset_root+'matches.txt'
+depth_text = dataset_root +'depth_large_norm.txt'
+match_text = dataset_root+'matches_with_duplicates_norm.txt'
 rgb_encoder_text = dataset_root+'encoder_rgb.txt'
 
 groundtruth_text = dataset_root+'groundtruth.txt'
@@ -42,7 +42,7 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True,max_difference=0.3))
 
 plot_steering = True
 
@@ -73,7 +73,8 @@ encoder_list = []
 vo_twist_list = []
 pose_estimate_list_loaded, encoder_list_loaded = FileIO.load_vo_from_file(data_file_path)
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUW()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300()
+
 
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)

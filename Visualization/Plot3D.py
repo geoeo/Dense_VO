@@ -90,7 +90,7 @@ def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw 
         ax.clear()
 
     #rmse_list = SE3.root_mean_square_error_for_entire_list(se3_gt_list,se3_est_list)
-    rmse_list = SE3.root_mean_square_error_for_consecutive_frames(se3_gt_list,se3_est_list,offset=offset)
+    rmse_list = SE3.root_mean_square_error_for_consecutive_frames_accumulated(se3_gt_list, se3_est_list, offset=offset)
 
     for i in range(0,len(rmse_list), 1):
         rmse = rmse_list[i]

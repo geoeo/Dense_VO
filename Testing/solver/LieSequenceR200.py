@@ -13,17 +13,23 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 966824.775582211
 
 # -z, dataset 4 #140 # 169
-#start_idx = 967058.393566343
+#start_idx = 967055.960884688
+start_idx = 967058.393566343
 
 # dataset 3
 #start_idx = 966894.954271683
-start_idx = 966899.524074905
+#start_idx = 966899.524074905
+#start_idx = 966900.841859362 # turning
+#start_idx = 966903.243488704 # turning use 20 its
+#start_idx = 966908.650253507
+#start_idx = 966904.978603252 # bad
+#start_idx = 966905.976391682 # + z bad
 
 
 #dataset 5 # good 254
 #start_idx = 967096.107000596
 #start_idx = 967099.841566016 # 60
-#start_idx = 967107.373734589
+#start_idx = 967107.373734589 # left
 #start_idx = 967110.420997406
 #start_idx = 967104.254622601
 #start_idx = 967106.035286206 # z is bad
@@ -37,14 +43,14 @@ start_idx = 966899.524074905
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_3_full/'
+dataset = 'marc_4_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
-depth_folder = 'depth_large/'
+depth_folder = 'depth_large_norm/'
 rgb_match = 'rgb'
-depth_match = 'depth_large'
-match_match = 'matches_rgb'
+depth_match = 'depth_large_norm'
+match_match = 'matches_with_duplicates_norm'
 encoder_match = 'encoder_rgb'
 #encoder_match = 'encoder_rgb_duplicates'
 
@@ -74,28 +80,28 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True,max_difference=0.3))
 
-depth_factor = 5000.0
+depth_factor = 1000.0
 #depth_factor = 1.0
 use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 300
+max_count = 5
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 500
-eps = 0.0000000005  # 0.0005, 0.0001, 0.0057
-alpha_step = 10.0  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+max_its = 50
+eps = 0.00000005
+alpha_step = 0.5
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = True
-use_motion_prior = False
+use_motion_prior = True
 use_ackermann = False
 debug = False
 
@@ -107,7 +113,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info +=  '_' + rgb_match + '_' + depth_match + '_' + 'solver_2_other_res_2_using_invalid_y_neg_z_neg'
+additional_info +=  '_' + rgb_match + '_' + depth_match +'_'+ depth_folder[:-1]+ '_' + 'solver_1_res_2_using_invalid_z_neg_no_divide'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -212,10 +218,14 @@ for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
     im_greyscale_target, im_depth_target = target_image_list[i]
 
-    im_depth_reference /= depth_factor
-    im_depth_target /= depth_factor
+    #im_depth_reference /= depth_factor
+    #im_depth_target /= depth_factor
 
     max_depth = np.amax(im_depth_reference)
+    if max_depth == float("inf"):
+        max_depth = 100000
+
+
 
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
@@ -282,7 +292,6 @@ for i in range(0, len(ref_image_list)):
         pose_estimate_list.append(se3_estimate_acc)
         vo_twist_list.append(solver_manager.twist_final)
 print("visualizing..")
-SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 
 if calc_vo:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)

@@ -13,14 +13,14 @@ output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '966899.524074905_500_5e-10_10.0_0_False_True_False_False_10_1_True_False_False_rgb_depth_large_solver_2_other_res_2_using_invalid_y_neg_z_neg_roll_neg_pitch_neg'
+data_file = '966894.954271683_250_5e-09_2.0_0_False_True_False_False_180_1_True_False_False_rgb_depth_large_norm_depth_large_norm_solver_1_res_2_using_invalid_z_neg_no_divide'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root +'depth_large.txt'
-match_text = dataset_root+'matches_rgb.txt'
+match_text = dataset_root+'matches_with_duplicates_norm.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 rgb_encoder_text = dataset_root+'encoder_rgb.txt'
 encoder_text = dataset_root+'encoder.txt'
@@ -40,7 +40,7 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True,max_difference=0.3))
 
 plot_steering = True
 
@@ -91,7 +91,10 @@ dt_list = ListGenerator.generate_time_step_list(
     max_count=max_count,
     offset=offset)
 
-for i in range(0, len(ref_id_list)):
+count = len(ref_id_list)
+#count = 20
+
+for i in range(0, count):
 
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
@@ -115,11 +118,10 @@ for i in range(0, len(ref_id_list)):
 
     SE3_est = pose_estimate_list_loaded[i]
 
+    #SE3.post_process_pose_for_display_in_mem(se3_estimate_acc)
     se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
     pose_estimate_list.append(se3_estimate_acc)
 
-
-SE3.post_process_pose_list_for_display_in_mem(pose_estimate_list)
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:

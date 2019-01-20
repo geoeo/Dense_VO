@@ -198,13 +198,15 @@ def post_process_pose_list_for_display_in_mem(pose_list):
 
 def post_process_pose_for_display_in_mem(se3):
 
-    # invert roll and pitch
+    # invert pitch
     rot = extract_rotation(se3)
     euler = rotationMatrixToEulerAngles(rot)
     #rot_new = makeS03(-euler[0], -euler[1], euler[2])
-    rot_new = makeS03(-euler[0], -euler[1], euler[2])
+    rot_new = makeS03(euler[0], -euler[1], euler[2])
     se3[0:3, 0:3] = rot_new
     #se3[0,3] *= -1
+    #se3[1,3] *= -1
+    se3[2,3] *= -1
 
 
 def relative_pose_error(rel_gt, rel_est):
@@ -232,6 +234,21 @@ def root_mean_square_error(gt_list, pose_list):
     acc /= length
     return math.sqrt(acc)
 
+def root_mean_square_error_raw(gt_start,gt_end, pose_start,pose_end):
+
+    gt = pose_pose_composition_inverse(gt_start,gt_end)
+    est = pose_pose_composition_inverse(pose_start,pose_end)
+
+    e = relative_pose_error(gt,est)
+    translation = extract_translation(e)
+    e_x = translation[0,0]
+    e_y = translation[1,0]
+    e_z = translation[2,0]
+
+    res = (math.pow(e_x,2.0) + math.pow(e_y,2.0) + math.pow(e_z,2.0))
+
+    return res
+
 
 def root_mean_square_error_for_entire_list(gt_list, pose_list):
     length = len(gt_list)
@@ -243,11 +260,14 @@ def root_mean_square_error_for_entire_list(gt_list, pose_list):
 
     return rmse_list
 
-def root_mean_square_error_for_consecutive_frames(gt_list, pose_list, offset = 1):
+def root_mean_square_error_for_consecutive_frames_accumulated(gt_list, pose_list, offset = 1):
     gt_list_length = len(gt_list)
+    pose_list_length = len(pose_list)
     assert offset <= gt_list_length
+    assert offset <= pose_list_length
 
-    length = int(gt_list_length/offset)
+    #length = int(gt_list_length/offset)
+    length = pose_list_length - offset
     rmse_list = np.zeros(length)
 
     for i in range(0,length):
@@ -255,3 +275,24 @@ def root_mean_square_error_for_consecutive_frames(gt_list, pose_list, offset = 1
         rmse_list[i] = root_mean_square_error(gt_list[i:i+offset],pose_list[i:i+offset])
 
     return rmse_list
+
+# Poses in the lists here are not accumulated but simply frame-to-frame
+def root_mean_square_error_for_consecutive_frames_raw(gt_list_raw, pose_list_raw, offset = 1):
+    gt_list_length = len(gt_list_raw)
+    pose_list_length = len(pose_list_raw)
+    assert offset <= gt_list_length
+    assert offset <= pose_list_length
+
+    #length = int(gt_list_length/offset)
+    length = pose_list_length - offset
+    rmse_list = np.zeros(length)
+
+    for i in range(0,length):
+
+        rmse_list[i] = root_mean_square_error_raw(gt_list_raw[i],gt_list_raw[i+offset],pose_list_raw[i],pose_list_raw[i+offset])
+
+    sum = np.sum(rmse_list)
+    rmse = math.sqrt(sum / length)
+
+    return rmse_list, rmse
+
