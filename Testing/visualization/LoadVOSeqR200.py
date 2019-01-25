@@ -8,18 +8,18 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_3_full/'
+dataset = 'marc_6_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
-depth_folder = 'depth_large/'
+depth_folder = 'depth_large_norm/'
 ext = '.png'
-data_file = '966894.954271683_250_5e-09_2.0_0_False_True_False_False_180_1_True_False_False_rgb_depth_large_norm_depth_large_norm_solver_1_res_2_using_invalid_z_neg_no_divide'
+data_file = '967169.198442095_100_5e-07_1.0_0_False_True_False_False_100_1_False_True_False_rgb_depth_large_norm_depth_large_norm_solver_1_res_2_using_invalid_z_neg_no_divide'
 data_ext = '.txt'
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
-depth_text = dataset_root +'depth_large.txt'
+depth_text = dataset_root +'depth_large_norm.txt'
 match_text = dataset_root+'matches_with_duplicates_norm.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 rgb_encoder_text = dataset_root+'encoder_rgb.txt'
@@ -73,6 +73,8 @@ pose_estimate_list_loaded, encoder_list_loaded = FileIO.load_vo_from_file(data_f
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUW()
 
+print(data_file)
+
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
@@ -92,7 +94,7 @@ dt_list = ListGenerator.generate_time_step_list(
     offset=offset)
 
 count = len(ref_id_list)
-#count = 20
+#count = 50
 
 for i in range(0, count):
 

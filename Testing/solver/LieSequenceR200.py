@@ -14,7 +14,7 @@ from Visualization import PostProcessGroundTruth
 
 # -z, dataset 4 #140 # 169
 #start_idx = 967055.960884688
-start_idx = 967058.393566343
+#start_idx = 967058.393566343
 
 # dataset 3
 #start_idx = 966894.954271683
@@ -35,15 +35,12 @@ start_idx = 967058.393566343
 #start_idx = 967106.035286206 # z is bad
 
 #dataset 6
-#start_idx = 967171.027841398
-
-#start = ListGenerator.get_index_of_id(966832.658716342,rgb_files)
-#start = ListGenerator.get_index_of_id(966834.146275472,rgb_files)
+start_idx = 967169.198442095 # 5e09
 
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_4_full/'
+dataset = 'marc_6_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
@@ -82,31 +79,34 @@ depth_file_total = len(depth_files)
 
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True,max_difference=0.3))
 
+#depth_factor = 5000.0
 depth_factor = 1000.0
 #depth_factor = 1.0
 use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 5
+max_count = 100
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 50
-eps = 0.00000005
-alpha_step = 0.5
+max_its = 100
+eps = 0.000000005
+alpha_step = 0.25
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = True
-use_motion_prior = True
+use_motion_prior = False
 use_ackermann = False
+
+divide_depth = False
 debug = False
 
-use_paper_cov = True
-use_ackermann_cov = False
+use_paper_cov = False
+use_ackermann_cov = True
 use_paper_ackermann_cov = False
 
 if use_motion_prior:
@@ -218,8 +218,9 @@ for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
     im_greyscale_target, im_depth_target = target_image_list[i]
 
-    #im_depth_reference /= depth_factor
-    #im_depth_target /= depth_factor
+    if divide_depth:
+        im_depth_reference /= depth_factor
+        im_depth_target /= depth_factor
 
     max_depth = np.amax(im_depth_reference)
     if max_depth == float("inf"):

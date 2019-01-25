@@ -3,7 +3,7 @@ import os
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_2_full/'
+dataset = 'marc_1_full/'
 
 #rgb_folder = 'depth/'
 #rgb_text = 'depth.txt'

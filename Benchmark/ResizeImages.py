@@ -8,9 +8,9 @@ import numpy as np
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'marc_5_full/'
+dataset = 'marc_6_full/'
 img_source_dir = 'depth/'
-img_target_dir = 'depth_small_norm/'
+img_target_dir = 'depth_large_norm/'
 
 #img_source_dir = 'depth_rect/'
 #img_target_dir = 'depth_rect_large_norm/'

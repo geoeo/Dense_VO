@@ -342,24 +342,26 @@ def solve_photometric(frame_reference,
             #else:
             w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
 
+            # For using ackermann motion
+            if use_ackermann:
+                # V1
+                # inc = ackermann_pose_prior - w
+                # w_new += np.matmul(motion_cov_inv,inc)
+                # w_new += inc
+
+                # V2
+                factor = Gradient_step_manager.current_alpha
+                #factor = math.pow(Gradient_step_manager.current_alpha,it)
+                # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
+                ack_prior = ackermann_pose_prior
+
+                w_new += Lie.lie_ackermann_correction(factor, motion_cov_inv, ack_prior, w, twist_size)
+
+
         else:
             not_better = True
             w_new = w_empty
 
-        # For using ackermann motion
-        if use_ackermann:
-            # V1
-            #inc = ackermann_pose_prior - w
-            #w_new += np.matmul(motion_cov_inv,inc)
-            #w_new += inc
-
-            # V2
-            #factor = Gradient_step_manager.current_alpha/10
-            factor = 1.0
-            ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
-            ack_prior = ackermann_pose_prior
-
-            w_new += Lie.lie_ackermann_correction(factor,motion_cov_inv,ack_prior,w,twist_size)
 
 
 
@@ -377,7 +379,7 @@ def solve_photometric(frame_reference,
 
         w = Lie.ln(R_est, t_est, twist_size)
 
-        SE_3_current = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
+        #SE_3_current = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
         debug_list  = [i for i, x in enumerate(valid_measurements) if x]
@@ -435,16 +437,24 @@ def solve_photometric(frame_reference,
 
 
 
+
+    # For using ackermann motion v2
     if use_ackermann:
-        #factor = Gradient_step_manager.current_alpha / 10
-        factor = 1.0
+        # V1
+        # inc = ackermann_pose_prior - w
+        # w_new += np.matmul(motion_cov_inv,inc)
+        # w_new += inc
+
+        # V2
+        factor = 2.0*Gradient_step_manager.current_alpha
+        #factor = 1.0
         # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
         ack_prior = ackermann_pose_prior
 
-        #w += Lie.lie_ackermann_correction(factor, motion_cov_inv, ack_prior, w, twist_size)
-
-        #R_est, t_est = Lie.exp(w, twist_size)
-
+        #w_inc = Lie.lie_ackermann_correction(factor, motion_cov_inv, ack_prior, w, twist_size)
+        #w += w_inc
+        #R_ack, t_ack = Lie.exp(w,twist_size)
+        #SE_3_est = np.append(np.append(R_ack, t_ack, axis=1), homogeneous_se3_padding, axis=0)
 
     motion_cov_inv = normal_matrix_ret
 

@@ -10,11 +10,9 @@ from math import pi
 # start
 #start_idx = 1305031526.671473
 
-# y up is hard to track
-#start_idx = 1305031528.439469
-#start_idx = 1305031530.175410
-#start_idx = 1305031530.339724
-st
+#Mid
+start_idx = 1305031536.739722
+
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
 xyz_dataset = 'rgbd_dataset_freiburg1_desk2/'
@@ -54,14 +52,14 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 20
+max_count = 100
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 500
-eps = 0.0003
-alpha_step = 1.0
+max_its = 100
+eps = 0.00005
+alpha_step = 2.0
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -71,7 +69,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = 'other_res_2_using_invalid_z_neg_y_neg'
+additional_info = 'other_res_2_using_invalid_z_neg'
 
 
 info = '_' + f"{max_its}" \

@@ -8,10 +8,12 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'rgbd_dataset_freiburg2_desk/'
+#dataset = 'rgbd_dataset_freiburg2_desk/'
 #dataset = 'rgbd_dataset_freiburg1_desk/'
-#dataset = 'rgbd_dataset_freiburg1_desk2/'
+dataset = 'rgbd_dataset_freiburg1_desk2/'
 #dataset = 'rgbd_dataset_freiburg1_xyz/'
+
+count = -1
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2() # f1_d2
 #post_process_gt = PostProcessGroundTruth.PostProcessTUM_F1()
@@ -20,7 +22,7 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868164.363181114_250_5e-08_1.0_0_False_True_False_False_300_1_solver_1_other_res_2_using_invaid_z_neg_with_duplicates'
+data_file = '1305031526.671473026_100_0.0003_1.0_0_False_True_False_False_300_1_other_res_2_using_invalid_z_neg'
 data_ext = '.txt'
 
 print(data_file)
@@ -101,8 +103,8 @@ dt_list = ListGenerator.generate_time_step_list(
 
 ref_list_len = len(ref_id_list)
 
-#count = 10
-count = ref_list_len
+if count == -1:
+    count = ref_list_len
 #pose_estimate_list_loaded_len = len(pose_estimate_list_loaded)
 
 for i in range(0, count):

@@ -8,13 +8,23 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_4_full/'
+dataset = 'marc_2_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '299339.666637928_50_5e-09_1.0_0_False_True_False_False_50_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_pitch_neg_using_invalid'
+data_file = '298681.172680459_50_5e-06_0.25_0_False_True_False_True_60_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_ack1'
 data_ext = '.txt'
+
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R200()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300() # dataset 5
+
+
+count = 60
+start_count = 0
+plot_vo = True
+
+print(data_file)
 
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
@@ -73,9 +83,6 @@ encoder_list = []
 vo_twist_list = []
 pose_estimate_list_loaded, encoder_list_loaded = FileIO.load_vo_from_file(data_file_path)
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300()
-
-
 
 start = ListGenerator.get_index_of_id(start_idx,rgb_files)
 
@@ -94,7 +101,11 @@ dt_list = ListGenerator.generate_time_step_list(
     max_count=max_count,
     offset=offset)
 
-for i in range(0, len(ref_id_list)):
+if count == -1:
+    count = len(ref_id_list)
+
+
+for i in range(start_count, count):
 
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
@@ -127,6 +138,7 @@ visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:
     visualizer.visualize_steering(encoder_list,clear=False,draw=False)
-visualizer.visualize_poses(pose_estimate_list, draw= False)
+if plot_vo:
+    visualizer.visualize_poses(pose_estimate_list, draw= False)
 print('visualizing..')
 visualizer.show()

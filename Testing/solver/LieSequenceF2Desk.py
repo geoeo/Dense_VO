@@ -79,8 +79,8 @@ offset = 1
 name = f"{start_idx:.9f}"
 
 max_its = 250
-eps = 0.00000005  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 1.0  # 0.001, 0.008 - motion pri
+eps = 0.0000000005  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 0.05  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -88,10 +88,12 @@ use_robust = True
 track_pose_estimates = True
 use_motion_prior = False
 use_ackermann = False
+
+divide_depth = False
 debug = False
 
 additional_info = ''
-additional_info += 'solver_1_other_res_2_using_invaid_with_duplicates'
+additional_info += 'solver_1_other_res_2_using_invaid_with_duplicates_no_divide'
 
 
 info = '_' + f"{max_its}" \
@@ -173,8 +175,9 @@ for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
     im_greyscale_target, im_depth_target = target_image_list[i]
 
-    im_depth_reference /= depth_factor
-    im_depth_target /= depth_factor
+    if divide_depth:
+        im_depth_reference /= depth_factor
+        im_depth_target /= depth_factor
 
     max_depth = np.amax(im_depth_reference)
 
