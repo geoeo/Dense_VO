@@ -8,19 +8,22 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_2_full/'
+dataset = 'marc_5_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '298681.172680459_50_5e-06_0.25_0_False_True_False_True_60_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_ack1'
+data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_60_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide'
 data_ext = '.txt'
 
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R200()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300() # dataset 5
+post_process_gt = None
+
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
-count = 60
+count = 40
 start_count = 0
 plot_vo = True
 
@@ -134,7 +137,7 @@ for i in range(start_count, count):
 
 
 
-visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
+visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering, title=None)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:
     visualizer.visualize_steering(encoder_list,clear=False,draw=False)

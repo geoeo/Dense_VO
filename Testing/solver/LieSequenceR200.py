@@ -235,7 +235,7 @@ for i in range(0, len(ref_image_list)):
     ackermann_cov = ackermann_cov_list[i]
     ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
     ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
-    ackermann_twist = ackermann_motion.motion_delta_list[i].get_6dof_twist(normalize=False)
+    ackermann_twist = ackermann_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
     #ackermann_twist[4] *= -1
 
     # OWN with motion prior = False

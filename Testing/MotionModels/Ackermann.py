@@ -1,4 +1,4 @@
-from MotionModels import Ackermann, SteeringCommand, MotionDelta, Pose
+from MotionModels import Ackermann, SteeringCommand, MotionDeltaRobot, Pose
 import numpy as np
 from Numerics import Utils, SE3
 import matplotlib.pyplot as plt
@@ -15,7 +15,7 @@ steering_command_straight = SteeringCommand.SteeringCommands(1.0, 0.0)
 
 ackermann_motion = Ackermann.Ackermann()
 
-new_motion_delta = ackermann_motion.ackermann_dead_reckoning(steering_command_straight)
+new_motion_delta = ackermann_motion.ackermann_dead_reckoning_delta(steering_command_straight)
 pose.apply_motion(new_motion_delta,dt)
 
 #TODO investigate which theta to use

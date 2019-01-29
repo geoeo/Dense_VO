@@ -1,4 +1,4 @@
-from MotionModels.MotionDelta import MotionDelta
+from MotionModels.MotionDeltaRobot import MotionDeltaRobot
 from MotionModels.SteeringCommand import SteeringCommands
 from MotionModels.Pose import Pose
 from Numerics.Utils import matrix_data_type
@@ -71,14 +71,14 @@ class Ackermann:
         self.steering_command_list = steering_command_list
         self.dt_list = dt_list
         self.cov_list = None # Will be populated when the motion model is run
-        self.motion_delta_list = None # Will be populated when the motion model is run
+        self.pose_delta_list = [] # Will be populated when the motion model is run
         #self.pose_list = None # Will be populated when the motion model is run
 
 
 
-    def ackermann_dead_reckoning(self, steering_input : SteeringCommands):
+    def ackermann_dead_reckoning_delta(self, steering_input : SteeringCommands):
 
-        new_motion_delta = MotionDelta()
+        new_motion_delta = MotionDeltaRobot()
         linear_velocity = 0.0
         steering_angle = 0.0
 
@@ -93,12 +93,24 @@ class Ackermann:
         new_motion_delta.delta_theta = linear_velocity * math.tan(steering_angle) / self.wheel_base
         new_motion_delta.delta_x = linear_velocity
         # wheel diameter TODO write about this
-        new_motion_delta.delta_x *= 0.0269*math.pi
+        #new_motion_delta.delta_x *= 0.0269*math.pi
 
         return new_motion_delta
 
-    def set_ackermann_dead_reckoning_for_list(self, steering_input_list : [SteeringCommands]):
-        self.motion_delta_list = list(map(lambda x: self.ackermann_dead_reckoning(x), steering_input_list))
+    def set_ackermann_dead_reckoning_for_list(self, steering_input_list : [SteeringCommands], dt_list):
+        steering_list_length = len(steering_input_list)
+        dt_list_length = len(dt_list)
+
+        assert steering_list_length == dt_list_length
+
+        for i in range(0,steering_list_length):
+            dt = dt_list[i]
+            steering_cmd = steering_input_list[i]
+            pose = Pose()
+
+            motion_delta_robot = self.ackermann_dead_reckoning_delta(steering_cmd)
+            pose.apply_world_motion(motion_delta_robot,dt)
+            self.pose_delta_list.append(pose)
 
 
     # TODO test
@@ -130,7 +142,7 @@ class Ackermann:
 
 
     def covariance_dead_reckoning_for_command_list(self, steering_input_list, dt_list):
-        self.set_ackermann_dead_reckoning_for_list(steering_input_list)
+        self.set_ackermann_dead_reckoning_for_list(steering_input_list, dt_list)
 
         steering_list_len = len(steering_input_list)
         dt_list_len = len(dt_list)
@@ -138,11 +150,11 @@ class Ackermann:
         if dt_steering_list_diff > 0:
             dt_list = dt_list[:-dt_steering_list_diff]
         assert steering_list_len == len(dt_list)
-        assert steering_list_len == len(self.motion_delta_list)
+        assert steering_list_len == len(self.pose_delta_list)
 
         cov_list = []
 
-        commands = zip(steering_input_list,self.motion_delta_list,dt_list)
+        commands = zip(steering_input_list, self.pose_delta_list, dt_list)
 
         for (steering_command,motion_delta,dt) in commands:
             self.pose.apply_motion(motion_delta, dt)

@@ -12,12 +12,12 @@ from Visualization import PostProcessGroundTruth
 
 #data 2
 #start_idx = 298679.112609803
-#start_idx = 298681.172680459 # turn then z
+#start_idx = 298681.172680459 # turn then z <-
 #start_idx = 298697.685993647 # turning
 #start_idx = 298698.117996584
-start_idx = 298698.350589178 # rect
+#start_idx = 298698.350589178 # rect
 #start_idx = 298702.172191178# rect
-#start_idx = 298703.036201397 # rect
+#start_idx = 298703.036201397 # rect <-
 #start_idx = 298703.302012647 # rect # y very high initially
 #start_idx = 298705.029765647
 #start_idx = 298706.059816803 # turning
@@ -29,29 +29,32 @@ start_idx = 298698.350589178 # rect
 #start_idx = 299208.004564834 # straight
 
 #dataset4 alpha < 0.2
+#start_idx = 299335.019590803
 #start_idx = 299336.878361490
 #start_idx = 299339.666637928 # turining right
 #start_idx = 299340.729057053 # turining
-#start_idx = 299338.172738053
+#start_idx = 299337.011086615  #<- +x/-z
 #start_idx = 299341.094225178
 
 #dataset5
 #start_idx = 299470.539768115
 #start_idx = 299472.931593209 # turning -x/-z
 #start_idx = 299473.961254115 # turning
-#start_idx = 299475.389421990
+start_idx = 299475.190163022 # turn left -x/-z <-
 #start_idx = 299478.976547240 # turning
 #start_idx = 299489.237554490 # turning
 
 
+post_process_gt = None
 
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300() # dataset 5
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
+
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_2_full/'
+dataset = 'marc_5_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
@@ -90,13 +93,13 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=False,max_difference=0.3))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True,max_difference=0.3))
 
 #depth_factor = 5000.0
 depth_factor = 1000.0
 #depth_factor = 1.0
 use_ndc = False
-calc_vo = False
+calc_vo = True
 plot_steering = True
 
 max_count = 60
@@ -106,12 +109,12 @@ name = f"{start_idx:.9f}"
 
 max_its = 50
 eps = 0.000000005
-alpha_step = 0.25  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+alpha_step = 0.15  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
-track_pose_estimates = True
+track_pose_estimates = False
 use_motion_prior = False
 use_ackermann = True
 
@@ -126,7 +129,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_ack1'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_ack_corr'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -248,7 +251,8 @@ for i in range(0, len(ref_image_list)):
     ackermann_cov = ackermann_cov_list[i]
     ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
     ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
-    ackermann_twist = ackermann_motion.motion_delta_list[i].get_6dof_twist(normalize=False)
+    ackermann_twist = ackermann_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
+    ackermann_twist[0] *= -1
     ackermann_twist[2] *= -1
     ackermann_twist[4] *= -1
 
@@ -311,7 +315,7 @@ print("visualizing..")
 if calc_vo:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
-visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering)
+visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering,title=info)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:
     visualizer.visualize_steering(encoder_list,clear=False,draw=False)

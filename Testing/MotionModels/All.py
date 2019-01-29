@@ -1,4 +1,4 @@
-from MotionModels import Ackermann, SteeringCommand, MotionDelta, Pose
+from MotionModels import Ackermann, SteeringCommand, MotionDeltaRobot, Pose
 from Numerics import Utils, SE3
 import matplotlib.pyplot as plt
 from Visualization import Plot3D
@@ -22,8 +22,8 @@ ellipse_factor_list = Ackermann.get_standard_deviation_factors_from_covaraince_l
 
 
 # TODO put this in visualizer
-se3_list = SE3.generate_se3_from_motion_delta_list(ackermann_motion.motion_delta_list)
-motion_delta = ackermann_motion.motion_delta_list[0]
+se3_list = SE3.generate_se3_from_motion_delta_list(ackermann_motion.pose_delta_list)
+motion_delta = ackermann_motion.pose_delta_list[0]
 se3 = SE3.generate_se3_from_motion_delta(motion_delta)
 origin_transformed = np.matmul(se3, origin)
 origin_transformed_2 = np.matmul(se3, origin_transformed)

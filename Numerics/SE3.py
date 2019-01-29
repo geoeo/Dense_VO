@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from Numerics.Utils import matrix_data_type
-from MotionModels import MotionDelta
+from MotionModels import MotionDeltaRobot
 from Numerics import Lie, Utils
 
 
@@ -165,7 +165,7 @@ def rotation_around_y(rad):
 
     return R_y
 
-def generate_se3_from_motion_delta(motion_delta : MotionDelta.MotionDelta):
+def generate_se3_from_motion_delta(motion_delta : MotionDeltaRobot.MotionDeltaRobot):
     se3 = np.identity(4, dtype=matrix_data_type)
     se3[0,3] = -motion_delta.delta_y
     se3[2,3] = -motion_delta.delta_x
@@ -175,7 +175,7 @@ def generate_se3_from_motion_delta(motion_delta : MotionDelta.MotionDelta):
     return se3
 
 
-def generate_se3_from_motion_delta_list(motion_delta_list : [MotionDelta.MotionDelta]):
+def generate_se3_from_motion_delta_list(motion_delta_list : [MotionDeltaRobot.MotionDeltaRobot]):
     return list(map(lambda x: generate_se3_from_motion_delta(x),motion_delta_list))
 
 def twist_to_SE3(twist):

@@ -6,12 +6,16 @@ from Visualization import Plot3D
 
 class Visualizer():
 
-    def __init__(self, ground_truth_list = None, plot_steering = False):
+    def __init__(self, ground_truth_list = None, plot_steering = False, title = None):
         self.ground_truth_list = []
         if ground_truth_list is not None:
             self.ground_truth_list = ground_truth_list
         self.figure = plt.figure()
         self.plot_steering = plot_steering
+
+        if title:
+            plt.title(title)
+
         if not plot_steering:
             self.se3_graph = self.figure.add_subplot(311, projection='3d')
             self.x_graph = self.figure.add_subplot(334)
