@@ -129,7 +129,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_ack_corr'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_steering_neg_ack_corr_4'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -254,7 +254,7 @@ for i in range(0, len(ref_image_list)):
     ackermann_twist = ackermann_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
     #ackermann_twist[0] *= -1
     ackermann_twist[2] *= -1
-    #ackermann_twist[4] *= -1
+    ackermann_twist[4] *= -1 # ack_corr_4
 
     # OWN with motion prior = False
     #motion_cov_inv = ackermann_cov_large_inv
@@ -315,7 +315,7 @@ print("visualizing..")
 if calc_vo:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
-visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering,title=info)
+visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering,title=None)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:
     visualizer.visualize_steering(encoder_list,clear=False,draw=False)

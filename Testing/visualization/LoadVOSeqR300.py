@@ -13,7 +13,7 @@ output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_60_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide'
+data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_60_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_ack_corr_5'
 data_ext = '.txt'
 
 post_process_gt = None
@@ -23,7 +23,7 @@ post_process_gt = None
 post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
-count = 40
+count = -1
 start_count = 0
 plot_vo = True
 

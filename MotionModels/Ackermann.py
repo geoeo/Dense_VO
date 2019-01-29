@@ -93,7 +93,7 @@ class Ackermann:
         new_motion_delta.delta_theta = linear_velocity * math.tan(steering_angle) / self.wheel_base
         new_motion_delta.delta_x = linear_velocity
         # wheel diameter TODO write about this
-        #new_motion_delta.delta_x *= 0.0269*math.pi
+        new_motion_delta.delta_x *= 0.0269*math.pi
 
         return new_motion_delta
 
@@ -121,7 +121,7 @@ class Ackermann:
     def covariance_dead_reckoning(self, steering_input : SteeringCommands, theta, dt):
 
         steering_vel_cmd = steering_input.linear_velocity
-        steering_angle_cmd = steering_input.steering_angle
+        steering_angle_cmd = -steering_input.steering_angle
 
         self.G[0, 2] = -steering_vel_cmd * math.sin(theta) * dt
         self.G[1, 2] = steering_vel_cmd * math.cos(theta) * dt
