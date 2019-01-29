@@ -83,7 +83,7 @@ class Ackermann:
         steering_angle = 0.0
 
         steering_vel_cmd = steering_input.linear_velocity
-        steering_angle_cmd = steering_input.steering_angle
+        steering_angle_cmd = -steering_input.steering_angle
 
         if math.fabs(steering_vel_cmd) > self.linear_velocity_noise:
             linear_velocity = steering_vel_cmd
@@ -102,15 +102,16 @@ class Ackermann:
         dt_list_length = len(dt_list)
 
         assert steering_list_length == dt_list_length
+        theta_prev = 0.0
 
         for i in range(0,steering_list_length):
             dt = dt_list[i]
             steering_cmd = steering_input_list[i]
             pose = Pose()
-
             motion_delta_robot = self.ackermann_dead_reckoning_delta(steering_cmd)
-            pose.apply_world_motion(motion_delta_robot,dt)
+            pose.apply_world_motion(motion_delta_robot,dt,theta_prev)
             self.pose_delta_list.append(pose)
+            theta_prev += pose.delta_theta
 
 
     # TODO test

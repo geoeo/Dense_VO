@@ -17,7 +17,7 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 298698.117996584
 #start_idx = 298698.350589178 # rect
 #start_idx = 298702.172191178# rect
-#start_idx = 298703.036201397 # rect <-
+#start_idx = 298703.036201397 # rect <- +x/-z
 #start_idx = 298703.302012647 # rect # y very high initially
 #start_idx = 298705.029765647
 #start_idx = 298706.059816803 # turning
@@ -252,9 +252,9 @@ for i in range(0, len(ref_image_list)):
     ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
     ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
     ackermann_twist = ackermann_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
-    ackermann_twist[0] *= -1
+    #ackermann_twist[0] *= -1
     ackermann_twist[2] *= -1
-    ackermann_twist[4] *= -1
+    #ackermann_twist[4] *= -1
 
     # OWN with motion prior = False
     #motion_cov_inv = ackermann_cov_large_inv
