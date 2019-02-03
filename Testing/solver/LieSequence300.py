@@ -33,14 +33,14 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 299336.878361490
 #start_idx = 299339.666637928 # turining right
 #start_idx = 299340.729057053 # turining
-#start_idx = 299337.011086615  #<- +x/-z
+start_idx = 299337.011086615  #<- +x/-z
 #start_idx = 299341.094225178
 
 #dataset5
 #start_idx = 299470.539768115
 #start_idx = 299472.931593209 # turning -x/-z
 #start_idx = 299473.961254115 # turning
-start_idx = 299475.190163022 # turn left -x/-z <-
+#start_idx = 299475.190163022 # turn left -x/-z <-
 #start_idx = 299478.976547240 # turning
 #start_idx = 299489.237554490 # turning
 
@@ -48,13 +48,13 @@ start_idx = 299475.190163022 # turn left -x/-z <-
 post_process_gt = None
 
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_5_full/'
+dataset = 'marc_4_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
@@ -102,14 +102,14 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 60
+max_count = 300
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 50
-eps = 0.000000005
-alpha_step = 0.15  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
+max_its = 500
+eps = 0.00000000005
+alpha_step = 0.25  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -129,7 +129,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_steering_neg_ack_corr_4'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_steering_neg'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \

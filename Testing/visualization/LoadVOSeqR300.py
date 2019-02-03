@@ -8,19 +8,19 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_5_full/'
+dataset = 'marc_4_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_60_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_ack_corr_5'
+data_file = '299337.011086615_200_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
 data_ext = '.txt'
 
 post_process_gt = None
 
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
 count = -1
