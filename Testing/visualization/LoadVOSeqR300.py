@@ -13,17 +13,22 @@ output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
-data_file = '299337.011086615_200_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
+### ds 4
+data_file = '299337.011086615_500_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
+### ds 5
+#data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg_ack_corr_4'
+
 data_ext = '.txt'
 
 post_process_gt = None
 
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
 post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
-count = -1
+count = 50
 start_count = 0
 plot_vo = True
 
@@ -38,6 +43,7 @@ match_text = dataset_root+'matches_with_duplicates_norm.txt'
 rgb_encoder_text = dataset_root+'encoder_rgb.txt'
 
 groundtruth_text = dataset_root+'groundtruth.txt'
+#groundtruth_text = dataset_root+'groundtruth_opti.txt'
 encoder_text = dataset_root+'encoder.txt'
 data_file_path = output_dir_path+data_file+data_ext
 
@@ -117,7 +123,6 @@ for i in range(start_count, count):
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
-
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
     ground_truth_list.append(ground_truth_acc)
 
@@ -135,6 +140,9 @@ for i in range(start_count, count):
     se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
     pose_estimate_list.append(se3_estimate_acc)
 
+
+
+print(SE3.rmse_avg_raw(ground_truth_list,pose_estimate_list, 30))
 
 
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering, title=None)

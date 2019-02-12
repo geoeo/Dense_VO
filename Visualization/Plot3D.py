@@ -96,6 +96,7 @@ def plot_rmse(se3_gt_list, se3_est_list, ax,  style = 'bx', clear = False, draw 
         rmse = rmse_list[i]
         ax.plot([i],[rmse],style)
 
+
     if draw:
         plt.draw()
         plt.pause(1)

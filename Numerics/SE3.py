@@ -232,7 +232,8 @@ def root_mean_square_error(gt_list, pose_list):
         acc += (math.pow(e_x,2.0) + math.pow(e_y,2.0) + math.pow(e_z,2.0))
 
     acc /= length
-    return math.sqrt(acc)
+    acc = math.sqrt(acc)
+    return acc
 
 def root_mean_square_error_raw(gt_start,gt_end, pose_start,pose_end):
 
@@ -291,8 +292,23 @@ def root_mean_square_error_for_consecutive_frames_raw(gt_list_raw, pose_list_raw
 
         rmse_list[i] = root_mean_square_error_raw(gt_list_raw[i],gt_list_raw[i+offset],pose_list_raw[i],pose_list_raw[i+offset])
 
+
+
+    return rmse_list
+
+def rmse_avg(gt_list, pose_list, offset):
+    rmse_list = root_mean_square_error_for_consecutive_frames_accumulated(gt_list, pose_list, offset=offset)
+    pose_list_len = len(pose_list)
     sum = np.sum(rmse_list)
-    rmse = math.sqrt(sum / length)
+    rmse_avg = sum / pose_list_len
 
-    return rmse_list, rmse
+    return rmse_avg
 
+
+def rmse_avg_raw(gt_list, pose_list, offset):
+    rmse_list = root_mean_square_error_for_consecutive_frames_raw(gt_list, pose_list, offset=offset)
+    rmse_list_len = len(rmse_list)
+    sum = np.sum(rmse_list)
+    rmse_avg = sum / rmse_list_len
+    rmse_avg = math.sqrt(rmse_avg)
+    return rmse_avg
