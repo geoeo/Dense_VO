@@ -6,9 +6,19 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
 
 # start
-start_idx = 1311868164.363181 # 2965
+#start_idx = 1311868164.363181 # 2965
+
+#start_idx = 1311868164.430940 # 3rd
 
 #start_idx = 1311868164.531025 # 6th
+
+#start_idx = 1311868165.063108 # 20
+
+#start_idx = 1311868166.331189 # 60 - rmse starts to go bad
+
+#start_idx = 1311868174.699578 # 300 - try this
+
+start_idx = 1311868250.648757 # try this
 
 #start_idx = 1311868165.999133
 
@@ -42,7 +52,7 @@ dataset_root = bench_path+xyz_dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
-match_text = dataset_root+'matches_with_duplicates.txt'
+match_text = dataset_root+'matches.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 groundtruth_dict = associate.read_file_list(groundtruth_text)
@@ -70,17 +80,17 @@ depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = False
 calc_vo = True
-plot_steering = True
+plot_steering = False
 
-max_count = 10
+max_count = 301
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
-max_its = 250
-eps = 0.0000000005  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 0.05  # 0.001, 0.008 - motion pri
+max_its = 50
+eps = 0.00000005  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 1.5  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -89,11 +99,13 @@ track_pose_estimates = True
 use_motion_prior = False
 use_ackermann = False
 
-divide_depth = False
+divide_depth = True
 debug = False
 
 additional_info = ''
-additional_info += 'solver_1_other_res_2_using_invaid_with_duplicates_no_divide'
+additional_info += 'solver_1_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag'
+if not divide_depth:
+    additional_info += '_no_depth_divide'
 
 
 info = '_' + f"{max_its}" \
@@ -137,11 +149,11 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_gt)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    #post_process_gt.post_process_in_mem(SE3_ref_target)
+    post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 

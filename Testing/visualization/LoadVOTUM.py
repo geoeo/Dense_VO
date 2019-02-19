@@ -13,7 +13,8 @@ dataset = 'rgbd_dataset_freiburg2_desk/'
 #dataset = 'rgbd_dataset_freiburg1_desk2/'
 #dataset = 'rgbd_dataset_freiburg1_xyz/'
 
-count = 250
+start_count = 0
+count = -1
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2() # f1_d2
 #post_process_gt = PostProcessGroundTruth.PostProcessTUM_F1()
@@ -22,7 +23,7 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868164.363181114_250_5e-08_1.0_0_False_True_False_False_300_1_solver_1_other_res_2_using_invaid_z_neg_with_duplicates'
+data_file = '1311868250.648756981_50_5e-08_1.5_0_False_True_False_False_31_1_solver_1_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag'
 data_ext = '.txt'
 
 print(data_file)
@@ -107,16 +108,16 @@ if count == -1:
     count = ref_list_len
 #pose_estimate_list_loaded_len = len(pose_estimate_list_loaded)
 
-for i in range(0, count):
+for i in range(start_count, count):
 
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=post_process_gt)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
-    #post_process_gt.post_process_in_mem(SE3_ref_target)
+    post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
     ground_truth_list.append(ground_truth_acc)
@@ -128,13 +129,15 @@ for i in range(0, count):
     SE3_est = pose_estimate_list_loaded[i]
 
 
-
     #SE3.post_process_pose_for_display_in_mem(se3_estimate_acc)
     se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
     pose_estimate_list.append(se3_estimate_acc)
 
 
-print(SE3.rmse_avg_raw(ground_truth_list,pose_estimate_list, 30))
+delta = 1
+if (count - 1) - start_count >= delta:
+
+    print(SE3.rmse_avg_raw(ground_truth_list,pose_estimate_list, delta))
 
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=False)
 visualizer.visualize_ground_truth(clear=True,draw=False)

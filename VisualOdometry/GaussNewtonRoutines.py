@@ -55,13 +55,14 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             #if true then invalid depth measurements are being considered
-            #if not valid_measurements[flat_index]:
-            #    continue
+            if not valid_measurements[flat_index]:
+                continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
 
-            if not 0 < y_index < height or not 0 < x_index < width:
-                valid_measurements[flat_index] = False
+            if not image_range_offset < y_index - image_range_offset < height or not image_range_offset < x_index < width - image_range_offset:
+                # res no flag
+                #valid_measurements[flat_index] = False
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             # TODO: investigate this flag in thesis
@@ -152,13 +153,13 @@ def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_
 def compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min, eps):
     variance = variance_min
     variance_prev = variance
-    max_it = 50
+    max_it = 100
     for i in range(0,max_it):
         variance = compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements,variance_prev)
         if math.fabs(variance_prev - variance) < eps or variance == 0.0:
             break
         variance_prev = variance
-        if i == 49:
+        if i == max_it-1:
             print('max variance iteration')
     return variance
 

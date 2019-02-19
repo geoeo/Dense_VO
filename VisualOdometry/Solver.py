@@ -412,7 +412,9 @@ def solve_photometric(frame_reference,
             break
 
         if use_robust:
-            variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min=1000, eps=0.00001)
+            variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements,
+                                                                   number_of_valid_measurements, variance_min=1000,
+                                                                   eps=0.00001)
             if variance > 0.0:
                 GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
 
