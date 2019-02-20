@@ -6,7 +6,7 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
 
 # start
-#start_idx = 1311868164.363181 # 2965
+start_idx = 1311868164.363181 # 2965
 
 #start_idx = 1311868164.430940 # 3rd
 
@@ -18,7 +18,7 @@ from Visualization import Visualizer, PostProcessGroundTruth
 
 #start_idx = 1311868174.699578 # 300 - try this
 
-start_idx = 1311868250.648757 # try this
+#start_idx = 1311868250.648757 # try this
 
 #start_idx = 1311868165.999133
 
@@ -52,7 +52,7 @@ dataset_root = bench_path+xyz_dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
-match_text = dataset_root+'matches.txt'
+match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
 
 groundtruth_dict = associate.read_file_list(groundtruth_text)
@@ -82,15 +82,15 @@ use_ndc = False
 calc_vo = True
 plot_steering = False
 
-max_count = 301
+max_count = 5
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
-max_its = 50
+max_its = 30
 eps = 0.00000005  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 1.5  # 0.001, 0.008 - motion pri
+alpha_step = 2.0  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -103,7 +103,7 @@ divide_depth = True
 debug = False
 
 additional_info = ''
-additional_info += 'solver_1_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag'
+additional_info += 'solver_2_valid_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag_pitch_neg_using_invalid'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 

@@ -5,14 +5,16 @@ import numpy as np
 import time
 
 
-def back_project_image(width, height, image_range_offset, reference_camera, reference_depth_image, X_back_projection,
-                       valid_measurements, use_ndc, depth_direction, max_depth ):
+def back_project_image(width, height, image_range_offset, reference_camera, reference_depth_image, target_depth_image, X_back_projection,
+                       valid_measurements,valid_measurements_target, use_ndc, depth_direction, max_depth ):
     start = time.time()
     for y in range(0, height, 1):
         for x in range(0, width, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
             depth = reference_depth_image[y, x]
+            depth_target = target_depth_image[y, x]
             valid_measurements[flat_index] = True
+            valid_measurements_target[flat_index] = True
             # For opencl maybe do this in a simple kernel before
             # Sets invalid depth measurements to False such that they do not impact the gauss newton step
             if depth == 0:
@@ -22,6 +24,8 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
                 #depth = depth_direction*1
                 valid_measurements[flat_index] = False
                 #continue
+            if depth_target == 0:
+                valid_measurements_target[flat_index] = False
             depth_ref = depth
 
             #depending on the direction of the focal length, the depth sign has to be adjusted
@@ -45,7 +49,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
     #print('Runtime for Back Project Image:', end - start)
 
 
-def compute_residual(width, height, target_index_projections, valid_measurements, target_image, reference_image,
+def compute_residual(width, height, target_index_projections, valid_measurements, valid_measurements_target, target_image, reference_image,
                      target_depth, reference_depth, v,
                      image_range_offset):
     v_sum = 0
@@ -55,12 +59,12 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             #if true then invalid depth measurements are being considered
-            if not valid_measurements[flat_index]:
-                continue
+            #if not valid_measurements[flat_index]:
+            #    continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
 
-            if not image_range_offset < y_index - image_range_offset < height or not image_range_offset < x_index < width - image_range_offset:
+            if not (image_range_offset < y_index < height - image_range_offset) or not (image_range_offset < x_index < width - image_range_offset):
                 # res no flag
                 #valid_measurements[flat_index] = False
                 continue
@@ -70,6 +74,9 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
+            flat_index_target = matrix_to_flat_index_rows(y_target, x_target, height)
+            #if not valid_measurements_target[flat_index_target]:
+            #    continue
             #error = target_image[y_target, x_target] - reference_image[y, x] #1
             error = reference_image[y, x] - target_image[y_target, x_target] #2
             v[flat_index][0] = error
@@ -150,12 +157,12 @@ def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_
     return convergence
 
 
-def compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_min, eps):
+def compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, valid_measurements_target, number_of_valid_measurements, variance_min, eps):
     variance = variance_min
     variance_prev = variance
     max_it = 100
     for i in range(0,max_it):
-        variance = compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements,variance_prev)
+        variance = compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements, valid_measurements_target, number_of_valid_measurements,variance_prev)
         if math.fabs(variance_prev - variance) < eps or variance == 0.0:
             break
         variance_prev = variance
@@ -164,11 +171,11 @@ def compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements, number
     return variance
 
 
-def compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements, number_of_valid_measurements, variance_prev):
+def compute_t_dist_variance_round(v, degrees_of_freedom, N, valid_measurements,valid_measurements_target, number_of_valid_measurements, variance_prev):
     numerator = degrees_of_freedom + 1.0
     variance = variance_prev
     for i in range(0,N):
-        if not valid_measurements[i]:
+        if not valid_measurements[i] or not valid_measurements_target[i]:
             continue
         if variance == 0.0:
             break

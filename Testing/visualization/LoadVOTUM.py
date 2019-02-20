@@ -14,7 +14,7 @@ dataset = 'rgbd_dataset_freiburg2_desk/'
 #dataset = 'rgbd_dataset_freiburg1_xyz/'
 
 start_count = 0
-count = -1
+count = 5
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2() # f1_d2
 #post_process_gt = PostProcessGroundTruth.PostProcessTUM_F1()
@@ -23,7 +23,7 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868250.648756981_50_5e-08_1.5_0_False_True_False_False_31_1_solver_1_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag'
+data_file = '1311868164.363181114_50_5e-08_2.0_0_False_True_False_False_301_1_solver_2_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag_pitch_neg'
 data_ext = '.txt'
 
 print(data_file)
@@ -134,7 +134,7 @@ for i in range(start_count, count):
     pose_estimate_list.append(se3_estimate_acc)
 
 
-delta = 1
+delta = 30
 if (count - 1) - start_count >= delta:
 
     print(SE3.rmse_avg_raw(ground_truth_list,pose_estimate_list, delta))

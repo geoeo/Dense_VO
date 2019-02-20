@@ -195,8 +195,8 @@ def solve_photometric(frame_reference,
     # Why?: Generator defines the direction of increase (My thoughts)
     generator_roll = Lie.generator_roll_3_4()
     #generator_roll = Lie.generator_roll_3_4_neg()
-    generator_pitch = Lie.generator_pitch_3_4()
-    #generator_pitch = Lie.generator_pitch_3_4_neg()
+    #generator_pitch = Lie.generator_pitch_3_4()
+    generator_pitch = Lie.generator_pitch_3_4_neg()
     generator_yaw = Lie.generator_yaw_3_4()
     #generator_yaw = Lie.generator_yaw_3_4_neg()
 
@@ -204,6 +204,7 @@ def solve_photometric(frame_reference,
     X_back_projection[3,:] = 1.0
     #X_back_projection_last_valid = np.ones((4, N), Utils.matrix_data_type)
     valid_measurements_reference = np.full(N,False)
+    valid_measurements_target = np.full(N, False)
     #valid_measurements_last = np.full(N,False)
     #valid_measurements_target = np.full(N,False)
     valid_measurements = valid_measurements_reference
@@ -216,13 +217,16 @@ def solve_photometric(frame_reference,
                                        image_range_offset,
                                        frame_reference.camera,
                                        frame_reference.pixel_depth,
+                                       frame_target.pixel_depth,
                                        X_back_projection,
                                        valid_measurements,
+                                       valid_measurements_target,
                                        use_ndc,
                                        depth_factor,
                                        max_depth)
 
     count = np.sum(valid_measurements)
+    count_target = np.sum(valid_measurements_target)
 
     z_rot = SE3.makeS03(0,0,math.pi)
     se3_rot = np.identity(4, dtype=matrix_data_type)
@@ -253,6 +257,7 @@ def solve_photometric(frame_reference,
                                                  height,
                                                  X_back_projection,
                                                  valid_measurements,
+                                                 valid_measurements_target,
                                                  frame_target.pixel_image,
                                                  frame_reference.pixel_image,
                                                  frame_target.pixel_depth,
@@ -286,81 +291,82 @@ def solve_photometric(frame_reference,
             print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
             break
 
-        if v_mean <= Gradient_step_manager.last_error_mean_abs:
-            not_better = False
-            prior_empty = False
-            if twist_prior[0] == 0 and twist_prior[1] == 0 and twist_prior[2] == 0 and twist_prior[3] == 0 and \
-                    twist_prior[4] == 0 and twist_prior[5] == 0:
-                prior_empty = True
+        # no if statement means solver 2
+        #if v_mean <= Gradient_step_manager.last_error_mean_abs:
+        not_better = False
+        prior_empty = False
+        if twist_prior[0] == 0 and twist_prior[1] == 0 and twist_prior[2] == 0 and twist_prior[3] == 0 and \
+                twist_prior[4] == 0 and twist_prior[5] == 0:
+            prior_empty = True
 
-            if use_motion_prior:
-                converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
-                                                  height,
-                                                  valid_measurements,
-                                                  W,
-                                                  J_pi,
-                                                  J_lie,
-                                                  frame_target.grad_x,
-                                                  frame_target.grad_y,
-                                                  v,
-                                                  g,
-                                                  normal_matrix,
-                                                  motion_cov_inv,
-                                                  twist_prior,
-                                                  w,
-                                                  image_range_offset)
-            else:
-                converged = GaussNewtonRoutines.gauss_newton_step(width,
-                                                  height,
-                                                  valid_measurements,
-                                                  W,
-                                                  J_pi,
-                                                  J_lie,
-                                                  frame_target.grad_x,
-                                                  frame_target.grad_y,
-                                                  v,
-                                                  g,
-                                                  normal_matrix,
-                                                  image_range_offset)
-            normal_matrix_ret = normal_matrix
-            # TODO: Investigate faster inversion with QR
-            try:
-                pseudo_inv = linalg.inv(normal_matrix)
-                #(Q,R) = linalg.qr(normal_matrix)
-                #Q_t = np.transpose(Q)
-                #R_inv = linalg.inv(R)
-                #pseudo_inv = np.multiply(R_inv,Q_t)
-            except:
-                print('Cant invert')
-                return SE_3_est
-
-            w_new = np.matmul(pseudo_inv, g)
-
-            # initial step with empty motion prior seems to be quite large
-            #if use_motion_prior and prior_empty:
-            #    w_new = np.multiply(Gradient_step_manager.current_alpha/2.0, w_new)
-            #else:
-            w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
-
-            # For using ackermann motion
-            if use_ackermann:
-                # V1
-                # inc = ackermann_pose_prior - w
-                # w_new += np.matmul(motion_cov_inv,inc)
-                # w_new += inc
-
-                # V2
-                factor = Gradient_step_manager.current_alpha
-                #factor = math.pow(Gradient_step_manager.current_alpha,it)
-                # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
-                ack_prior = ackermann_pose_prior
-
-                w_new += Lie.lie_ackermann_correction(factor, motion_cov_inv, ack_prior, w, twist_size)
-
-
+        if use_motion_prior:
+            converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
+                                              height,
+                                              valid_measurements_target,
+                                              W,
+                                              J_pi,
+                                              J_lie,
+                                              frame_target.grad_x,
+                                              frame_target.grad_y,
+                                              v,
+                                              g,
+                                              normal_matrix,
+                                              motion_cov_inv,
+                                              twist_prior,
+                                              w,
+                                              image_range_offset)
         else:
-            not_better = True
-            w_new = w_empty
+            converged = GaussNewtonRoutines.gauss_newton_step(width,
+                                              height,
+                                              valid_measurements_target,
+                                              W,
+                                              J_pi,
+                                              J_lie,
+                                              frame_target.grad_x,
+                                              frame_target.grad_y,
+                                              v,
+                                              g,
+                                              normal_matrix,
+                                              image_range_offset)
+        normal_matrix_ret = normal_matrix
+        # TODO: Investigate faster inversion with QR
+        try:
+            pseudo_inv = linalg.inv(normal_matrix)
+            #(Q,R) = linalg.qr(normal_matrix)
+            #Q_t = np.transpose(Q)
+            #R_inv = linalg.inv(R)
+            #pseudo_inv = np.multiply(R_inv,Q_t)
+        except:
+            print('Cant invert')
+            return SE_3_est
+
+        w_new = np.matmul(pseudo_inv, g)
+
+        # initial step with empty motion prior seems to be quite large
+        #if use_motion_prior and prior_empty:
+        #    w_new = np.multiply(Gradient_step_manager.current_alpha/2.0, w_new)
+        #else:
+        w_new = np.multiply(Gradient_step_manager.current_alpha, w_new)
+
+        # For using ackermann motion
+        if use_ackermann:
+            # V1
+            # inc = ackermann_pose_prior - w
+            # w_new += np.matmul(motion_cov_inv,inc)
+            # w_new += inc
+
+            # V2
+            factor = Gradient_step_manager.current_alpha
+            #factor = math.pow(Gradient_step_manager.current_alpha,it)
+            # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
+            ack_prior = ackermann_pose_prior
+
+            w_new += Lie.lie_ackermann_correction(factor, motion_cov_inv, ack_prior, w, twist_size)
+
+
+        #else:
+        #    not_better = True
+        #    w_new = w_empty
 
 
 
@@ -393,6 +399,7 @@ def solve_photometric(frame_reference,
                                                  height,
                                                  target_index_projections,
                                                  valid_measurements,
+                                                 valid_measurements_target,
                                                  frame_target.pixel_image,
                                                  frame_reference.pixel_image,
                                                  frame_target.pixel_depth,
@@ -413,7 +420,8 @@ def solve_photometric(frame_reference,
 
         if use_robust:
             variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements,
-                                                                   number_of_valid_measurements, variance_min=1000,
+                                                                   valid_measurements_target,number_of_valid_measurements,
+                                                                   variance_min=1000,
                                                                    eps=0.00001)
             if variance > 0.0:
                 GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
