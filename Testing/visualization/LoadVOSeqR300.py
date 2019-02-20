@@ -14,8 +14,9 @@ rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
 ### ds 4
-#data_file = '299337.011086615_500_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
-data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_11_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
+#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_False_120_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
+data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg_steering_0.5'
+#data_file = '299337.011086615_500_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg_save'
 ### ds 5
 #data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg_ack_corr_4'
 
@@ -29,7 +30,7 @@ post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
-count = 11
+count = -1
 start_count = 0
 plot_vo = True
 

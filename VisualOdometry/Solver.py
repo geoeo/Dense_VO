@@ -358,7 +358,7 @@ def solve_photometric(frame_reference,
             # w_new += inc
 
             # V2
-            factor = 2.0*Gradient_step_manager.current_alpha
+            factor = 4.0*Gradient_step_manager.current_alpha
             #factor = 1.0
             #factor = math.pow(Gradient_step_manager.current_alpha,it)
             # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)

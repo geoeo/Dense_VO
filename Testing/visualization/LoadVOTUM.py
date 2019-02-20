@@ -23,7 +23,7 @@ output_dir = 'output/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
-data_file = '1311868164.363181114_30_5e-08_2.0_0_False_True_False_False_5_1_solver_2_valid_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag_pitch_neg_using_invalid'
+data_file = '1311868164.363181114_10_5e-09_1.0_0_False_True_False_False_5_1_solver_2_valid_other_res_2_z_stand_with_duplicates_kernel_1_pitch_neg_new_jacobian_no_update_using_invalid'
 data_ext = '.txt'
 
 print(data_file)

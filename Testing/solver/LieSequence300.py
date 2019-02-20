@@ -102,7 +102,7 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 11
+max_count = 120
 offset = 1
 
 name = f"{start_idx:.9f}"
@@ -129,7 +129,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_steering_neg'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_steering_neg'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 
