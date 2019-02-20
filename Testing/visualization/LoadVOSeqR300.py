@@ -14,7 +14,8 @@ rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
 ### ds 4
-data_file = '299337.011086615_500_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
+#data_file = '299337.011086615_500_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
+data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_11_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
 ### ds 5
 #data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg_ack_corr_4'
 
@@ -28,7 +29,7 @@ post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
-count = 50
+count = 11
 start_count = 0
 plot_vo = True
 
@@ -141,8 +142,9 @@ for i in range(start_count, count):
     pose_estimate_list.append(se3_estimate_acc)
 
 
-
-print(SE3.rmse_avg_raw(ground_truth_list,pose_estimate_list, 30))
+delta = 30
+if (count - 1) - start_count >= delta:
+    print(SE3.rmse_avg_raw(ground_truth_list,pose_estimate_list, delta))
 
 
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering, title=None)

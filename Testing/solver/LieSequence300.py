@@ -93,7 +93,7 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True,max_difference=0.3))
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True, max_difference=0.3))
 
 #depth_factor = 5000.0
 depth_factor = 1000.0
@@ -102,12 +102,12 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 300
+max_count = 11
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 500
+max_its = 30
 eps = 0.00000000005
 alpha_step = 0.25  # 0.002 ds3, 0.0055, 0.0085 - motion pri 0.01
 gradient_monitoring_window_start = 1
@@ -118,7 +118,7 @@ track_pose_estimates = False
 use_motion_prior = False
 use_ackermann = True
 
-divide_depth = False
+divide_depth = True
 debug = False
 
 use_paper_cov = False
@@ -130,6 +130,8 @@ if use_motion_prior:
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
 additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_no_divide_steering_neg'
+if not divide_depth:
+    additional_info += '_no_depth_divide'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \

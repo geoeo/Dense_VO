@@ -21,6 +21,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
                 # this value directly influences the pose estimation!
                 # TODO write about this
                 depth = depth_direction*(1.0+max_depth)
+                #depth = depth_direction*(max_depth)
                 #depth = depth_direction*1
                 valid_measurements[flat_index] = False
                 #continue
@@ -66,7 +67,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
 
             if not (image_range_offset < y_index < height - image_range_offset) or not (image_range_offset < x_index < width - image_range_offset):
                 # res no flag
-                #valid_measurements[flat_index] = False
+                valid_measurements[flat_index] = False
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             # TODO: investigate this flag in thesis
@@ -88,7 +89,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
 
 #TODO make own gauss_newton step
 
-def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
+def gauss_newton_step_motion_prior(width, height, valid_measurements, valid_measurements_target, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
                       g, normal_matrix_return, motion_cov_inv, twist_prior, twist_prev, image_range_offset):
     convergence = False
     start = time.time()
@@ -98,7 +99,7 @@ def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
-            if not valid_measurements[flat_index]:
+            if not valid_measurements[flat_index] or not valid_measurements_target[flat_index]:
                 continue
             J_image = get_jacobian_image(target_image_grad_x, target_image_grad_y, x, y)
             J_pi_element = J_pi[flat_index]
@@ -127,14 +128,14 @@ def gauss_newton_step_motion_prior(width, height, valid_measurements, W, J_pi, J
     return convergence
 
 
-def gauss_newton_step(width, height, valid_measurements, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
+def gauss_newton_step(width, height, valid_measurements, valid_measurements_target, W, J_pi, J_lie, target_image_grad_x, target_image_grad_y, v,
                       g, normal_matrix_return, image_range_offset):
     convergence = False
     start = time.time()
     for y in range(image_range_offset, height - image_range_offset, 1):
         for x in range(image_range_offset, width - image_range_offset, 1):
             flat_index = matrix_to_flat_index_rows(y, x, height)
-            if not valid_measurements[flat_index]:
+            if not valid_measurements[flat_index] or not valid_measurements_target[flat_index]:
                 continue
             J_image = get_jacobian_image(target_image_grad_x, target_image_grad_y, x, y)
             J_pi_element = J_pi[flat_index]

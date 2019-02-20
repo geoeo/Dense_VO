@@ -82,15 +82,15 @@ use_ndc = False
 calc_vo = True
 plot_steering = False
 
-max_count = 5
+max_count = 11
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 30
-eps = 0.00000005  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 2.0  # 0.001, 0.008 - motion pri
+eps = 0.000000005  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 1.0  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -103,7 +103,7 @@ divide_depth = True
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_valid_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag_pitch_neg_using_invalid'
+additional_info += 'solver_2_valid_other_res_2_z_stand_with_duplicates_kernel_1_res_no_flag_pitch_neg_new_jacobian_using_invalid'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 

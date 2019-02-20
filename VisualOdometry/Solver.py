@@ -253,17 +253,17 @@ def solve_photometric(frame_reference,
 
     #target_index_projections_id = frame_target.camera.apply_perspective_pipeline(I_4)
 
-    v_id = GaussNewtonRoutines.compute_residual(width,
-                                                 height,
-                                                 X_back_projection,
-                                                 valid_measurements,
-                                                 valid_measurements_target,
-                                                 frame_target.pixel_image,
-                                                 frame_reference.pixel_image,
-                                                 frame_target.pixel_depth,
-                                                 frame_reference.pixel_depth,
-                                                 v_id,
-                                                 image_range_offset)
+    GaussNewtonRoutines.compute_residual(width,
+                                         height,
+                                         X_back_projection,
+                                         valid_measurements,
+                                         valid_measurements_target,
+                                         frame_target.pixel_image,
+                                         frame_reference.pixel_image,
+                                         frame_target.pixel_depth,
+                                         frame_reference.pixel_depth,
+                                         v_id,
+                                         image_range_offset)
 
     v = v_id
 
@@ -302,6 +302,7 @@ def solve_photometric(frame_reference,
         if use_motion_prior:
             converged = GaussNewtonRoutines.gauss_newton_step_motion_prior(width,
                                               height,
+                                              valid_measurements,
                                               valid_measurements_target,
                                               W,
                                               J_pi,
@@ -318,6 +319,7 @@ def solve_photometric(frame_reference,
         else:
             converged = GaussNewtonRoutines.gauss_newton_step(width,
                                               height,
+                                              valid_measurements,
                                               valid_measurements_target,
                                               W,
                                               J_pi,
@@ -356,7 +358,8 @@ def solve_photometric(frame_reference,
             # w_new += inc
 
             # V2
-            factor = Gradient_step_manager.current_alpha
+            factor = 2.0*Gradient_step_manager.current_alpha
+            #factor = 1.0
             #factor = math.pow(Gradient_step_manager.current_alpha,it)
             # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
             ack_prior = ackermann_pose_prior
