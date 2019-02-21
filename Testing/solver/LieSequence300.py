@@ -100,6 +100,7 @@ depth_factor = 1000.0
 #depth_factor = 1.0
 use_ndc = False
 calc_vo = True
+only_steering = False
 plot_steering = True
 
 max_count = 120
@@ -129,9 +130,11 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_steering_neg'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_steering_neg_correction_2'
 if not divide_depth:
     additional_info += '_no_depth_divide'
+if only_steering:
+    additional_info += '_only_steering'
 
 info = '_' + f"{max_its}" \
        + '_' + f"{eps}" \
@@ -301,7 +304,6 @@ for i in range(0, len(ref_image_list)):
         twist_prior = np.multiply(1.0,solver_manager.twist_final)
 
 
-
     #twist_prior = ackermann_twist
 
     #twist_prior = np.add(twist_prior,solver_manager.twist_final)
@@ -312,9 +314,12 @@ for i in range(0, len(ref_image_list)):
         se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
         pose_estimate_list.append(se3_estimate_acc)
         vo_twist_list.append(solver_manager.twist_final)
+    elif only_steering:
+        vo_twist_list.append(ackermann_twist)
+
 print("visualizing..")
 
-if calc_vo:
+if calc_vo or only_steering:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
 visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering,title=None)

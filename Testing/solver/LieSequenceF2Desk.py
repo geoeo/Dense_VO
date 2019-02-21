@@ -82,15 +82,15 @@ use_ndc = False
 calc_vo = True
 plot_steering = False
 
-max_count = 31
+max_count = 120
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 30
-eps = 0.00000005  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 1.0  # 0.001, 0.008 - motion pri
+eps = 0.000005  #0.001, 0.00001, 0.00005, 0.00000001
+alpha_step = 2.0  # 0.001, 0.008 - motion pri
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
