@@ -436,10 +436,10 @@ def solve_photometric(frame_reference,
                 GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
 
 
+        v_weighted = np.copy(v)
+        GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v_weighted,N,valid_measurements)
 
-        #GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
-
-        v_sum = np.matmul(np.transpose(v),v)[0][0]
+        v_sum = np.matmul(np.transpose(v),v_weighted)[0][0]
 
         end = time.time()
 
