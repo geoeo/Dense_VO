@@ -265,7 +265,8 @@ def solve_photometric(frame_reference,
                                          v_id,
                                          image_range_offset)
 
-    v = v_id
+    v = np.copy(v_id)
+    W = np.ones((1, N), dtype=matrix_data_type, order='F')
 
     for it in range(0, max_its, 1):
         start = time.time()
@@ -273,7 +274,7 @@ def solve_photometric(frame_reference,
         #TODO: investigate preallocate and clear in a for loop
         g = np.zeros((twist_size, 1))
         normal_matrix = np.identity(twist_size, dtype=matrix_data_type)
-        W = np.ones((1,N), dtype=matrix_data_type,order='F')
+
 
         # TODO investigate performance impact
         if track_pose_estimates:
@@ -331,18 +332,20 @@ def solve_photometric(frame_reference,
                                               normal_matrix,
                                               image_range_offset)
         normal_matrix_ret = normal_matrix
-        # TODO: Investigate faster inversion with QR
-        try:
-            pseudo_inv = linalg.inv(normal_matrix)
-            #(Q,R) = linalg.qr(normal_matrix)
-            #Q_t = np.transpose(Q)
-            #R_inv = linalg.inv(R)
-            #pseudo_inv = np.multiply(R_inv,Q_t)
-        except:
-            print('Cant invert')
-            return SE_3_est
 
-        w_new = np.matmul(pseudo_inv, g)
+        #try:
+        #    pseudo_inv = linalg.inv(normal_matrix)
+        #except:
+        #    print('Cant invert')
+        #    return SE_3_est
+
+        #w_new = np.matmul(pseudo_inv, g)
+
+        try:
+            w_new = linalg.solve(normal_matrix, g)
+        except:
+            print('Cant solve')
+            return SE_3_est
 
         # initial step with empty motion prior seems to be quite large
         #if use_motion_prior and prior_empty:
@@ -358,8 +361,8 @@ def solve_photometric(frame_reference,
             # w_new += inc
 
             # V2
-            factor = 6.0*Gradient_step_manager.current_alpha
-            #factor = 1.0
+            #factor = 0.1*Gradient_step_manager.current_alpha
+            factor = 1.5
             #factor = math.pow(Gradient_step_manager.current_alpha,it)
             # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
             ack_prior = ackermann_pose_prior
@@ -427,11 +430,14 @@ def solve_photometric(frame_reference,
                                                                    variance_min=1000,
                                                                    eps=0.00001)
             if variance > 0.0:
+                # clear old weights
+                for i in range(0,N):
+                    W[0,i] = 1
                 GaussNewtonRoutines.generate_weight_matrix(W, v, variance, degrees_of_freedom, N)
 
 
 
-        GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
+        #GaussNewtonRoutines.multiply_v_by_diagonal_matrix(W,v,N,valid_measurements)
 
         v_sum = np.matmul(np.transpose(v),v)[0][0]
 
@@ -445,37 +451,11 @@ def solve_photometric(frame_reference,
 
         if number_of_valid_measurements > 0:
             v_mean = v_sum / number_of_valid_measurements
+            #v_mean = v_sum
         else:
             v_mean = 10000
 
 
-
-
-    # For using ackermann motion v2
-    if use_ackermann:
-        # V1
-        # inc = ackermann_pose_prior - w
-        # w_new += np.matmul(motion_cov_inv,inc)
-        # w_new += inc
-
-        # V2
-        factor = 2.0*Gradient_step_manager.current_alpha
-        #factor = 1.0
-        # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
-        ack_prior = ackermann_pose_prior
-
-        #w_inc = Lie.lie_ackermann_correction(factor, motion_cov_inv, ack_prior, w, twist_size)
-        #w += w_inc
-        #R_ack, t_ack = Lie.exp(w,twist_size)
-        #SE_3_est = np.append(np.append(R_ack, t_ack, axis=1), homogeneous_se3_padding, axis=0)
-
     motion_cov_inv = normal_matrix_ret
-
-
-    #w[3] = 0
-    #w[4] = 0
-    #w[5] = 0
-
-    #w /= np.linalg.norm(w)
 
     return SE_3_est, w, motion_cov_inv
