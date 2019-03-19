@@ -103,16 +103,16 @@ class Linear:
         self.V[0, 0] = vx + ax*dt
         self.V[0, 1] = 0.5*dt*dt
         self.V[1, 0] = vy + ay*dt
-        self.V[1, 1] = 0.5*dt*dt
+        self.V[1, 2] = 0.5*dt*dt
         self.V[2, 0] = vz + az*dt
-        self.V[2, 1] = 0.5*dt*dt
+        self.V[2, 3] = 0.5*dt*dt
 
         self.V[3, 0] = ax
         self.V[3, 1] = dt
         self.V[4, 0] = ay
-        self.V[4, 1] = dt
+        self.V[4, 2] = dt
         self.V[5, 0] = az
-        self.V[5, 1] = dt
+        self.V[5, 3] = dt
 
         G_t = np.transpose(self.G)
         V_t = np.transpose(self.V)

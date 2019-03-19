@@ -85,10 +85,11 @@ vo_twist_list = []
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = False
+calc_vo = True
 plot_steering = False
+only_steering = True
 
-max_count = 80
+max_count = 20
 offset = 1
 
 #TODO investigate index after rounding
@@ -96,7 +97,7 @@ name = f"{start_idx:.9f}"
 
 max_its = 30
 eps = 0.00005
-alpha_step = 25
+alpha_step = 10
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 #TODO investigate this when realtime implementation is ready
@@ -113,6 +114,8 @@ additional_info = ''
 additional_info += 'scharr_new_W'
 if not divide_depth:
     additional_info += '_no_depth_divide'
+if only_steering:
+    additional_info += '_only_steering'
 
 
 info = '_' + f"{max_its}" \
@@ -226,7 +229,7 @@ for i in range(0, len(ref_image_list)):
     linear_cov = linear_cov_list[i]
     linear_cov_large = Linear.generate_6DOF_cov_from_motion_model_cov(linear_cov)
     linear_cov_large_inv = np.linalg.inv(linear_cov_large)
-    #ackermann_twist = ackermann_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
+    linear_twist = linear_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
 
     solver_manager = SolverThreadManager.Manager(1,
                                                  "Solver Manager",
@@ -259,9 +262,11 @@ for i in range(0, len(ref_image_list)):
         se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
         pose_estimate_list.append(se3_estimate_acc)
         vo_twist_list.append(solver_manager.twist_final)
+    elif only_steering:
+        vo_twist_list.append(linear_twist)
 print("visualizing..")
 
-if calc_vo:
+if calc_vo or only_steering:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
 visualizer.visualize_ground_truth(clear=True,draw=False)
