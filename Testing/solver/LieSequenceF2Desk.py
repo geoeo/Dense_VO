@@ -87,9 +87,12 @@ depth_factor = 5000.0
 use_ndc = True
 calc_vo = True
 plot_steering = False
-only_steering = True
+only_steering = False
 
-max_count = 20
+if calc_vo:
+    assert not only_steering
+
+max_count = 10
 offset = 1
 
 #TODO investigate index after rounding
@@ -97,7 +100,7 @@ name = f"{start_idx:.9f}"
 
 max_its = 30
 eps = 0.00005
-alpha_step = 10
+alpha_step = 1
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 #TODO investigate this when realtime implementation is ready
@@ -111,7 +114,7 @@ divide_depth = True
 debug = False
 
 additional_info = ''
-additional_info += 'scharr_new_W'
+additional_info += 'scharr_new_W_motion_1.0'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 if only_steering:
@@ -166,6 +169,9 @@ if len(ref_files_failed_to_load) > 0:
 
 for i in range(0, len(ref_id_list)):
 
+    ref_id_prev = None
+    if i > 1:
+        ref_id_prev = ref_id_list[i-1]
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
@@ -183,7 +189,16 @@ for i in range(0, len(ref_id_list)):
 
     acceleration_ts = float(rgb_acceleration_dict[ref_id][0])
     acceleration_values = acceleration_dict[acceleration_ts]
-    acceleration_command = AccelerationCommand(float(acceleration_values[0]),float(acceleration_values[1]),float(acceleration_values[2]))
+    if ref_id_prev:
+        acceleration_ts_prev = float(rgb_acceleration_dict[ref_id][0])
+        acceleration_values_prev = acceleration_dict[acceleration_ts_prev]
+
+        acceleration_values_avg_x = (float(acceleration_values[0]) + float(acceleration_values_prev[0]))/2.0
+        acceleration_values_avg_y = (float(acceleration_values[1]) + float(acceleration_values_prev[1]))/2.0
+        acceleration_values_avg_z = (float(acceleration_values[2]) + float(acceleration_values_prev[2]))/2.0
+        acceleration_command = AccelerationCommand(acceleration_values_avg_x,acceleration_values_avg_y,acceleration_values_avg_z)
+    else:
+        acceleration_command = AccelerationCommand(float(acceleration_values[0]),float(acceleration_values[1]),float(acceleration_values[2]))
 
     acceleration_list.append(acceleration_command)
 
@@ -247,6 +262,8 @@ for i in range(0, len(ref_image_list)):
                                                  use_robust=use_robust,
                                                  track_pose_estimates=track_pose_estimates,
                                                  use_motion_prior=use_motion_prior,
+                                                 ackermann_pose_prior=linear_twist,
+                                                 use_ackermann=use_ackermann,
                                                  debug=debug)
 
     if calc_vo:

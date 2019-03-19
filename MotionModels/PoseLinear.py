@@ -34,7 +34,7 @@ class PoseLinear:
 
 
     def get_6dof_twist(self, normalize=False):
-        twist = np.array([[self.delta_x],[self.delta_y],[-self.delta_z],[0],[0],[0]],dtype=Utils.matrix_data_type)
+        twist = np.array([[self.delta_y],[self.delta_x],[-self.delta_z],[0],[0],[0]],dtype=Utils.matrix_data_type)
         if normalize:
             twist /= np.linalg.norm(twist)
         return twist

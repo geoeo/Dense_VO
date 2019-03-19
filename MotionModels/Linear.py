@@ -35,16 +35,16 @@ def generate_6DOF_cov_from_motion_model_cov(cov_linear):
 
     covariance_current_large = np.identity(6, dtype=matrix_data_type)
 
-    covariance_current_large[x_offset,x_offset] = cov_linear[0,0]
-    covariance_current_large[x_offset,y_offset] = cov_linear[0,1]
-    covariance_current_large[x_offset,z_offset] = cov_linear[0,2]
+    covariance_current_large[x_offset,x_offset] = cov_linear[1,1]
+    covariance_current_large[x_offset,y_offset] = cov_linear[1,0]
+    covariance_current_large[x_offset,z_offset] = cov_linear[1,2]
 
-    covariance_current_large[y_offset,x_offset] = cov_linear[1,0]
-    covariance_current_large[y_offset,y_offset] = cov_linear[1,1]
-    covariance_current_large[y_offset,z_offset] = cov_linear[1,2]
+    covariance_current_large[y_offset,x_offset] = cov_linear[0,1]
+    covariance_current_large[y_offset,y_offset] = cov_linear[0,0]
+    covariance_current_large[y_offset,z_offset] = cov_linear[0,2]
 
-    covariance_current_large[z_offset,x_offset] = cov_linear[2,0]
-    covariance_current_large[z_offset,y_offset] = cov_linear[2,1]
+    covariance_current_large[z_offset,x_offset] = cov_linear[2,1]
+    covariance_current_large[z_offset,y_offset] = cov_linear[2,0]
     covariance_current_large[z_offset,z_offset] = cov_linear[2,2]
 
     return covariance_current_large
@@ -118,6 +118,7 @@ class Linear:
         V_t = np.transpose(self.V)
 
         cov_est = np.matmul(self.G,np.matmul(self.covariance_prev,G_t)) + np.matmul(self.V,V_t)
+        #cov_est = np.identity(6, dtype=matrix_data_type)
 
         # set for next iteration
         self.covariance_prev = np.copy(cov_est)

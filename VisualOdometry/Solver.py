@@ -363,7 +363,7 @@ def solve_photometric(frame_reference,
 
             # V2
             #factor = 0.1*Gradient_step_manager.current_alpha
-            factor = 1.5
+            factor = 1.0
             #factor = math.pow(Gradient_step_manager.current_alpha,it)
             # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
             ack_prior = ackermann_pose_prior
@@ -395,7 +395,7 @@ def solve_photometric(frame_reference,
         #SE_3_current = np.append(np.append(R_cur, t_cur, axis=1), homogeneous_se3_padding, axis=0)
         SE_3_est = np.append(np.append(R_est, t_est, axis=1), homogeneous_se3_padding, axis=0)
 
-        debug_list  = [i for i, x in enumerate(valid_measurements) if x]
+        #debug_list  = [i for i, x in enumerate(valid_measurements) if x]
 
         Y_est = np.matmul(SE_3_est, X_back_projection)
 

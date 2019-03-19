@@ -44,7 +44,8 @@ ext = '.png'
 #data_file = '1311868164.363181114_30_5e-05_0.1_0_True_True_False_False_10_1_solver_2_valid_other_res_2_z_stand_with_duplicates_scharr_pitch_neg_new_jacobian_no_update_using_invalid_res_no_flag_new_W'
 
 #data_file = '1311868164.363181114_30_5e-05_10_0_True_True_True_False_80_1_scharr_new_W_only_steering'
-data_file = '1311868164.363181114_30_5e-05_10_0_True_True_True_False_20_1_scharr_new_W_only_steering'
+#data_file = '1311868164.363181114_30_5e-05_10_0_True_True_True_False_20_1_scharr_new_W_only_steering'
+data_file = '1311868164.363181114_30_5e-05_1_0_True_True_True_False_10_1_scharr_new_W_motion_1.0_only_steering'
 
 
 
