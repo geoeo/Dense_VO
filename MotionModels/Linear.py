@@ -1,6 +1,6 @@
 from MotionModels.LinearDeltaRobot import LinearDeltaRobot
 from MotionModels.AccelerationCommand import AccelerationCommand
-from MotionModels.PoseConstant import PoseConstant
+from MotionModels.PoseLinear import PoseLinear
 from Numerics.Utils import matrix_data_type
 from Numerics import Utils
 import numpy as np
@@ -54,7 +54,7 @@ def generate_6DOF_cov_from_motion_model_cov_list(cov_small_list):
 
 
 
-class Ackermann:
+class Linear:
 
     def __init__(self, steering_command_list, dt_list):
 
@@ -75,18 +75,18 @@ class Ackermann:
         dt_list_length = len(dt_list)
 
         assert acc_list_length == dt_list_length
-        pose_prev = PoseConstant()
+        pose_prev = PoseLinear()
 
         for i in range(0,acc_list_length):
             dt = dt_list[i]
             acc_cmd = acc_input_list[i]
-            pose = PoseConstant()
+            pose = PoseLinear()
             pose.apply_world_motion(pose_prev, dt, acc_cmd.ax, acc_cmd.ay, acc_cmd.az)
             self.pose_delta_list.append(pose)
             pose_prev = pose
 
 
-    def covariance_dead_reckoning(self, acceleration_input : AccelerationCommand, pose_prev, dt):
+    def covariance(self, acceleration_input : AccelerationCommand, pose_prev, dt):
 
         ax = acceleration_input.ax
         ay = acceleration_input.ay
@@ -96,9 +96,9 @@ class Ackermann:
         vy = pose_prev.v_y
         vz = pose_prev.v_z
 
-        self.G[0, 4] = dt
-        self.G[1, 5] = dt
-        self.G[2, 6] = dt
+        self.G[0, 3] = dt
+        self.G[1, 4] = dt
+        self.G[2, 5] = dt
 
         self.V[0, 0] = vx + ax*dt
         self.V[0, 1] = 0.5*dt*dt
@@ -125,7 +125,7 @@ class Ackermann:
         return cov_est
 
 
-    def covariance_dead_reckoning_for_command_list(self, acc_input_list, dt_list):
+    def covariance_for_command_list(self, acc_input_list, dt_list):
         self.set_linear_velocity_for_list(acc_input_list, dt_list)
 
         acc_list_len = len(acc_input_list)
@@ -140,14 +140,13 @@ class Ackermann:
 
         commands = zip(acc_input_list, self.pose_delta_list, dt_list)
 
-        for (steering_command,motion_delta,dt) in commands:
+        for (acceleration, motion_delta, dt) in commands:
             #self.pose.apply_motion(motion_delta, dt)
             # TODO investigate which theta to use
             # this might actually be better since we are interested in the uncertainty only in this timestep
-            theta = motion_delta.delta_theta
             # traditional uses accumulated theta
             #theta = self.pose.theta
-            motion_cov = self.covariance_dead_reckoning(steering_command, theta, dt)
+            motion_cov = self.covariance(acceleration, motion_delta, dt)
             cov_list.append(motion_cov)
 
         return cov_list

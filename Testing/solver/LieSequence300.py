@@ -117,7 +117,7 @@ offset = 1
 name = f"{start_idx:.9f}"
 
 max_its = 30
-eps = 0.0000000000000000005
+eps = 0.0000000005
 alpha_step = 10.0
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
@@ -138,7 +138,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_acker_new_pi_1.5_scharr_solve_new_W'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 if only_steering:

@@ -3,7 +3,7 @@ from Numerics import Utils
 import numpy as np
 import math
 
-class PoseConstant:
+class PoseLinear:
 
     def __init__(self):
 
@@ -11,9 +11,9 @@ class PoseConstant:
         self.delta_y = 0.0
         self.delta_z = 0.0
 
-        self.v_x = 0.0
-        self.v_y = 0.0
-        self.v_z = 0.0
+        self.delta_v_x = 0.0
+        self.delta_v_y = 0.0
+        self.delta_v_z = 0.0
 
     def apply_world_motion(self, linear_delta_robot, dt, ax, ay, az):
         delta_x = linear_delta_robot.delta_x

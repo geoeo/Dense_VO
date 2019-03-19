@@ -4,6 +4,9 @@ from Camera import Intrinsic, Camera
 from VisualOdometry import Frame, SolverThreadManager
 from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
+from MotionModels.AccelerationCommand import AccelerationCommand
+from MotionModels import Linear
+
 
 # start
 start_idx = 1311868164.363181 # 2965
@@ -52,8 +55,11 @@ dataset_root = bench_path+xyz_dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
 depth_text = dataset_root+'depth.txt'
+acceleration_text = dataset_root+'accelerometer.txt'
+
 match_text = dataset_root+'matches_with_duplicates.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
+acceleration_match = dataset_root+ 'accelerometer_rgb_matches.txt'
 
 groundtruth_dict = associate.read_file_list(groundtruth_text)
 
@@ -79,7 +85,7 @@ vo_twist_list = []
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = True
-calc_vo = True
+calc_vo = False
 plot_steering = False
 
 max_count = 80
@@ -123,8 +129,12 @@ info = '_' + f"{max_its}" \
 if additional_info:
     info += '_' + additional_info
 
+acceleration_list = []
+
 match_dict = associate.read_file_list(match_text)
 image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text, max_difference=0.2,with_duplicates=True))
+rgb_acceleration_dict = associate.read_file_list(acceleration_match)
+acceleration_dict = associate.read_file_list(acceleration_text)
 
 post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2()
 
@@ -140,6 +150,12 @@ ref_id_list, target_id_list, ref_files_failed_to_load = ListGenerator.generate_f
     ground_truth_dict=image_groundtruth_dict,
     match_dict = match_dict,
     reverse=False)
+
+dt_list = ListGenerator.generate_time_step_list(
+    rgb_files,
+    start=start,
+    max_count=max_count,
+    offset=offset)
 
 if len(ref_files_failed_to_load) > 0:
     print(ref_files_failed_to_load)
@@ -162,6 +178,12 @@ for i in range(0, len(ref_id_list)):
     ref_image_list.append((im_greyscale_reference, im_depth_reference))
     target_image_list.append((im_greyscale_target, im_depth_target))
 
+    acceleration_ts = float(rgb_acceleration_dict[ref_id][0])
+    acceleration_values = acceleration_dict[acceleration_ts]
+    acceleration_command = AccelerationCommand(float(acceleration_values[0]),float(acceleration_values[1]),float(acceleration_values[2]))
+
+    acceleration_list.append(acceleration_command)
+
 
 im_greyscale_reference_1, im_depth_reference_1 = ref_image_list[0]
 (image_height, image_width) = im_greyscale_reference_1.shape
@@ -175,6 +197,9 @@ if use_ndc:
 
 camera_reference = Camera.Camera(intrinsic_identity, se3_identity)
 camera_target = Camera.Camera(intrinsic_identity, se3_identity)
+
+linear_motion = Linear.Linear(acceleration_list, dt_list)
+linear_cov_list = linear_motion.covariance_for_command_list(acceleration_list, dt_list)
 
 visualizer = Visualizer.Visualizer(ground_truth_list)
 
@@ -197,6 +222,11 @@ for i in range(0, len(ref_image_list)):
     # We only need the gradients of the target frame
     frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
     frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
+
+    linear_cov = linear_cov_list[i]
+    linear_cov_large = Linear.generate_6DOF_cov_from_motion_model_cov(linear_cov)
+    linear_cov_large_inv = np.linalg.inv(linear_cov_large)
+    #ackermann_twist = ackermann_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
 
     solver_manager = SolverThreadManager.Manager(1,
                                                  "Solver Manager",
