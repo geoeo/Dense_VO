@@ -9,6 +9,7 @@ from VisualOdometry import GradientStepManager
 from VisualOdometry import GaussNewtonRoutines
 from Visualization import Plot3D
 import time
+from sys import  maxsize
 
 def solve_SE3(X, Y, max_its, eps):
     # init
@@ -147,7 +148,7 @@ def solve_photometric(frame_reference,
     stacked_obs_size = position_vector_size * N
     homogeneous_se3_padding = Utils.homogenous_for_SE3()
     variance = -1
-    v_mean = 1000
+    v_mean = maxsize
     image_range_offset = image_range_offset_start
     degrees_of_freedom = 5.0 # empirically derived: see paper
     normal_matrix_ret = np.identity(6, dtype=Utils.matrix_data_type)
@@ -362,7 +363,7 @@ def solve_photometric(frame_reference,
 
             # V2
             #factor = 0.1*Gradient_step_manager.current_alpha
-            factor = 1.5
+            factor = 1.0
             #factor = math.pow(Gradient_step_manager.current_alpha,it)
             # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
             ack_prior = ackermann_pose_prior
@@ -451,9 +452,8 @@ def solve_photometric(frame_reference,
 
         if number_of_valid_measurements > 0:
             v_mean = v_sum / number_of_valid_measurements
-            #v_mean = v_sum
         else:
-            v_mean = 10000
+            v_mean = maxsize
 
 
     motion_cov_inv = normal_matrix_ret

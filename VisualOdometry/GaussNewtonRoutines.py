@@ -67,13 +67,13 @@ def compute_residual(width, height, target_index_projections, valid_measurements
 
             if not (image_range_offset < y_index < height - image_range_offset) or not (image_range_offset < x_index < width - image_range_offset):
                 # res no flag - these have to be disabled for R300 since the depth image is very sparse!
-                #valid_measurements[flat_index] = False
+                valid_measurements[flat_index] = False
                 continue
             # A newer SE3 estimate might re-validate a sample / pixel
             # TODO: investigate this flag in thesis
             # Might set invalid depth measurements to True such that they can contribute to the residual
             # res no flag - these have to be disabled for R300 since the depth image is very sparse!
-            #valid_measurements[flat_index] = True
+            valid_measurements[flat_index] = True
             x_target = math.floor(x_index)
             y_target = math.floor(y_index)
             flat_index_target = matrix_to_flat_index_rows(y_target, x_target, height)

@@ -67,7 +67,7 @@ class Ackermann:
         self.M = np.identity(2,dtype=matrix_data_type) # noise parameters
         self.G = np.identity(3, dtype=matrix_data_type)
         self.V = np.zeros((3,2), dtype=matrix_data_type)
-        self.pose = Pose()
+        #self.pose = Pose()
         self.steering_command_list = steering_command_list
         self.dt_list = dt_list
         self.cov_list = None # Will be populated when the motion model is run
@@ -75,7 +75,7 @@ class Ackermann:
         #self.pose_list = None # Will be populated when the motion model is run
 
 
-
+    #Local (maybe there should be a dt here?)
     def ackermann_dead_reckoning_delta(self, steering_input : SteeringCommands):
 
         new_motion_delta = MotionDeltaRobot()
@@ -94,6 +94,9 @@ class Ackermann:
         new_motion_delta.delta_x = linear_velocity
         # wheel diameter TODO write about this
         new_motion_delta.delta_x *= 0.0269*math.pi
+        #new_motion_delta.delta_x *= 0.1
+        #new_motion_delta.delta_theta *= 0.1
+        new_motion_delta.delta_theta *= 0.0269*math.pi
 
         return new_motion_delta
 
@@ -158,7 +161,7 @@ class Ackermann:
         commands = zip(steering_input_list, self.pose_delta_list, dt_list)
 
         for (steering_command,motion_delta,dt) in commands:
-            self.pose.apply_motion(motion_delta, dt)
+            #self.pose.apply_motion(motion_delta, dt)
             # TODO investigate which theta to use
             # this might actually be better since we are interested in the uncertainty only in this timestep
             theta = motion_delta.delta_theta

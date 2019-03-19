@@ -13,12 +13,42 @@ output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
+### ds 2
+#data_file = '298681.172680459_30_5e-11_0.25_0_False_True_False_False_30_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_pitch_norm_neg_correction_2_steering_0.5_only_steering'
 ### ds 4
+#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_False_301_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_only_steering' #<-
 #data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_False_120_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
-data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_neg_correction_2_steering_1'
-#data_file = '299337.011086615_500_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg_save'
+#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_True_False_120_1_False_False_True_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_neg_correction_2'
+#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_False_301_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr' #<- VO
+#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve' # <- VO
+#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_True_301_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr'
+#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_1.0'
+#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_1.5'
+#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_True_False_120_1_False_False_True_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_cov_switch'
+#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_True_301_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr' #<-
+
+#data_file = '299337.011086615_30_5e-10_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve_new_W' # VO
+#data_file = '299337.011086615_30_5e-10_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve_new_W'
+#data_file = '299337.011086615_30_5e-10_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
+data_file = '299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
+#data_file = '299337.011086615_30_5e-19_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
+
+###
+
+#data_file = '299346.671264740_30_5e-11_2.5_0_False_True_False_False_180_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve' # VO ds5 trans
+
+
 ### ds 5
-#data_file = '299475.190163022_50_5e-09_0.15_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg_ack_corr_4'
+#data_file = '299475.190163022_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_only_steering'
+#data_file = '299475.190163022_30_5e-11_0.25_0_False_True_False_False_120_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_neg_correction_2'
+#data_file = '299475.190163022_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_1.5_only_steering'
+#data_file = '299475.190163022_30_5e-11_2.5_0_False_True_False_True_301_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_only_steering' #<-
+#data_file = '299475.190163022_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_1.5'
+#data_file = '299475.190163022_30_5e-11_2.5_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr' #<-
+#data_file = '299475.190163022_30_5e-11_2.5_0_False_True_False_True_301_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr' #<-
+#data_file = '299475.190163022_30_5e-11_2.5_0_False_True_False_False_301_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr' #<- VO
+
+#data_file = '299475.190163022_30_5e-11_2.5_10_False_True_False_False_300_1_False_False_False_rgb_rect_depth_large_rect_norm_depth_large_rect_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr'
 
 data_ext = '.txt'
 
@@ -30,7 +60,7 @@ post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
-count = -1
+count = 300
 start_count = 0
 plot_vo = True
 
@@ -125,7 +155,8 @@ for i in range(start_count, count):
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
-    ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
+    #ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
+    ground_truth_acc = np.matmul(SE3_ref_target,ground_truth_acc)
     ground_truth_list.append(ground_truth_acc)
 
     ref_image_list.append((im_greyscale_reference, im_depth_reference))

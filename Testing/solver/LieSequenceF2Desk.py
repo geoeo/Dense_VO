@@ -16,7 +16,7 @@ start_idx = 1311868164.363181 # 2965
 
 #start_idx = 1311868166.331189 # 60 - rmse starts to go bad
 
-#start_idx = 1311868174.699578 # 300 - try this
+#start_idx = 1311868174.699578 # only works with 180 frames
 
 #start_idx = 1311868250.648757 # try this
 
@@ -78,32 +78,33 @@ vo_twist_list = []
 
 depth_factor = 5000.0
 #depth_factor = 1.0
-use_ndc = False
+use_ndc = True
 calc_vo = True
 plot_steering = False
 
-max_count = 120
+max_count = 80
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 30
-eps = 0.000005  #0.001, 0.00001, 0.00005, 0.00000001
-alpha_step = 2.0  # 0.001, 0.008 - motion pri
+eps = 0.00005
+alpha_step = 25
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
+#TODO investigate this when realtime implementation is ready
 use_ndc = use_ndc
 use_robust = True
-track_pose_estimates = True
-use_motion_prior = False
+track_pose_estimates = False
+use_motion_prior = True
 use_ackermann = False
 
 divide_depth = True
 debug = False
 
 additional_info = ''
-additional_info += 'solver_2_valid_other_res_2_z_stand_with_duplicates_kernel_1_pitch_neg_new_jacobian_no_update_using_invalid_res_no_flag'
+additional_info += 'scharr_new_W'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 

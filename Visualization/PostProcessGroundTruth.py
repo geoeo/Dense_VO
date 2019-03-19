@@ -84,9 +84,9 @@ class PostProcessTUW_R300_DS5:
         x = se3[0, 3]
         y = se3[1, 3]
         z = se3[2, 3]
-        #se3[0, 3] = -x
+        #se3[0, 3] = -y
         #se3[1, 3] = z
-        #se3[2, 3] = y
+        #se3[2, 3] = -x
 
         se3[0, 3] = -x
         se3[1, 3] = z

@@ -5,15 +5,20 @@ import os
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'marc_1_full/'
+dataset = 'marc_4_full/'
 
 
-rgb_text = bench_path + dataset + 'rgb.txt'
-depth_text = bench_path + dataset + 'depth_large_norm.txt'
+rgb_text = bench_path + dataset + 'rgb_rect.txt'
+depth_text = bench_path + dataset + 'depth_large_rect_norm.txt'
+match_file = bench_path + dataset + 'matches_rect_with_duplicates_norm.txt'
+
+#rgb_text = bench_path + dataset + 'rgb_rect.txt'
+#depth_text = bench_path + dataset + 'encoder.txt'
+#match_file = bench_path + dataset + 'encoder_rgb_rect.txt'
+
 with_duplicates_for_steering = True
+matches = associate.match(rgb_text,depth_text,with_duplicates=with_duplicates_for_steering,max_difference=10.0)
 
-matches = associate.match(rgb_text,depth_text,with_duplicates=with_duplicates_for_steering,max_difference=0.3)
-match_file = bench_path + dataset + 'matches_with_duplicates_norm.txt'
 
 try:
     os.remove(match_file)

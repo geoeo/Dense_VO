@@ -52,24 +52,24 @@ use_ndc = False
 calc_vo = True
 plot_steering = True
 
-max_count = 100
+max_count = 120
 offset = 1
 
 name = f"{start_idx:.9f}"
 
-max_its = 100
+max_its = 30
 eps = 0.00005
-alpha_step = 2.0
+alpha_step = 10.0
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
-track_pose_estimates = True
+track_pose_estimates = False
 use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = 'other_res_2_using_invalid_z_neg'
+additional_info = 'other_solver_1_z_neg_no_res_flag_scharr_new_W'
 
 
 info = '_' + f"{max_its}" \
@@ -112,11 +112,11 @@ for i in range(0, len(ref_id_list)):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_gt)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,target_id)
 
-    #post_process_gt.post_process_in_mem(SE3_ref_target)
+    post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
 

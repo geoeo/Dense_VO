@@ -5,12 +5,12 @@ import cv2
 import numpy as np
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-#bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
+#bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
+bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
-dataset = 'marc_6_full/'
-img_source_dir = 'depth/'
-img_target_dir = 'depth_large_norm/'
+dataset = 'marc_2_full/'
+img_source_dir = 'depth_rect/'
+img_target_dir = 'depth_large_rect_norm/'
 
 #img_source_dir = 'depth_rect/'
 #img_target_dir = 'depth_rect_large_norm/'
@@ -22,8 +22,8 @@ compression_params = [int(cv2.IMWRITE_PNG_COMPRESSION), 9]
 
 timestamps = ListGenerator.get_files_from_directory(full_source_path, '.')
 
-source_files = list(map(lambda float: full_source_path+f'{float:.9f}'+'.png',timestamps))
-target_files = list(map(lambda float: full_target_path+f'{float:.9f}'+'.png',timestamps))
+source_files = list(map(lambda float: full_source_path+f'{float:.9f}'+'.png', timestamps))
+target_files = list(map(lambda float: full_target_path+f'{float:.9f}'+'.png', timestamps))
 
 zipped_files = zip(source_files,target_files)
 

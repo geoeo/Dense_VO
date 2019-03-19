@@ -3,12 +3,14 @@ import os
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
 #bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
-dataset = 'marc_1_full/'
+dataset = 'marc_2_full/'
 
 #rgb_folder = 'depth/'
 #rgb_text = 'depth.txt'
-rgb_folder = 'depth_large_norm/'
-rgb_text = 'depth_large_norm.txt'
+#rgb_folder = 'depth_large_norm/'
+#rgb_text = 'depth_large_norm.txt'
+rgb_folder = 'depth_large_rect_norm/'
+rgb_text = 'depth_large_rect_norm.txt'
 #rgb_folder = 'depth_small/'
 #rgb_text = 'depth_small.txt'
 #rgb_folder = 'depth_rect/'
