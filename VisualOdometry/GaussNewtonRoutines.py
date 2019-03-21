@@ -17,10 +17,11 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             valid_measurements_target[flat_index] = True
             # For opencl maybe do this in a simple kernel before
             # Sets invalid depth measurements to False such that they do not impact the gauss newton step
+            focal_m = reference_camera.intrinsic.extract_fx()/(1000.0*width)
             if depth == 0:
                 # this value directly influences the pose estimation!
                 # TODO write about this
-                depth = depth_direction*(1.0+max_depth)
+                depth = depth_direction*(focal_m+max_depth)
                 #depth = depth_direction*(max_depth)
                 #depth = depth_direction*1
                 valid_measurements[flat_index] = False
@@ -34,7 +35,7 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             # we push all depth values out to guarantee that they are always infront of the image plane
             # Better depth results without pushing it out (?)
             if valid_measurements[flat_index]:
-                depth_ref = depth_direction*(1.0 + depth)
+                depth_ref = depth_direction*(focal_m + depth)
                 #depth_ref = depth_direction*(depth)
 
             # back projection from ndc seems to give better convergence
