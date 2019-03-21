@@ -254,9 +254,11 @@ def solve_photometric(frame_reference,
 
     #target_index_projections_id = frame_target.camera.apply_perspective_pipeline(I_4)
 
+    target_index_projections = frame_target.camera.apply_perspective_pipeline(X_back_projection, use_ndc, width, height)
+
     GaussNewtonRoutines.compute_residual(width,
                                          height,
-                                         X_back_projection,
+                                         target_index_projections,
                                          valid_measurements,
                                          valid_measurements_target,
                                          frame_target.pixel_image,
@@ -399,7 +401,7 @@ def solve_photometric(frame_reference,
 
         Y_est = np.matmul(SE_3_est, X_back_projection)
 
-        target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est)
+        target_index_projections = frame_target.camera.apply_perspective_pipeline(Y_est, use_ndc, width, height)
         #target_index_projections[2,:] -= depth_factor*1
 
         v = GaussNewtonRoutines.compute_residual(width,
