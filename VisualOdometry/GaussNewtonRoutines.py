@@ -61,7 +61,7 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             #if true then invalid depth measurements are being considered
-            #if not valid_measurements[flat_index]:
+            #if not valid_measurements[flat_index] or not valid_measurements_target[flat_index]:
             #    continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
