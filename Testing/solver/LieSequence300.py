@@ -24,7 +24,7 @@ from Visualization import PostProcessGroundTruth
 
 # dataset 3 # prior no gt
 #start_idx = 299199.866808740 # -z
-#start_idx = 299202.723105334 # +z
+#start_idx = 299202.723105334 # -z then +z <-
 #start_idx = 299206.609285928
 #start_idx = 299208.004564834 # straight
 
@@ -34,7 +34,7 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 299339.666637928 # turining right
 #start_idx = 299340.729057053 # turining
 start_idx = 299337.011086615  #<- +x/-z
-#start_idx = 299346.671264740 # +z <-
+#start_idx = 299346.671264740 # +z <- DS5 PP
 #start_idx = 299341.094225178
 
 #dataset5
@@ -43,12 +43,13 @@ start_idx = 299337.011086615  #<- +x/-z
 #start_idx = 299473.961254115 # turning
 #start_idx = 299475.190163022 # turn left -x/-z <-
 #start_idx = 299478.976547240 # turning
-#start_idx = 299489.237554490 # turning
+#start_idx = 299489.237554490 # turning <-
 
 
 #post_process_gt = None
 
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
 post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
@@ -117,8 +118,10 @@ offset = 1
 name = f"{start_idx:.9f}"
 
 max_its = 30
-eps = 0.0000000005
-alpha_step = 10.0
+#eps = 0.00000000000000000005 # 20
+#eps = 0.000000000000005 # 15
+eps = 0.0000000000005 # 13
+alpha_step = 1.0
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -138,7 +141,7 @@ if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'z_neg_using_invalid_acker_new_pi_1.5_scharr_solve_new_W'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'sobel_1_eps_1_ack_01'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 if only_steering:
@@ -265,12 +268,14 @@ for i in range(0, len(ref_image_list)):
     ackermann_cov_large = Ackermann.generate_6DOF_cov_from_motion_model_cov(ackermann_cov)
     ackermann_cov_large_inv = np.linalg.inv(ackermann_cov_large)
     ackermann_twist = ackermann_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
+
     #ackermann_twist[0] *= -1  #DS5
     #ackermann_twist[2] *= -1  #DS5
 
-    t = np.copy(ackermann_twist[2])
-    ackermann_twist[2] = -np.copy(ackermann_twist[0])  #DS4
-    ackermann_twist[0] = -t  #DS4
+    t = np.copy(ackermann_twist[2]) # DS4/3
+    ackermann_twist[2] = -np.copy(ackermann_twist[0])  #DS4/3
+    ackermann_twist[0] = t  #DS4/5 negative for +z
+    ackermann_twist[4] *= -1 # remove for DS5
 
     # OWN with motion prior = False
     #motion_cov_inv = ackermann_cov_large_inv
@@ -333,7 +338,7 @@ print("visualizing..")
 if calc_vo or only_steering:
     FileIO.write_vo_output_to_file(name,info,output_dir_path,vo_twist_list)
 
-visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering,title=None)
+visualizer = Visualizer.Visualizer(ground_truth_list, plot_steering=plot_steering, title=None)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 if plot_steering:
     visualizer.visualize_steering(encoder_list,clear=False,draw=False)

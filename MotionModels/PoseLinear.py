@@ -15,22 +15,22 @@ class PoseLinear:
         self.delta_v_y = 0.0
         self.delta_v_z = 0.0
 
-    def apply_world_motion(self, linear_delta_robot, dt, ax, ay, az):
-        delta_x = linear_delta_robot.delta_x
-        delta_y = linear_delta_robot.delta_y
-        delta_z = linear_delta_robot.delta_z
+    def apply_world_motion(self, linear_delta_robot_prev, dt, ax, ay, az):
+        delta_x = linear_delta_robot_prev.delta_x
+        delta_y = linear_delta_robot_prev.delta_y
+        delta_z = linear_delta_robot_prev.delta_z
 
-        delta_v_x = linear_delta_robot.delta_v_x
-        delta_v_y = linear_delta_robot.delta_v_y
-        delta_v_z = linear_delta_robot.delta_v_z
+        delta_v_x = linear_delta_robot_prev.delta_v_x
+        delta_v_y = linear_delta_robot_prev.delta_v_y
+        delta_v_z = linear_delta_robot_prev.delta_v_z
 
-        self.delta_x = delta_v_x*dt + 0.5*ax*dt*dt
-        self.delta_y = delta_v_y*dt + 0.5*ay*dt*dt
-        self.delta_z = delta_v_z*dt + 0.5*az*dt*dt
+        self.delta_x =   delta_v_x*dt + 0.5*ax*dt*dt
+        self.delta_y =   delta_v_y*dt + 0.5*ay*dt*dt
+        self.delta_z =   delta_v_z*dt + 0.5*az*dt*dt
 
-        self.v_x = ax*dt
-        self.v_y = ay*dt
-        self.v_z = az*dt
+        self.v_x = delta_v_x + ax*dt
+        self.v_y = delta_v_y + ay*dt
+        self.v_z = delta_v_z + az*dt
 
 
     def get_6dof_twist(self, normalize=False):

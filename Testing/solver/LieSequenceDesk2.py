@@ -59,7 +59,7 @@ name = f"{start_idx:.9f}"
 
 max_its = 30
 eps = 0.00005
-alpha_step = 10.0
+alpha_step = 1.0
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
@@ -69,7 +69,7 @@ use_motion_prior = False
 use_ackermann = False
 debug = False
 
-additional_info = 'other_solver_1_z_neg_no_res_flag_scharr_new_W'
+additional_info = 'sobel_1'
 
 
 info = '_' + f"{max_its}" \

@@ -7,6 +7,9 @@ import cv2
 def show():
     plt.show()
 
+def legend(h):
+    plt.legend(handles=h)
+
 def scatter_plot(X,Y,Z):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')

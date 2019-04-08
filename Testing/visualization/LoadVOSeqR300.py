@@ -13,30 +13,36 @@ output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
 ext = '.png'
+
+post_process_gt = None
+
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4_2()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
+
+
+### ds 3
+
+#data_file = '299202.723105334_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_0.5_only_steering'
+#data_file = '299202.723105334_30_5e-15_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1'
+#data_file = '299202.723105334_30_5e-15_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001'
+#data_file = '299202.723105334_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01_only_steering'
+
 ### ds 2
 #data_file = '298681.172680459_30_5e-11_0.25_0_False_True_False_False_30_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_pitch_norm_neg_correction_2_steering_0.5_only_steering'
 ### ds 4
-#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_False_301_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_only_steering' #<-
-#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_False_120_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_no_divide_steering_neg'
-#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_True_False_120_1_False_False_True_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_neg_correction_2'
-#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_False_301_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr' #<- VO
-#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve' # <- VO
-#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_True_301_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr'
-#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_1.0'
-#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_False_True_120_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_1.5'
-#data_file = '299337.011086615_30_5e-11_0.25_0_False_True_True_False_120_1_False_False_True_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1_steering_cov_switch'
-#data_file = '299337.011086615_30_5e-11_2.5_0_False_True_False_True_301_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr' #<-
 
-#data_file = '299337.011086615_30_5e-10_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve_new_W' # VO
-#data_file = '299337.011086615_30_5e-10_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve_new_W'
-#data_file = '299337.011086615_30_5e-10_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
-#data_file = '299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
-data_file = '299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve_new_W'
-#data_file = '299337.011086615_30_5e-19_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
-
+#data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
+#data_file ='299337.011086615_30_5e-10_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_1.0'
+#data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
+#data_file = '299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0_only_steering'
+data_file = '299337.011086615_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01'
 ###
 
-#data_file = '299346.671264740_30_5e-11_2.5_0_False_True_False_False_180_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr_solve' # VO ds5 trans
+
 
 
 ### ds 5
@@ -51,17 +57,17 @@ data_file = '299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_
 
 #data_file = '299475.190163022_30_5e-11_2.5_10_False_True_False_False_300_1_False_False_False_rgb_rect_depth_large_rect_norm_depth_large_rect_norm_z_neg_using_invalid_acker_new_pi_1.5_scharr'
 
+#data_file = '299475.190163022_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_acker_new_pi_1.0_scharr_solve_new_W'
+
+#data_file = '299475.190163022_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_depth_large_scharr_1.0_only_steering'
+
+#data_file = '299489.237554490_30_5e-11_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_1.1_only_steering'
+
 data_ext = '.txt'
 
-post_process_gt = None
-
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
-count = 300
+count = -1
 start_count = 0
 plot_vo = True
 
@@ -153,11 +159,14 @@ for i in range(start_count, count):
     target_id = target_id_list[i]
 
     SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=post_process_gt)
+    SE3_ref_target_clean = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
     #ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
-    ground_truth_acc = np.matmul(SE3_ref_target,ground_truth_acc)
+    ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
+    #ground_truth_acc[0,3] = SE3_ref_target_clean[0,3] # ds3
+    ground_truth_acc[1,3] = SE3_ref_target_clean[1,3]
     ground_truth_list.append(ground_truth_acc)
 
     ref_image_list.append((im_greyscale_reference, im_depth_reference))
@@ -171,7 +180,7 @@ for i in range(start_count, count):
 
     SE3_est = pose_estimate_list_loaded[i]
 
-    se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
+    se3_estimate_acc = np.matmul( se3_estimate_acc,SE3_est)
     pose_estimate_list.append(se3_estimate_acc)
 
 

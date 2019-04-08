@@ -365,7 +365,7 @@ def solve_photometric(frame_reference,
 
             # V2
             #factor = 0.1*Gradient_step_manager.current_alpha
-            factor = 1.0
+            factor = 0.1
             #factor = math.pow(Gradient_step_manager.current_alpha,it)
             # ack_prior = np.multiply(Gradient_step_manager.current_alpha,ackermann_pose_prior)
             ack_prior = ackermann_pose_prior
@@ -431,7 +431,7 @@ def solve_photometric(frame_reference,
             variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements,
                                                                    valid_measurements_target,number_of_valid_measurements,
                                                                    variance_min=1000,
-                                                                   eps=0.00001)
+                                                                   eps=0.1)
             if variance > 0.0:
                 # clear old weights
                 for i in range(0,N):

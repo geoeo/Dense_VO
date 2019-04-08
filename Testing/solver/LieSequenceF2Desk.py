@@ -9,7 +9,7 @@ from MotionModels import Linear
 
 
 # start
-start_idx = 1311868164.363181 # 2965
+#start_idx = 1311868164.363181 # 2965
 
 #start_idx = 1311868164.430940 # 3rd
 
@@ -19,7 +19,7 @@ start_idx = 1311868164.363181 # 2965
 
 #start_idx = 1311868166.331189 # 60 - rmse starts to go bad
 
-#start_idx = 1311868174.699578 # only works with 180 frames
+start_idx = 1311868174.699578 # only works with 180 frames
 
 #start_idx = 1311868250.648757 # try this
 
@@ -84,7 +84,6 @@ vo_twist_list = []
 
 depth_factor = 5000.0
 #depth_factor = 1.0
-use_ndc = True
 calc_vo = True
 plot_steering = False
 only_steering = False
@@ -92,19 +91,19 @@ only_steering = False
 if calc_vo:
     assert not only_steering
 
-max_count = 10
+max_count = 300
 offset = 1
 
 #TODO investigate index after rounding
 name = f"{start_idx:.9f}"
 
 max_its = 30
-eps = 0.00005
+eps = 0.0000005
 alpha_step = 1
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 #TODO investigate this when realtime implementation is ready
-use_ndc = use_ndc
+use_ndc = False
 use_robust = True
 track_pose_estimates = False
 use_motion_prior = True
@@ -114,7 +113,7 @@ divide_depth = True
 debug = False
 
 additional_info = ''
-additional_info += 'scharr_new_W_motion_1.0'
+additional_info += 'sobel_1_eps_001'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 if only_steering:
@@ -189,16 +188,16 @@ for i in range(0, len(ref_id_list)):
 
     acceleration_ts = float(rgb_acceleration_dict[ref_id][0])
     acceleration_values = acceleration_dict[acceleration_ts]
-    if ref_id_prev:
-        acceleration_ts_prev = float(rgb_acceleration_dict[ref_id][0])
-        acceleration_values_prev = acceleration_dict[acceleration_ts_prev]
+    #if ref_id_prev:
+        #acceleration_ts_prev = float(rgb_acceleration_dict[ref_id][0])
+        #acceleration_values_prev = acceleration_dict[acceleration_ts_prev]
 
-        acceleration_values_avg_x = (float(acceleration_values[0]) + float(acceleration_values_prev[0]))/2.0
-        acceleration_values_avg_y = (float(acceleration_values[1]) + float(acceleration_values_prev[1]))/2.0
-        acceleration_values_avg_z = (float(acceleration_values[2]) + float(acceleration_values_prev[2]))/2.0
-        acceleration_command = AccelerationCommand(acceleration_values_avg_x,acceleration_values_avg_y,acceleration_values_avg_z)
-    else:
-        acceleration_command = AccelerationCommand(float(acceleration_values[0]),float(acceleration_values[1]),float(acceleration_values[2]))
+        #acceleration_values_avg_x = (float(acceleration_values[0]) + float(acceleration_values_prev[0]))/2.0
+        #acceleration_values_avg_y = (float(acceleration_values[1]) + float(acceleration_values_prev[1]))/2.0
+        #acceleration_values_avg_z = (float(acceleration_values[2]) + float(acceleration_values_prev[2]))/2.0
+        #acceleration_command = AccelerationCommand(acceleration_values_avg_x,acceleration_values_avg_y,acceleration_values_avg_z)
+    #else:
+    acceleration_command = AccelerationCommand(float(acceleration_values[0]),float(acceleration_values[1]),float(acceleration_values[2]))
 
     acceleration_list.append(acceleration_command)
 
@@ -245,6 +244,7 @@ for i in range(0, len(ref_image_list)):
     linear_cov_large = Linear.generate_6DOF_cov_from_motion_model_cov(linear_cov)
     linear_cov_large_inv = np.linalg.inv(linear_cov_large)
     linear_twist = linear_motion.pose_delta_list[i].get_6dof_twist(normalize=False)
+    motion_cov_inv = linear_cov_large_inv
 
     solver_manager = SolverThreadManager.Manager(1,
                                                  "Solver Manager",
