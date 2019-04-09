@@ -121,27 +121,27 @@ max_its = 30
 #eps = 0.00000000000000000005 # 20
 #eps = 0.000000000000005 # 15
 eps = 0.0000000000005 # 13
-alpha_step = 1.0
+alpha_step = 10.0
 gradient_monitoring_window_start = 1
 image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = False
 use_motion_prior = False
-use_ackermann = True
+use_ackermann = False
 
 divide_depth = True
 debug = False
 
 use_paper_cov = False
-use_ackermann_cov = True
+use_ackermann_cov = False
 use_paper_ackermann_cov = False
 
 if use_motion_prior:
     assert (use_paper_cov or use_ackermann_cov or use_paper_ackermann_cov)
 
 additional_info = f"{use_paper_cov}" + '_' + f"{use_ackermann_cov}" + '_' + f"{use_paper_ackermann_cov}"
-additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'sobel_1_eps_1_ack_01'
+additional_info += '_' + rgb_match + '_' + depth_match+'_'+depth_folder[:-1]+'_'+'scharr_eps_001_ack_01'
 if not divide_depth:
     additional_info += '_no_depth_divide'
 if only_steering:

@@ -431,7 +431,7 @@ def solve_photometric(frame_reference,
             variance = GaussNewtonRoutines.compute_t_dist_variance(v, degrees_of_freedom, N, valid_measurements,
                                                                    valid_measurements_target,number_of_valid_measurements,
                                                                    variance_min=1000,
-                                                                   eps=0.1)
+                                                                   eps=0.001)
             if variance > 0.0:
                 # clear old weights
                 for i in range(0,N):

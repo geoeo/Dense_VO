@@ -4,30 +4,35 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
 
 
-bench_path = '/Users/marchaubenstock/Desktop/Diplomarbeit/Results/TUM/'
-#dataset = 'f2d1/'
-dataset = 'f1d2/'
+bench_path = '/Users/marchaubenstock/Desktop/Diplomarbeit/Results/TUW/'
+dataset = 'dataset_3/'
+#dataset = 'dataset_4/'
+#dataset = 'dataset_5/'
+
 
 
 start_count = 0
 count = -1
-post_process_gt = PostProcessGroundTruth.PostProcessTUM_F2()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 plot_vo = True
+plot_steering = True
 
 output_dir = 'output/'
-rgb_folder = 'rgb/'
-depth_folder = 'depth/'
+rgb_folder = 'color/'
+depth_folder = 'depth_large_norm/'
 ext = '.png'
 
-# F2D1
-## Batch 1
-res_b1_1 = '1311868164.363181114_30_5e-07_1_0_False_True_False_False_300_1_sobel_1'
-res_b1_2 = '1311868164.363181114_30_5e-07_1_0_False_True_False_False_300_1_sobel_3'
-res_b1_3 = '1311868164.363181114_30_5e-07_1_0_False_True_False_False_301_1_scharr'
-res_b1_4 = '1311868164.363181114_30_5e-07_10_0_False_True_False_False_301_1_scharr'
-res_b1_5 = '1311868164.363181114_30_5e-07_1_0_False_True_True_False_300_1_sobel_1'
+# Dataset1
+res_d1_1 = '299202.723105334_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01_only_steering'
+res_d1_2 = '299202.723105334_30_5e-13_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1' # filter
+res_d1_3 = '299202.723105334_30_5e-15_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1' # filter
+res_d1_4 = '299202.723105334_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01' # Ackerman
+res_d1_5 = '299202.723105334_30_5e-11_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_05' # Ackerman
+res_d1_6 = '299202.723105334_30_5e-15_10.0_0_False_True_True_False_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1' # Motion Prior
 
-## Batch 2
+# Dataset 2
 res_b2_1 = '1311868174.699578047_30_5e-07_1_0_False_False_False_False_180_1_sobel_1_'
 res_b2_2 = '1311868174.699578047_30_5e-07_1_0_False_True_False_False_180_1_sobel_1_eps_1'
 res_b2_3 = '1311868174.699578047_30_5e-07_1_0_False_True_False_False_180_1_sobel_1_eps_001'
@@ -35,25 +40,22 @@ res_b2_4 = '1311868174.699578047_30_5e-07_1_0_False_True_False_False_180_1_sobel
 res_b2_5 = '1311868174.699578047_30_5e-07_1_0_False_True_True_False_180_1_sobel_1'
 res_b2_6 = '1311868174.699578047_30_5e-07_10_0_False_True_False_False_180_1_scharr'
 
-## Batch 3
+# Dataset 3
 res_b3_1 = '1311868250.648756981_30_5e-07_1_0_False_True_False_False_300_1_scharr'
 res_b3_2 = '1311868250.648756981_30_5e-07_1_0_False_True_False_False_300_1_sobel_1'
 res_b3_3 = '1311868250.648756981_30_5e-07_1_0_False_True_True_False_300_1_sobel_1_eps_1'
 res_b3_4 = '1311868250.648756981_30_5e-07_10_0_False_True_False_False_300_1_scharr'
 
-#F1D2
-
-res_f1d2_1 = '1305031536.739722013_30_5e-05_1.0_0_False_True_False_False_120_1_sobel_1_eps_001'
-res_f1d2_2 = '1305031536.739722013_30_5e-05_1.0_0_False_True_True_False_120_1_sobel_1_eps_001'
 
 label_1 = 'no prior'
 label_2 = 'prior'
 label_3 = 'eps 0.00001'
 label_4 = 'scharr 10'
+label_steering = 'control in'
 
-data_file = res_f1d2_1
+data_file = res_d1_1
 data_file_2 = ''
-data_file_2 = res_f1d2_2
+data_file_2 = res_d1_2
 data_file_3 = ''
 #data_file_3 = res_b2_4
 data_file_4 = ''
@@ -72,10 +74,12 @@ if data_file_4:
 dataset_root = bench_path + dataset
 output_dir_path = dataset_root + output_dir
 rgb_text = dataset_root +'rgb.txt'
-depth_text = dataset_root +'depth.txt'
+depth_text = dataset_root +'depth_large_norm.txt'
 #match_text = dataset_root+'matches.txt'
-match_text = dataset_root+'matches_with_duplicates.txt'
+match_text = dataset_root+'matches_with_duplicates_norm.txt'
 groundtruth_text = dataset_root+'groundtruth.txt'
+encoder_text = dataset_root+'encoder.txt'
+rgb_encoder_text = dataset_root+'encoder_rgb.txt'
 
 data_file_path = output_dir_path+data_file+data_ext
 if data_file_2:
@@ -97,8 +101,9 @@ depth_files = ListGenerator.get_files_from_directory(depth_folder_full, delimite
 rgb_file_total = len(rgb_files)
 depth_file_total = len(depth_files)
 
-#image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,max_difference=0.2,with_duplicates=True))
-image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text)) #f1_d2
+image_groundtruth_dict = dict(associate.match(rgb_text, groundtruth_text,with_duplicates=True,max_difference=0.3))
+rgb_encoder_dict = associate.read_file_list(rgb_encoder_text)
+encoder_dict = associate.read_file_list(encoder_text)
 
 
 parameters = data_file.split('_')
@@ -223,13 +228,16 @@ for i in range(start_count, count):
     ref_id = ref_id_list[i]
     target_id = target_id_list[i]
 
-    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=None)
+    SE3_ref_target = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=post_process_gt)
+    SE3_ref_target_clean = Parser.generate_ground_truth_se3(groundtruth_dict,image_groundtruth_dict,ref_id,target_id,post_process_object=None)
     im_greyscale_reference, im_depth_reference = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text,ref_id)
     im_greyscale_target, im_depth_target = Parser.generate_image_depth_pair_match(dataset_root,rgb_text,depth_text,match_text, ref_id)
 
-    post_process_gt.post_process_in_mem(SE3_ref_target)
+    #post_process_gt.post_process_in_mem(SE3_ref_target)
 
-    ground_truth_acc = np.matmul(ground_truth_acc,SE3_ref_target)
+    ground_truth_acc = np.matmul(ground_truth_acc, SE3_ref_target)
+    #ground_truth_acc[0,3] = SE3_ref_target_clean[0,3] # ds3
+    ground_truth_acc[1,3] = SE3_ref_target_clean[1,3]
     ground_truth_list.append(ground_truth_acc)
 
     ref_image_list.append((im_greyscale_reference, im_depth_reference))
@@ -240,6 +248,11 @@ for i in range(start_count, count):
     #SE3.post_process_pose_for_display_in_mem(se3_estimate_acc)
     se3_estimate_acc = np.matmul(se3_estimate_acc, SE3_est)
     pose_estimate_list.append(se3_estimate_acc)
+
+    encoder_ts = float(rgb_encoder_dict[ref_id][0])
+    encoder_values = encoder_dict[encoder_ts]
+    encoder_values_float = [float(encoder_values[0]),float(encoder_values[1])]
+    encoder_list.append(encoder_values_float)
 
 
     if data_file_2:
@@ -270,7 +283,7 @@ if (count - 1) - start_count >= delta:
 
 handles = []
 
-visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=False, plot_trajectory=False, plot_rmse=False)
+visualizer = Visualizer.Visualizer(ground_truth_list,plot_steering=plot_steering, plot_trajectory=False, plot_rmse=False)
 visualizer.visualize_ground_truth(clear=True,draw=False)
 
 
@@ -293,7 +306,11 @@ if plot_vo:
         handles.append(patch_4)
         visualizer.visualize_poses(pose_estimate_list_4, draw= False, style='-cx')
 print('visualizing..')
+if plot_steering:
+    patch_5 = Visualizer.make_patch(color='yellow', label=label_steering)
+    handles.append(patch_5)
+    visualizer.visualize_steering(encoder_list,clear=False,draw=False)
 
-anchor = (0.4, 1.02, 1., .102)
-visualizer.legend(handles,anchor)
+anchor = (1.25, 1.02, 0., .102)
+visualizer.legend(handles, anchor)
 visualizer.show()

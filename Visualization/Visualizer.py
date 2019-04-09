@@ -23,7 +23,7 @@ class Visualizer():
         if title:
             plt.title(title)
         if not plot_trajectory and not plot_rmse:
-            if not plot_steering:
+            if not self.plot_steering:
                 self.x_graph = self.figure.add_subplot(131)
                 self.y_graph = self.figure.add_subplot(132)
                 self.z_graph = self.figure.add_subplot(133)
@@ -31,8 +31,9 @@ class Visualizer():
                 self.x_graph = self.figure.add_subplot(231)
                 self.y_graph = self.figure.add_subplot(232)
                 self.z_graph = self.figure.add_subplot(233)
-                self.rev = self.figure.add_subplot(224)
-                self.steer = self.figure.add_subplot(225)
+                self.rev = self.figure.add_subplot(223)
+                self.steer = self.figure.add_subplot(224)
+
 
         elif not plot_steering:
             if plot_trajectory:
@@ -53,16 +54,31 @@ class Visualizer():
             self.rev = self.figure.add_subplot(427)
             self.steer = self.figure.add_subplot(428)
 
+        if plot_steering:
             self.rev.set_title("rev cmd")
             self.steer.set_title("str cmd")
+
+            self.rev.set_xlabel("frame")
+            self.steer.set_xlabel("frame")
+
+            self.rev.set_ylabel("input level")
+            self.steer.set_ylabel("input level")
 
 
         #self.se3_graph.set_aspect('equal')
         if self.plot_trajectory:
             self.se3_graph.set_title("relative pose estimate")
         self.x_graph.set_title("X")
+        self.x_graph.set_title("X")
         self.y_graph.set_title("Y")
         self.z_graph.set_title("Z")
+
+        self.x_graph.set_xlabel("frame")
+        self.y_graph.set_xlabel("frame")
+        self.z_graph.set_xlabel("frame")
+
+        self.x_graph.set_ylabel("meters")
+
         if self.plot_rmse:
             self.rmse_graph.set_title("drift per frame (pose error)")
 
@@ -73,16 +89,21 @@ class Visualizer():
 
         self.point_pair = Utils.to_homogeneous_positions(X, Y, Z, H)
 
+        if self.plot_steering:
+            plt.subplots_adjust(left=0.07)
+        else:
+            plt.subplots_adjust(left=0.05)
+
 
     def show(self):
         Plot3D.show()
 
-    def legend(self, handles):
-        Plot3D.legend(handles)
+    def legend(self, handles, anchor):
+        Plot3D.legend(handles, anchor)
 
     def visualize_steering(self, encoder_list, clear = False, draw = False):
         assert self.plot_steering
-        Plot3D.plot_steering_commands(encoder_list, self.rev, self.steer, style='-rx', clear=clear, draw=draw)
+        Plot3D.plot_steering_commands(encoder_list, self.rev, self.steer, style='-yx', clear=clear, draw=draw)
 
     def visualize_ground_truth(self, clear= True, draw=False):
         if len(self.ground_truth_list) > 0:

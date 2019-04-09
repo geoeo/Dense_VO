@@ -49,7 +49,7 @@ vo_twist_list = []
 depth_factor = 5000.0
 #depth_factor = 1.0
 use_ndc = False
-calc_vo = True
+calc_vo = False
 plot_steering = True
 
 max_count = 120
@@ -65,11 +65,11 @@ image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = False
-use_motion_prior = False
+use_motion_prior = True
 use_ackermann = False
 debug = False
 
-additional_info = 'sobel_1'
+additional_info = 'sobel_1_eps_001'
 
 
 info = '_' + f"{max_its}" \

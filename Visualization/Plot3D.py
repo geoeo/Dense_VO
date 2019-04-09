@@ -7,8 +7,8 @@ import cv2
 def show():
     plt.show()
 
-def legend(h):
-    plt.legend(handles=h)
+def legend(h, anchor):
+    plt.legend(bbox_to_anchor=anchor, handles=h, loc='upper right')
 
 def scatter_plot(X,Y,Z):
     fig = plt.figure()

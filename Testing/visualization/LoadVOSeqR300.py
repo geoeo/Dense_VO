@@ -35,11 +35,12 @@ post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #data_file = '298681.172680459_30_5e-11_0.25_0_False_True_False_False_30_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_pitch_norm_neg_correction_2_steering_0.5_only_steering'
 ### ds 4
 
-#data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
+data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
 #data_file ='299337.011086615_30_5e-10_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_1.0'
 #data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
 #data_file = '299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0_only_steering'
-data_file = '299337.011086615_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01'
+#data_file = '299337.011086615_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01'
+#data_file = '299337.011086615_30_5e-13_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001_ack_01'
 ###
 
 
@@ -175,7 +176,6 @@ for i in range(start_count, count):
     encoder_ts = float(rgb_encoder_dict[ref_id][0])
     encoder_values = encoder_dict[encoder_ts]
     encoder_values_float = [float(encoder_values[0]),float(encoder_values[1])]
-
     encoder_list.append(encoder_values_float)
 
     SE3_est = pose_estimate_list_loaded[i]
