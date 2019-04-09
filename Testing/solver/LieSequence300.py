@@ -33,7 +33,7 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 299336.878361490
 #start_idx = 299339.666637928 # turining right
 #start_idx = 299340.729057053 # turining
-start_idx = 299337.011086615  #<- +x/-z
+#start_idx = 299337.011086615  #<- +x/-z
 #start_idx = 299346.671264740 # +z <- DS5 PP
 #start_idx = 299341.094225178
 
@@ -43,20 +43,20 @@ start_idx = 299337.011086615  #<- +x/-z
 #start_idx = 299473.961254115 # turning
 #start_idx = 299475.190163022 # turn left -x/-z <-
 #start_idx = 299478.976547240 # turning
-#start_idx = 299489.237554490 # turning <-
+start_idx = 299489.237554490 # turning <-
 
 
 #post_process_gt = None
 
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_4_full/'
+dataset = 'marc_5_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
@@ -127,14 +127,14 @@ image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = False
-use_motion_prior = False
+use_motion_prior = True
 use_ackermann = False
 
 divide_depth = True
 debug = False
 
 use_paper_cov = False
-use_ackermann_cov = False
+use_ackermann_cov = True
 use_paper_ackermann_cov = False
 
 if use_motion_prior:
@@ -274,8 +274,9 @@ for i in range(0, len(ref_image_list)):
 
     t = np.copy(ackermann_twist[2]) # DS4/3
     ackermann_twist[2] = -np.copy(ackermann_twist[0])  #DS4/3
-    ackermann_twist[0] = t  #DS4/5 negative for +z
-    ackermann_twist[4] *= -1 # remove for DS5
+    #ackermann_twist[0] = t  #DS4
+    ackermann_twist[0] = -t  #DS5 negative for +z
+    #ackermann_twist[4] *= -1 # remove for DS5
 
     # OWN with motion prior = False
     #motion_cov_inv = ackermann_cov_large_inv

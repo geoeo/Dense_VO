@@ -8,7 +8,7 @@ from MotionModels import Ackermann,SteeringCommand
 
 
 bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_4_full/'
+dataset = 'marc_5_full/'
 output_dir = 'output/'
 rgb_folder = 'color/'
 depth_folder = 'depth_large/'
@@ -19,9 +19,9 @@ post_process_gt = None
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4_2()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
 ### ds 3
@@ -35,7 +35,7 @@ post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #data_file = '298681.172680459_30_5e-11_0.25_0_False_True_False_False_30_1_False_False_False_rgb_depth_large_norm_depth_large_norm_z_neg_using_invalid_steering_pitch_norm_neg_correction_2_steering_0.5_only_steering'
 ### ds 4
 
-data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
+#data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
 #data_file ='299337.011086615_30_5e-10_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_1.0'
 #data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0'
 #data_file = '299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0_only_steering'
@@ -63,6 +63,8 @@ data_file ='299337.011086615_30_5e-10_10.0_0_False_True_False_False_300_1_False_
 #data_file = '299475.190163022_30_5e-10_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_depth_large_scharr_1.0_only_steering'
 
 #data_file = '299489.237554490_30_5e-11_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_1.1_only_steering'
+
+data_file = '299489.237554490_30_5e-13_10.0_0_False_True_True_False_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001_ack_01_only_steering'
 
 data_ext = '.txt'
 

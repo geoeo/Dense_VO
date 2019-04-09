@@ -5,6 +5,7 @@ from Visualization import Visualizer, PostProcessGroundTruth
 
 
 bench_path = '/Users/marchaubenstock/Desktop/Diplomarbeit/Results/TUM/'
+
 #dataset = 'f2d1/'
 dataset = 'f1d2/'
 
@@ -40,6 +41,7 @@ res_b3_1 = '1311868250.648756981_30_5e-07_1_0_False_True_False_False_300_1_schar
 res_b3_2 = '1311868250.648756981_30_5e-07_1_0_False_True_False_False_300_1_sobel_1'
 res_b3_3 = '1311868250.648756981_30_5e-07_1_0_False_True_True_False_300_1_sobel_1_eps_1'
 res_b3_4 = '1311868250.648756981_30_5e-07_10_0_False_True_False_False_300_1_scharr'
+res_b3_5 = '1311868250.648756981_30_5e-07_1_0_False_True_True_False_300_1_sobel_1_eps_001'
 
 #F1D2
 
@@ -48,8 +50,10 @@ res_f1d2_2 = '1305031536.739722013_30_5e-05_1.0_0_False_True_True_False_120_1_so
 
 label_1 = 'no prior'
 label_2 = 'prior'
-label_3 = 'eps 0.00001'
-label_4 = 'scharr 10'
+#label_3 = 'eps 0.00001'
+#label_4 = 'scharr 10'
+
+
 
 data_file = res_f1d2_1
 data_file_2 = ''
