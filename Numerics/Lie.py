@@ -76,7 +76,6 @@ def generator_roll_3_4_neg():
                      [0,0,1,0],
                      [0,-1,0,0]], dtype=matrix_data_type)
 
-
 # Rotation Around Y
 def generator_pitch():
     return np.array([[0,0,1,0],
@@ -93,7 +92,6 @@ def generator_pitch_3_4_neg():
     return np.array([[0,0,-1,0],
                      [0,0,0,0],
                      [1,0,0,0]], dtype=matrix_data_type)
-
 
 # Rotation Around Z
 def generator_yaw():
@@ -184,7 +182,7 @@ def ln(R, t,twist_size):
     if not (theta == 0 or theta_sqred == 0):
         coeff = (1.0/(theta_sqred))*(1.0 - (A/(2.0*B)))
 
-    V_inv = I_3 + np.multiply(0.5,w_x) + np.multiply(coeff,w_x_squared)
+    V_inv = I_3 - np.multiply(0.5,w_x) + np.multiply(coeff,w_x_squared)
 
     u = np.matmul(V_inv,t)
 
