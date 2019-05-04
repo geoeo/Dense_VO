@@ -10,5 +10,6 @@ Robust Odometry Estimation for RGB-D Cameras
 
 # Results 
 ## TUM Freiburg 2 Desk 1
-![results](f2d1_b1_filter.png)
+![results_b1](f2d1_b1_filter.png)
+![results_b2](f2d1_b2_filter.png)
 
