@@ -39,7 +39,7 @@ start_idx = 967169.198442095 # 5e09
 
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_26_09_18/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit_Resources/rccar_26_09_18/'
 dataset = 'marc_6_full/'
 output_dir = 'output/'
 

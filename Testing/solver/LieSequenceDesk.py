@@ -17,7 +17,7 @@ start_idx = 1305031453.391690016
 #start_idx = 1305031468.095867
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit_Resources/VO_Bench/'
 xyz_dataset = 'rgbd_dataset_freiburg1_desk/'
 rgb_folder = 'rgb/'
 output_dir = 'output/'

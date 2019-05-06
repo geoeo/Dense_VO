@@ -71,6 +71,8 @@ class Camera:
 
     def apply_perspective_pipeline(self,point_3D_world, use_ndc, width, height):
         #persp = np.matmul(self.perspective_pipeline(),point_3D_world)
+        # I think this is here because otherwise we would get very very small values
+        # this will be undone in back_project_image(..)
         if use_ndc:
             point_3D_world[0,:] *= width
             point_3D_world[1,:] *= height

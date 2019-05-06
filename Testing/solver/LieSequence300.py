@@ -24,7 +24,7 @@ from Visualization import PostProcessGroundTruth
 
 # dataset 3 # prior no gt
 #start_idx = 299199.866808740 # -z
-#start_idx = 299202.723105334 # -z then +z <-
+start_idx = 299202.723105334 # -z then +z <-
 #start_idx = 299206.609285928
 #start_idx = 299208.004564834 # straight
 
@@ -43,20 +43,20 @@ from Visualization import PostProcessGroundTruth
 #start_idx = 299473.961254115 # turning
 #start_idx = 299475.190163022 # turn left -x/-z <-
 #start_idx = 299478.976547240 # turning
-start_idx = 299489.237554490 # turning <-
+#start_idx = 299489.237554490 # turning <-
 
 
 #post_process_gt = None
 
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS2()
-#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
+post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
-post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
+#post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/rccar_15_11_18/'
-dataset = 'marc_5_full/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit_Resources/rccar_15_11_18/'
+dataset = 'marc_3_full/'
 output_dir = 'output/'
 
 rgb_folder = 'color/'
@@ -127,8 +127,8 @@ image_range_offset_start = 0
 use_ndc = use_ndc
 use_robust = True
 track_pose_estimates = False
-use_motion_prior = True
-use_ackermann = False
+use_motion_prior = False
+use_ackermann = True
 
 divide_depth = True
 debug = False
@@ -274,9 +274,9 @@ for i in range(0, len(ref_image_list)):
 
     t = np.copy(ackermann_twist[2]) # DS4/3
     ackermann_twist[2] = -np.copy(ackermann_twist[0])  #DS4/3
-    #ackermann_twist[0] = t  #DS4
-    ackermann_twist[0] = -t  #DS5 negative for +z
-    #ackermann_twist[4] *= -1 # remove for DS5
+    ackermann_twist[0] = t  #DS4/3
+    #ackermann_twist[0] = -t  #DS5 negative for +z
+    ackermann_twist[4] *= -1 # remove for DS5
 
     # OWN with motion prior = False
     #motion_cov_inv = ackermann_cov_large_inv

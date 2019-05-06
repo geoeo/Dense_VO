@@ -21,8 +21,8 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             if depth == 0:
                 # this value directly influences the pose estimation!
                 # TODO write about this
-                depth = depth_direction*(focal_m+max_depth)
-                #depth = depth_direction*(max_depth)
+                #depth = depth_direction*(focal_m+max_depth)
+                depth = depth_direction*(max_depth)
                 #depth = depth_direction*1
                 valid_measurements[flat_index] = False
                 #continue
@@ -34,8 +34,8 @@ def back_project_image(width, height, image_range_offset, reference_camera, refe
             # Since our virtual image plane is on the same side as our depth values
             # we push all depth values out to guarantee that they are always infront of the image plane
             # Better depth results without pushing it out (?)
-            if valid_measurements[flat_index]:
-                depth_ref = depth_direction*(focal_m + depth)
+            #if valid_measurements[flat_index]:
+            #    depth_ref = depth_direction*(focal_m + depth)
                 #depth_ref = depth_direction*(depth)
 
             # back projection from ndc seems to give better convergence
@@ -61,8 +61,8 @@ def compute_residual(width, height, target_index_projections, valid_measurements
             flat_index = matrix_to_flat_index_rows(y, x, height)
             v[flat_index][0] = 0
             #if true then invalid depth measurements are being considered
-            #if not valid_measurements[flat_index] or not valid_measurements_target[flat_index]:
-            #    continue
+            if not valid_measurements[flat_index] or not valid_measurements_target[flat_index]:
+                continue
             x_index = target_index_projections[0, flat_index]
             y_index = target_index_projections[1, flat_index]
 

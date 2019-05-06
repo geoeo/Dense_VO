@@ -16,7 +16,7 @@ from Visualization import Visualizer, PostProcessGroundTruth
 # Y Up then X Right
 start_idx = 1305031919.933102 # good
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit_Resources/VO_Bench/'
 xyz_dataset = 'rgbd_dataset_freiburg1_room/'
 rgb_folder = 'rgb/'
 output_dir = 'output/'

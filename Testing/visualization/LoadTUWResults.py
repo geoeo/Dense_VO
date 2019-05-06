@@ -4,7 +4,7 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
 
 
-bench_path = '/Users/marchaubenstock/Desktop/Diplomarbeit/Results/TUW/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit/Results/TUW/'
 dataset = 'dataset_3/'
 #dataset = 'dataset_4/'
 #dataset = 'dataset_5/'
@@ -17,7 +17,7 @@ post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS3()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS4()
 #post_process_gt = PostProcessGroundTruth.PostProcessTUW_R300_DS5()
 plot_vo = True
-plot_steering = True
+plot_steering = False
 
 output_dir = 'output/'
 rgb_folder = 'color/'
@@ -26,7 +26,7 @@ ext = '.png'
 
 # Dataset1
 res_d1_1 = '299202.723105334_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01_only_steering'
-res_d1_2 = '299202.723105334_30_5e-13_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1' # filter
+res_d1_2 = '299202.723105334_30_5e-13_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001_ack_01' # filter
 res_d1_3 = '299202.723105334_30_5e-15_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1' # filter
 res_d1_4 = '299202.723105334_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01' # Ackerman
 res_d1_5 = '299202.723105334_30_5e-11_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_05' # Ackerman
@@ -36,32 +36,32 @@ res_d1_6 = '299202.723105334_30_5e-15_10.0_0_False_True_True_False_300_1_False_T
 res_d2_1 = '299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0_only_steering'
 res_d2_2 = '299337.011086615_30_5e-13_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1' # filter
 res_d2_3 = '299337.011086615_30_5e-20_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_1.0' # filter
-res_d2_4 = '299337.011086615_30_5e-13_1.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1_ack_01' # Ackerman
+res_d2_4 = '299337.011086615_30_5e-13_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001_ack_01' # Ackerman
 res_d2_5 = '299337.011086615_30_5e-10_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_0.5' # Ackerman
 res_d2_6 = '299337.011086615_30_5e-13_10.0_0_False_True_True_False_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001_ack_01' # Motion Prior
 
 # Dataset 3
-res_b3_1 = '299489.237554490_30_5e-11_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_1.1_only_steering'
-res_b3_2 = '299489.237554490_30_5e-11_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1' # filter
-res_b3_3 = '299489.237554490_30_5e-13_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1' # filter
-res_b3_4 = '299489.237554490_30_5e-13_10.0_0_False_True_True_False_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001_ack_01'
-res_b3_5 = '299489.237554490_30_5e-13_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_05'
-res_b3_6 = '299489.237554490_30_5e-15_10.0_0_False_True_True_False_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1' # Motion Prior
+res_d3_1 = '299489.237554490_30_5e-11_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_1.1_only_steering'
+res_d3_2 = '299489.237554490_30_5e-11_10.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1' # filter
+res_d3_3 = '299489.237554490_30_5e-13_1.0_0_False_True_False_False_300_1_False_False_False_rgb_depth_large_norm_depth_large_norm_sobel_1_eps_1' # filter
+res_d3_4 = '299489.237554490_30_5e-13_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_001_ack_01'
+res_d3_5 = '299489.237554490_30_5e-13_10.0_0_False_True_False_True_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1_ack_05'
+res_d3_6 = '299489.237554490_30_5e-15_10.0_0_False_True_True_False_300_1_False_True_False_rgb_depth_large_norm_depth_large_norm_scharr_eps_1' # Motion Prior
 
 
-label_1 = 'no prior'
-label_2 = 'prior'
-label_3 = 'eps 0.00001'
-label_4 = 'scharr 10'
+label_1 = 'ackermann'
+label_2 = 'scharr 10'
+label_3 = 'ack 0.1'
+label_4 = 'ack 0.5'
 label_steering = 'control in'
 
 data_file = res_d1_1
 data_file_2 = ''
-data_file_2 = res_d1_2
+data_file_2 = res_d1_3
 data_file_3 = ''
-#data_file_3 = res_b2_4
+data_file_3 = res_d1_4
 data_file_4 = ''
-#data_file_4 = res_b1_4
+data_file_4 = res_d1_5
 
 data_ext = '.txt'
 
@@ -238,8 +238,8 @@ for i in range(start_count, count):
     #post_process_gt.post_process_in_mem(SE3_ref_target)
 
     ground_truth_acc = np.matmul(ground_truth_acc, SE3_ref_target)
-    #ground_truth_acc[0,3] = SE3_ref_target_clean[0,3] # ds3
-    ground_truth_acc[1,3] = SE3_ref_target_clean[1,3]
+    ground_truth_acc[0,3] = -SE3_ref_target_clean[0,3] # ds3
+    #ground_truth_acc[1,3] = SE3_ref_target_clean[1,3]
     ground_truth_list.append(ground_truth_acc)
 
     ref_image_list.append((im_greyscale_reference, im_depth_reference))

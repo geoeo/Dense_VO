@@ -8,7 +8,8 @@ def get_files_from_directory(dir_path, delimiter=''):
     else:
         files = [concat_all_but_last(f.split(delimiter)) for f in listdir(dir_path) if isfile(join(dir_path, f)) and is_valid_file(f)]
 
-    files_float = list(map(lambda string: float(string),files))
+
+    files_float = list(map(lambda string: format_file_name(string),files))
     files_float.sort()
     return files_float
 
@@ -148,7 +149,13 @@ def validate(key, ground_truth_dict):
     return does_ground_truth_exist
 
 def is_valid_file(file_name):
-    return not file_name == '.DS_Store'
+    return not (file_name == '.DS_Store' or file_name == '._.DS_Store')
+
+def format_file_name(file_name):
+    name = file_name
+    if file_name[:2] == '._':
+        name = name[2:]
+    return float(name)
 
 def get_index_of_id(id, file_list):
     id_ret = -1

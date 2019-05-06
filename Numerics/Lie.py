@@ -182,7 +182,7 @@ def ln(R, t,twist_size):
     if not (theta == 0 or theta_sqred == 0):
         coeff = (1.0/(theta_sqred))*(1.0 - (A/(2.0*B)))
 
-    V_inv = I_3 - np.multiply(0.5,w_x) + np.multiply(coeff,w_x_squared)
+    V_inv = I_3 + np.multiply(0.5,w_x) + np.multiply(coeff,w_x_squared)
 
     u = np.matmul(V_inv,t)
 

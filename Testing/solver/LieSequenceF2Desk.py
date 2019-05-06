@@ -45,7 +45,7 @@ start_idx = 1311868174.699578 # only works with 180 frames
 # good x/y values - motin prior, shows bad recovery, better with higher offset (2 with prior)
 #start_idx = 1311868235.279710
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit_Resources/VO_Bench/'
 xyz_dataset = 'rgbd_dataset_freiburg2_desk/'
 rgb_folder = 'rgb/'
 depth_folder = 'depth/'
@@ -91,7 +91,7 @@ only_steering = False
 if calc_vo:
     assert not only_steering
 
-max_count = 300
+max_count = 30
 offset = 1
 
 #TODO investigate index after rounding
@@ -106,7 +106,7 @@ image_range_offset_start = 0
 use_ndc = False
 use_robust = True
 track_pose_estimates = False
-use_motion_prior = True
+use_motion_prior = False
 use_ackermann = False
 
 divide_depth = True
@@ -230,7 +230,9 @@ for i in range(0, len(ref_image_list)):
     im_greyscale_reference, im_depth_reference = ref_image_list[i]
     im_greyscale_target, im_depth_target = target_image_list[i]
 
+    max_depth_prior = np.amax(im_depth_reference)
     if divide_depth:
+
         im_depth_reference /= depth_factor
         im_depth_target /= depth_factor
 

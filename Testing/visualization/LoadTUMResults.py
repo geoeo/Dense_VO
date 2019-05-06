@@ -4,10 +4,10 @@ from Benchmark import Parser, associate, ListGenerator, FileIO
 from Visualization import Visualizer, PostProcessGroundTruth
 
 
-bench_path = '/Users/marchaubenstock/Desktop/Diplomarbeit/Results/TUM/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit/Results/TUM/'
 
-#dataset = 'f2d1/'
-dataset = 'f1d2/'
+dataset = 'f2d1/'
+#dataset = 'f1d2/'
 
 
 start_count = 0
@@ -48,16 +48,16 @@ res_b3_5 = '1311868250.648756981_30_5e-07_1_0_False_True_True_False_300_1_sobel_
 res_f1d2_1 = '1305031536.739722013_30_5e-05_1.0_0_False_True_False_False_120_1_sobel_1_eps_001'
 res_f1d2_2 = '1305031536.739722013_30_5e-05_1.0_0_False_True_True_False_120_1_sobel_1_eps_001'
 
-label_1 = 'no prior'
-label_2 = 'prior'
+label_1 = 'sobel 1'
+label_2 = 'scharr 10'
 #label_3 = 'eps 0.00001'
 #label_4 = 'scharr 10'
 
 
 
-data_file = res_f1d2_1
+data_file = res_b3_2
 data_file_2 = ''
-data_file_2 = res_f1d2_2
+data_file_2 = res_b3_4
 data_file_3 = ''
 #data_file_3 = res_b2_4
 data_file_4 = ''

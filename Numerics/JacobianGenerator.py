@@ -75,8 +75,6 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
             f_x = intrinsics.extract_fx()
             f_y = intrinsics.extract_fy()
 
-
-
             v11 = f_x/z
             v22 = f_y/z
             v13 = (-f_x*x)/z_sqrd

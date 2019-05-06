@@ -285,15 +285,15 @@ def solve_photometric(frame_reference,
             pose_estimate_list.append(SE_3_est)
             threadLock.release()
 
-        v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
+        #v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
         #v_diff = Gradient_step_manager.last_error_mean_abs - v_mean
 
         #Gradient_step_manager.track_gradient(v_mean,it)
 
         # TODO investigate absolute error threshold aswel?
-        if ((v_diff <= eps)) and Gradient_step_manager.check_iteration(it) :
-            print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
-            break
+        #if ((v_diff <= eps)) and Gradient_step_manager.check_iteration(it) :
+        #    print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
+        #    break
 
         # no if statement means solver 2
         #if v_mean <= Gradient_step_manager.last_error_mean_abs:
@@ -450,12 +450,22 @@ def solve_photometric(frame_reference,
         #    SE3_best = np.copy(SE_3_est)
         #if not not_better: # solver 6
         Gradient_step_manager.save_previous_mean_error(v_mean)
-        print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
 
         if number_of_valid_measurements > 0:
             v_mean = v_sum / number_of_valid_measurements
         else:
             v_mean = maxsize
+
+        v_diff = math.fabs(Gradient_step_manager.last_error_mean_abs - v_mean)
+        print('mean error:', v_mean, 'error diff: ',v_diff, 'iteration: ', it,'valid pixel ratio: ', valid_pixel_ratio, 'runtime: ', end-start, 'variance: ', variance)
+        #v_diff = Gradient_step_manager.last_error_mean_abs - v_mean
+
+        #Gradient_step_manager.track_gradient(v_mean,it)
+
+        # TODO investigate absolute error threshold aswel?
+        if ((v_diff <= eps)) and Gradient_step_manager.check_iteration(it) :
+            print('done, mean error:', v_mean, 'diff: ', v_diff, 'pixel ratio:', valid_pixel_ratio)
+            break
 
 
     motion_cov_inv = normal_matrix_ret

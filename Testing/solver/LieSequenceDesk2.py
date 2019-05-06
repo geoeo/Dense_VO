@@ -14,7 +14,7 @@ from math import pi
 start_idx = 1305031536.739722
 
 
-bench_path = '/Users/marchaubenstock/Workspace/Diplomarbeit_Resources/VO_Bench/'
+bench_path = '/Volumes/Sandisk/Diplomarbeit_Resources/VO_Bench/'
 xyz_dataset = 'rgbd_dataset_freiburg1_desk2/'
 output_dir = 'output/'
 rgb_folder = 'rgb/'
