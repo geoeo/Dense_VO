@@ -19,7 +19,8 @@ class Frame:
         if depth_image.dtype != Utils.depth_data_type_float and depth_image.dtype != Utils.depth_data_type_int:
             raise TypeError('Depth image is not of type float16 or uint16')
 
-        self.pixel_image = ImageProcessing.z_standardise(pixel_image)
+        #self.pixel_image = ImageProcessing.z_standardise(pixel_image)
+        self.pixel_image = pixel_image
         self.pixel_depth = depth_image
         self.camera = camera
         if compute_gradients:
@@ -27,6 +28,11 @@ class Frame:
             #self.grad_x = np.absolute(cv2.Sobel(pixel_image, Utils.image_data_type_open_cv, 1, 0))
             self.grad_x = cv2.Sobel(pixel_image, Utils.image_data_type_open_cv, 1, 0, ksize=1)
             self.grad_y = cv2.Sobel(pixel_image, Utils.image_data_type_open_cv, 0, 1, ksize=1)
+            print(np.max(self.grad_x))
+            print(np.min(self.grad_x))
+            print(np.max(self.pixel_image))
+            print(np.min(self.pixel_image))
+            print(self.grad_x[30,67])
             #self.grad_x = cv2.Scharr(pixel_image, Utils.image_data_type_open_cv, 1, 0)
             #self.grad_y = cv2.Scharr(pixel_image, Utils.image_data_type_open_cv, 0, 1)
             #self.grad_y = np.absolute(cv2.Sobel(pixel_image, Utils.image_data_type_open_cv, 0, 1))

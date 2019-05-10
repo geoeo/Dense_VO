@@ -91,7 +91,7 @@ only_steering = False
 if calc_vo:
     assert not only_steering
 
-max_count = 30
+max_count = 1
 offset = 1
 
 #TODO investigate index after rounding
@@ -237,9 +237,10 @@ for i in range(0, len(ref_image_list)):
         im_depth_target /= depth_factor
 
     max_depth = np.amax(im_depth_reference)
+    print(max_depth)
 
     # We only need the gradients of the target frame
-    frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, False)
+    frame_reference = Frame.Frame(im_greyscale_reference, im_depth_reference, camera_reference, True)
     frame_target = Frame.Frame(im_greyscale_target, im_depth_target, camera_target, True)
 
     linear_cov = linear_cov_list[i]
@@ -281,6 +282,7 @@ for i in range(0, len(ref_image_list)):
         se3_estimate_acc = np.matmul(se3_estimate_acc,solver_manager.SE3_est_final)
         pose_estimate_list.append(se3_estimate_acc)
         vo_twist_list.append(solver_manager.twist_final)
+        print(solver_manager.twist_final)
     elif only_steering:
         vo_twist_list.append(linear_twist)
 print("visualizing..")

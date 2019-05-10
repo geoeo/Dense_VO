@@ -63,6 +63,7 @@ def generate_image_depth_pair_match(dataset_root, rgb_file_path, depth_file_path
     im_greyscale_reference = cv2.imread(rgb_ref_file_path, cv2.IMREAD_GRAYSCALE).astype(Utils.image_data_type)
     im_greyscale_reference = ImageProcessing.z_standardise(im_greyscale_reference)
     im_depth_reference = cv2.imread(depth_ref_file_path, cv2.IMREAD_ANYDEPTH).astype(Utils.depth_data_type_float)
+
     return im_greyscale_reference, im_depth_reference
 
 # No match.txt means image and depth have same ts

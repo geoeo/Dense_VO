@@ -149,7 +149,7 @@ def validate(key, ground_truth_dict):
     return does_ground_truth_exist
 
 def is_valid_file(file_name):
-    return not (file_name == '.DS_Store' or file_name == '._.DS_Store')
+    return not file_name == '.DS_Store' and not file_name[:2] == '._'
 
 def format_file_name(file_name):
     name = file_name

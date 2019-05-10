@@ -20,6 +20,8 @@ rgb_folder = 'rgb/'
 depth_folder = 'depth/'
 ext = '.png'
 
+res_rust = '1311868174.699578_1_2_3_4_5_6_7_8_150_1'
+
 # F2D1
 ## Batch 1
 res_b1_1 = '1311868164.363181114_30_5e-07_1_0_False_True_False_False_300_1_sobel_1'
@@ -48,16 +50,16 @@ res_b3_5 = '1311868250.648756981_30_5e-07_1_0_False_True_True_False_300_1_sobel_
 res_f1d2_1 = '1305031536.739722013_30_5e-05_1.0_0_False_True_False_False_120_1_sobel_1_eps_001'
 res_f1d2_2 = '1305031536.739722013_30_5e-05_1.0_0_False_True_True_False_120_1_sobel_1_eps_001'
 
-label_1 = 'sobel 1'
-label_2 = 'scharr 10'
+label_1 = 'rust'
+#label_2 = 'scharr 10'
 #label_3 = 'eps 0.00001'
 #label_4 = 'scharr 10'
 
 
 
-data_file = res_b3_2
+data_file = res_rust
 data_file_2 = ''
-data_file_2 = res_b3_4
+#data_file_2 = res_b3_4
 data_file_3 = ''
 #data_file_3 = res_b2_4
 data_file_4 = ''
@@ -118,13 +120,13 @@ start_idx = float(parameters[0])
 max_count = int(parameters[9])
 offset = int(parameters[10])
 
-max_its = int(parameters[1])
-eps = float(parameters[2])
-alpha_step = float(parameters[3])
-image_range_offset_start = bool(parameters[5])
-use_robust = bool(parameters[6])
-use_motion_prior = bool(parameters[7])
-use_ackermann = bool(parameters[8])
+#max_its = int(parameters[1])
+#eps = float(parameters[2])
+#alpha_step = float(parameters[3])
+#image_range_offset_start = bool(parameters[5])
+#use_robust = bool(parameters[6])
+#use_motion_prior = bool(parameters[7])
+#use_ackermann = bool(parameters[8])
 
 if data_file_2:
     start_idx_2 = float(parameters_2[0])
