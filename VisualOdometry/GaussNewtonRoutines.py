@@ -194,9 +194,11 @@ def generate_weight_matrix(W, v, variance, degrees_of_freedom, N):
     numerator = degrees_of_freedom + 1.0
     for i in range(0,N):
         v_i = v[i][0]
-        t = v_i/variance
-        t_sq = t*t
-        frac = (t_sq/variance)
+        #t = v_i/variance
+        #t_sq = t*t
+        #frac = (t_sq/variance)
+        v_i_sqrd = v_i*v_i
+        frac = (v_i_sqrd/variance)
         W[0,i] = numerator / (degrees_of_freedom + frac)
 
 def multiply_v_by_diagonal_matrix(W,v,N,valid_measurements):
