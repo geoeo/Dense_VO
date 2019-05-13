@@ -65,7 +65,6 @@ def get_jacobian_camera_model(intrinsics : Intrinsic.Intrinsic,X):
         z = X[2,i]
         z_sqrd = math.pow(z,2)
 
-
         v11 = 0
         v22 = 0
         v13 = 0
